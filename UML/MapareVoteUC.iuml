@@ -1,0 +1,41 @@
+@startuml
+
+left to right direction
+
+title  MapareVote - Use Case Diagram 
+
+:Voter: -|> :User:
+:Votemaker: -|> :User:
+:Admin: -|> :User:
+
+:Voter: --> (Vote)
+
+:Votemaker: --> (Create vote)
+
+(Create vote) <|-- (Create private vote)
+
+(Create vote) <|-- (Create public vote)
+
+:Votemaker: --> (Invite voter)
+
+:Votemaker: --> (Consult intermediary results)
+
+:Admin: --> (Do the maintenance)
+
+(Vote) <. (Consult one's vote): extends
+
+:Voter: --> (Consult one's vote)
+
+(Consult one's vote) ..> (See the vote's results): include
+
+Voter --> (Browse public votes)
+
+(Vote) ..> (Browse public votes): extends
+
+:User: --> (Change notification settings)
+
+:Voter: --> (Consult private votes)
+
+(Vote) ..> (Consult private votes): extends
+
+@enduml
