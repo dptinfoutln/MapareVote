@@ -20,7 +20,7 @@ title  MapareVote - Use Case Diagram
 
 :Votemaker: --> (Consult intermediary results)
 
-:Admin: --> (Do the maintenance)
+:Admin: --> (Ban Users due to inappropriate content)
 
 (Vote) <. (Consult one's votes): extends
 
@@ -43,5 +43,7 @@ Voter --> (Browse public votes)
 (Vote) <.. (Share vote): extends
 
 (See the vote's results) <.. (Share vote): extends
+
+:Voter: --> (Report vote)
 
 @enduml
