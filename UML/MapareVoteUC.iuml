@@ -22,11 +22,11 @@ title  MapareVote - Use Case Diagram
 
 :Admin: --> (Do the maintenance)
 
-(Vote) <. (Consult one's vote): extends
+(Vote) <. (Consult one's votes): extends
 
-:Voter: --> (Consult one's vote)
+:Voter: --> (Consult one's votes)
 
-(Consult one's vote) ..> (See the vote's results): include
+(Consult one's votes) ..> (See the vote's results): include
 
 Voter --> (Browse public votes)
 
@@ -37,5 +37,11 @@ Voter --> (Browse public votes)
 :Voter: --> (Consult private votes)
 
 (Vote) ..> (Consult private votes): extends
+
+:Voter: ---> (Share vote)
+
+(Vote) <.. (Share vote): extends
+
+(See the vote's results) <.. (Share vote): extends
 
 @enduml
