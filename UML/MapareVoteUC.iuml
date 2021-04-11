@@ -46,4 +46,6 @@ Voter --> (Browse public votes)
 
 :Voter: --> (Report vote)
 
+(Create private vote) ..> (Invite voter): include
+
 @enduml
