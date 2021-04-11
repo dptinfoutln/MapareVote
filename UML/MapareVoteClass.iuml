@@ -1,0 +1,45 @@
+@startuml
+
+title MapareVote - Class Diagram
+
+package M {
+    class Vote {
+        int id
+        String label
+        LocalDate startDate
+        LocalDate endDate
+        String algo
+        Boolean anonymous
+    }
+    
+    class PrivateVote
+    
+    class Choice
+    
+    class Ballot {
+        String identifyingHash
+        LocalDateTime date
+    }
+    
+    class User {
+        String email
+        String nom
+        String prenom
+        String confirmationHash
+        Boolean confirmed
+        Boolean admin
+        Boolean banned
+    }
+}
+
+
+Choice "1..*" --* "1" Vote
+Ballot "*" --* "1" Vote
+Ballot "*" -- "*" Choice
+Ballot "*" -- "0..1" User:Voter
+Vote "*" --- "1" User:Votemaker
+PrivateVote "1" *-- "*" User:Member
+Vote "1"-- "*" User:Voted
+Vote <|-- PrivateVote
+
+@enduml
