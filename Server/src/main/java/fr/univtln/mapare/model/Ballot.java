@@ -1,6 +1,7 @@
-package fr.univtln.mapare.Model;
+package fr.univtln.mapare.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,7 +10,7 @@ public class Ballot {
     private LocalDateTime date;
     private Vote vote;
     private Optional<User> voter;
-    private Choice choices;
+    private List<Choice> choices = new ArrayList<>();
 
     public Ballot() {
     }
@@ -46,11 +47,16 @@ public class Ballot {
         this.voter = voter;
     }
 
-    public Choice getChoices() {
+    public List<Choice> getChoices() {
         return choices;
     }
 
-    public void setChoices(Choice choices) {
+    public void addChoice(Choice choice) {
+        if (!choices.contains(choice))
+            choices.add(choice);
+    }
+
+    public void setChoices(List<Choice> choices) {
         this.choices = choices;
     }
 }

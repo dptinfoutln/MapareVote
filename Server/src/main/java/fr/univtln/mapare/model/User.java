@@ -1,20 +1,41 @@
-package fr.univtln.mapare.Model;
+package fr.univtln.mapare.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class User {
+    private int id;
     private String email;
-    private String nom;
-    private String prenom;
+    private String lastname;
+    private String firstname;
     private String confirmationHash;
     private Boolean confirmed;
     private Boolean admin;
     private Boolean banned;
-    private List<Vote> startedVotes;
-    private List<Vote> votedVotes;
-    private List<PrivateVote> privateVoteList;
+    private List<Vote> startedVotes = new ArrayList<>();
+    private List<Vote> votedVotes = new ArrayList<>();
+    private List<PrivateVote> privateVoteList = new ArrayList<>();
 
     public User() {
+    }
+
+    public User(int id, String email, String lastname, String firstname, String confirmationHash, Boolean confirmed, Boolean admin, Boolean banned) {
+        this.id = id;
+        this.email = email;
+        this.lastname = lastname;
+        this.firstname = firstname;
+        this.confirmationHash = confirmationHash;
+        this.confirmed = confirmed;
+        this.admin = admin;
+        this.banned = banned;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getEmail() {
@@ -25,20 +46,20 @@ public class User {
         this.email = email;
     }
 
-    public String getNom() {
-        return nom;
+    public String getLastname() {
+        return lastname;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
-    public String getPrenom() {
-        return prenom;
+    public String getFirstname() {
+        return firstname;
     }
 
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
     }
 
     public String getConfirmationHash() {

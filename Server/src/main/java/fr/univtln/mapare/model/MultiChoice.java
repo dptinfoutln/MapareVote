@@ -1,4 +1,4 @@
-package fr.univtln.mapare.Model;
+package fr.univtln.mapare.model;
 
 import java.util.List;
 

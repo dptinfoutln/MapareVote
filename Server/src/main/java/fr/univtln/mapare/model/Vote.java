@@ -1,6 +1,7 @@
-package fr.univtln.mapare.Model;
+package fr.univtln.mapare.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Vote {
@@ -11,11 +12,21 @@ public class Vote {
     private String algo; //TODO: find better name
     private Boolean anonymous;
     private User Votemaker;
-    private List<Ballot> ballots;
-    private List<User> voters;
-    private List<Choice> choices;
+    private List<Ballot> ballots = new ArrayList<>();
+    private List<User> voters = new ArrayList<>();
+    private List<Choice> choices = new ArrayList<>();
 
     public Vote() {
+    }
+
+    public Vote(int id, String label, LocalDate startDate, LocalDate endDate, String algo, Boolean anonymous, User votemaker) {
+        this.id = id;
+        this.label = label;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.algo = algo;
+        this.anonymous = anonymous;
+        Votemaker = votemaker;
     }
 
     public int getId() {
