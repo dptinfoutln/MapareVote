@@ -8,7 +8,9 @@ title  MapareVote - Use Case Diagram
 :Votemaker: -|> :User:
 :Admin: -|> :User:
 
-:Voter: --> (Vote)
+Voter -> (Browse public votes)
+
+:Voter: ---> (Vote)
 
 :Votemaker: --> (Create vote)
 
@@ -24,11 +26,11 @@ title  MapareVote - Use Case Diagram
 
 (Vote) <. (Consult one's votes): extends
 
-:Voter: --> (Consult one's votes)
+:Voter: ----> (Consult one's votes)
 
 (Consult one's votes) ..> (See the vote's results): include
 
-Voter --> (Browse public votes)
+
 
 (Vote) ..> (Browse public votes): extends
 
@@ -36,7 +38,7 @@ Voter --> (Browse public votes)
 
 :Voter: --> (Consult private votes)
 
-(Vote) ..> (Consult private votes): extends
+(Consult private votes) <.. (Vote): extends
 
 :Voter: ---> (Share vote)
 
@@ -47,5 +49,6 @@ Voter --> (Browse public votes)
 :Voter: --> (Report vote)
 
 (Create private vote) ..> (Invite voter): include
+
 
 @enduml
