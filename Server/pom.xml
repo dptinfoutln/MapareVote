@@ -32,6 +32,19 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
+    <!-- https://mvnrepository.com/artifact/javax.mail/mail -->
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4.7</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.json/json -->
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20210307</version>
+    </dependency>
 
     <!-- JPA -->
     <dependency>
@@ -57,7 +70,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.18</version>
+      <version>1.18.20</version>
       <scope>compile</scope>
     </dependency>
 
@@ -382,7 +395,8 @@
                     <transformer
                             implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                         <manifestEntries>
-                            <Main-Class>${app.main.class}</Main-Class>
+                            <!--suppress UnresolvedMavenProperty -->
+                          <Main-Class>${app.main.class}</Main-Class>
                             <X-Compile-Source-JDK>${java.version}</X-Compile-Source-JDK>
                             <X-Compile-Target-JDK>${java.version}</X-Compile-Target-JDK>
                         </manifestEntries>
