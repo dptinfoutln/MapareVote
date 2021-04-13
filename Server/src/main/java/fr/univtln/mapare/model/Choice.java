@@ -2,7 +2,7 @@ package fr.univtln.mapare.model;
 
 public abstract class Choice {
     private Vote vote;
-    private int score;
+    private int weight;
 
     public Vote getVote() {
         return vote;
@@ -12,11 +12,11 @@ public abstract class Choice {
         this.vote = vote;
     }
 
-    public int getScore() {
-        return score;
+    public int getWeight() {
+        return weight;
     }
 
-    public void setScore(int score) {
-        this.score = score;
+    public void setWeight(int weight) {
+        this.weight = weight;
     }
 }

@@ -13,8 +13,8 @@ public class User {
     private Boolean admin;
     private Boolean banned;
     private List<Vote> startedVotes = new ArrayList<>();
-    private List<Vote> votedVotes = new ArrayList<>();
     private List<PrivateVote> privateVoteList = new ArrayList<>();
+    private List<VotedVote> votedVotes = new ArrayList<>();
 
     public User() {
     }
@@ -107,17 +107,12 @@ public class User {
             startedVotes.add(vote);
     }
 
-    public List<Vote> getVotedVotes() {
+    public List<VotedVote> getVotedVotes() {
         return votedVotes;
     }
 
-    public void setVotedVotes(List<Vote> votedVotes) {
+    public void setVotedVotes(List<VotedVote> votedVotes) {
         this.votedVotes = votedVotes;
-    }
-
-    public void addVotedVote(Vote vote) {
-        if (!votedVotes.contains(vote))
-            votedVotes.add(vote);
     }
 
     public List<PrivateVote> getPrivateVoteList() {

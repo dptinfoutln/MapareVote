@@ -13,8 +13,8 @@ public class Vote {
     private Boolean anonymous;
     private User Votemaker;
     private List<Ballot> ballots = new ArrayList<>();
-    private List<User> voters = new ArrayList<>();
     private List<Choice> choices = new ArrayList<>();
+    private List<VotedVote> votedVotes = new ArrayList<>();
 
     public Vote() {
     }
@@ -98,19 +98,6 @@ public class Vote {
             ballots.add(ballot);
     }
 
-    public List<User> getVoters() {
-        return voters;
-    }
-
-    public void setVoters(List<User> voters) {
-        this.voters = voters;
-    }
-
-    public void addVoter(User voter) {
-        if (!voters.contains(voter))
-            voters.add(voter);
-    }
-
     public List<Choice> getChoices() {
         return choices;
     }
@@ -122,5 +109,13 @@ public class Vote {
     public void addChoice(Choice choice) {
         if (!choices.contains(choice))
             choices.add(choice);
+    }
+
+    public List<VotedVote> getVotedVotes() {
+        return votedVotes;
+    }
+
+    public void setVotedVotes(List<VotedVote> votedVotes) {
+        this.votedVotes = votedVotes;
     }
 }

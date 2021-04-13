@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Ballot {
-    private String identifyingHash;
+    int id;
     private LocalDateTime date;
     private Vote vote;
     private Optional<User> voter;
@@ -15,12 +15,18 @@ public class Ballot {
     public Ballot() {
     }
 
-    public String getIdentifyingHash() {
-        return identifyingHash;
+    public Ballot(int id, LocalDateTime date, Vote vote) {
+        this.id = id;
+        this.date = date;
+        this.vote = vote;
     }
 
-    public void setIdentifyingHash(String identifyingHash) {
-        this.identifyingHash = identifyingHash;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public LocalDateTime getDate() {
