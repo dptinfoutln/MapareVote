@@ -14,10 +14,13 @@ package M {
     
     class PrivateVote
     
-    class Choice
+    class Choice {
+        int id
+        int weight
+    }
     
     class Ballot {
-        String identifyingHash
+        int id
         LocalDateTime date
     }
     
@@ -26,10 +29,15 @@ package M {
         String email
         String lastname
         String firstname
+        String hashPassword
         String confirmationHash
         Boolean confirmed
         Boolean admin
         Boolean banned
+    }
+    
+    class VotedVote {
+        String token
     }
 }
 
@@ -40,7 +48,8 @@ Ballot "*" -- "*" Choice
 Ballot "*" -- "0..1" User:Voter
 Vote "*" --- "1" User:Votemaker
 PrivateVote "1" *-- "*" User:Member
-Vote "1"-- "*" User:Voted
+Vote "1"-- "*" VotedVote
+VotedVote "*" -- "1" User
 Vote <|-- PrivateVote
 
 @enduml
