@@ -12,7 +12,8 @@ import java.util.List;
 @Entity
 @Table(name = "PRIVATE_VOTES")
 public class PrivateVote extends Vote implements Serializable {
-    @ManyToMany(mappedBy = " privateVoteList")
+
+    @ManyToMany(mappedBy = "privateVoteList")
     private List<User> members = new ArrayList<>();
 
     public PrivateVote() {

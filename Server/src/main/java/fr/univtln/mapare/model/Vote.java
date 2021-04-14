@@ -22,19 +22,15 @@ public class Vote implements Serializable {
     private Boolean anonymous;
 
     @OneToOne
-    @JsonIdentityReference(alwaysAsId = true)
     private User votemaker;
 
     @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
-    @JsonIdentityReference(alwaysAsId = true)
     private List<Ballot> ballots = new ArrayList<>();
 
     @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
-    @JsonIdentityReference(alwaysAsId = true)
     private List<Choice> choices = new ArrayList<>();
 
     @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
-    @JsonIdentityReference(alwaysAsId = true)
     private List<VotedVote> votedVotes = new ArrayList<>();
 
     public Vote() {

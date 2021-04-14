@@ -1,24 +1,36 @@
 package fr.univtln.mapare.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "CHOICE")
 public class Choice {
-
-    @Id //c chiant
-    List<String> names;
-
     @Id
+    @GeneratedValue
+    int id;
+
+    @ElementCollection
+    @CollectionTable(name = "CHOICE_DETAILS",
+            joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "choice")
+    @OrderColumn(name="order")
+    private List<String> names = new ArrayList<>();
+
     @ManyToOne
     private Vote vote;
 
     public Choice() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Vote getVote() {

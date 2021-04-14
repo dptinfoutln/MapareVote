@@ -1,5 +1,6 @@
 package fr.univtln.mapare.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -7,26 +8,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "USER")
 public class User implements Serializable {
     @Id
     @GeneratedValue
     private int id;
 
     private String email;
+
     private String lastname;
+
     private String firstname;
+
     private String emailToken;
+
     private Boolean confirmed;
+
     private Boolean admin;
+
     private Boolean banned;
+
     private Boolean deleted;
 
-    @ManyToMany(mappedBy = )
+    @OneToMany
+    @JoinTable(name = "STARTED_VOTES",
+            joinColumns = @JoinColumn(name = "votemaker"),
+            inverseJoinColumns = @JoinColumn(name = "vote"))
     private List<Vote> startedVotes = new ArrayList<>();
 
     @ManyToMany(mappedBy = "members", cascade = {CascadeType.ALL})
     private List<PrivateVote> privateVoteList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     private List<VotedVote> votedVotes = new ArrayList<>();
 
     public User() {

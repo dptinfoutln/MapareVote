@@ -18,16 +18,14 @@ public class Ballot implements Serializable {
 
     private LocalDateTime date;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
-    @ManyToOne()
-    @JsonIdentityReference(alwaysAsId = true)
+    @ManyToOne
     private Vote vote;
 
     @OneToOne
     @JoinColumn(nullable = true)
     private User voter;
 
-    @OneToMany(mappedBy = "ballot", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "ballot")
     private List<BallotChoice> choices = new ArrayList<>();
 
     public Ballot() {
