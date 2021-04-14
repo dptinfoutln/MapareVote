@@ -18,14 +18,18 @@ public class Ballot implements Serializable {
     @GeneratedValue
     int id;
 
-    @Temporal(TemporalType.TIMESTAMP)
+
     private LocalDateTime date;
 
     @ManyToOne(cascade = {CascadeType.ALL})
     @JsonIdentityReference(alwaysAsId = true)
     private Vote vote;
-    
-    private Optional<User> voter;
+
+    @OneToOne
+    @JoinColumn(nullable = true)
+    private User voter;
+
+
     private List<Choice> choices = new ArrayList<>();
 
     public Ballot() {
