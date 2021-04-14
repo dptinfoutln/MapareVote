@@ -10,6 +10,7 @@ package M {
         LocalDate endDate
         String algo
         Boolean anonymous
+        Boolean deleted
     }
     
     class PrivateVote
@@ -30,7 +31,7 @@ package M {
         String lastname
         String firstname
         String hashPassword
-        String confirmationHash
+        String emailToken
         Boolean confirmed
         Boolean admin
         Boolean banned
@@ -39,12 +40,17 @@ package M {
     class VotedVote {
         String token
     }
+    
+    class BallotChoice {
+        int weight
+    }
 }
 
 
 Choice "1..*" --* "1" Vote
 Ballot "*" --* "1" Vote
-Ballot "*" -- "*" Choice
+Ballot "1" -- "*" BallotChoice
+BallotChoice "*" -- "1" Choice
 Ballot "*" -- "0..1" User:Voter
 Vote "*" --- "1" User:Votemaker
 PrivateVote "1" *-- "*" User:Member
