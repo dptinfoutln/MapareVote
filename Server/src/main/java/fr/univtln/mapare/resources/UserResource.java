@@ -5,7 +5,7 @@ import fr.univtln.mapare.model.User;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
-import java.util.List;
+import java.util.Collection;
 
 @Path("users")
 public class UserResource {
@@ -15,8 +15,8 @@ public class UserResource {
     //preload list
 
     @GET
-    public List<User> getUsers(@QueryParam("page_num") int pagenum,
-                               @QueryParam("page_size") int pagesize) {
+    public Collection<User> getUsers(@DefaultValue("1") @QueryParam("page_num") int pagenum,
+                                     @DefaultValue("20") @QueryParam("page_size") int pagesize) {
         //Lancer DAO
         //Pagination
         //rentrer users dans liste
@@ -24,11 +24,17 @@ public class UserResource {
         return ctrl.getList();
     }
 
+    @GET
+    @Path("{id}")
+    public User getUser(@PathParam("id") int id) {
+        return ctrl.mapGet(id);
+    }
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public User addUser(User user) {
         user.setId(lastId++);
-        ctrl.listAdd(user);
+        ctrl.mapAdd(user.getId(), user);
         return user;
     }
 }

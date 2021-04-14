@@ -2,27 +2,28 @@ package fr.univtln.mapare.resources;
 
 import fr.univtln.mapare.controllers.Controller;
 import fr.univtln.mapare.model.PrivateVote;
-import fr.univtln.mapare.model.User;
-import fr.univtln.mapare.model.Vote;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.QueryParam;
-
-import java.time.LocalDate;
-import java.util.List;
+import jakarta.ws.rs.*;
 
 @Path("privatevotes")
 public class PrivateVoteResource {
-    Controller<PrivateVote> ctrl = new Controller<>();
+    static Controller<PrivateVote> ctrl = new Controller<>();
+    static int lastId = 0; // init at highest ID + 1
 
+    private static void foo() {
+        lastId++;
+    }
 
     @GET
     @Path("{id}")
-    public List<PrivateVote> getVotes(@PathParam ("id") int id,
-                                      @QueryParam("page_num") int pagenum,
-                                      @QueryParam("page_size") int pagesize) {
-        ctrl.listAdd(new PrivateVote(new Vote(1, "Testvote", LocalDate.now(), LocalDate.now(), "majority", false, new User(1, "test@example.com", "Dupont", "Thomas", "TESTX5", true, true, false))));
-        return ctrl.getList();
+    public PrivateVote getVote(@PathParam ("id") int id) {
+        return ctrl.mapGet(id);
+    }
+
+    @POST
+    public PrivateVote addVote(PrivateVote vote) {
+        vote.setId(lastId);
+        foo();
+        ctrl.mapAdd(vote.getId(), vote);
+        return vote;
     }
 }
