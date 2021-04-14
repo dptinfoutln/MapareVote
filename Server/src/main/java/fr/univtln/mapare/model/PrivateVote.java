@@ -1,9 +1,18 @@
 package fr.univtln.mapare.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PrivateVote extends Vote {
+@Entity
+@Table(name = "PRIVATE_VOTES")
+public class PrivateVote extends Vote implements Serializable {
+    @ManyToMany(mappedBy = " privateVoteList")
     private List<User> members = new ArrayList<>();
 
     public PrivateVote() {

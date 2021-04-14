@@ -11,16 +11,15 @@ import java.util.List;
 @Entity
 @Table(name = "BALLOT")
 public class Ballot implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue
     int id;
 
-
     private LocalDateTime date;
 
     @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne()
     @JsonIdentityReference(alwaysAsId = true)
     private Vote vote;
 
@@ -28,6 +27,7 @@ public class Ballot implements Serializable {
     @JoinColumn(nullable = true)
     private User voter;
 
+    @OneToMany(mappedBy = "ballot", cascade = {CascadeType.ALL})
     private List<BallotChoice> choices = new ArrayList<>();
 
     public Ballot() {

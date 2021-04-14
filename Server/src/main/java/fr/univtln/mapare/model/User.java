@@ -1,8 +1,6 @@
 package fr.univtln.mapare.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,23 +15,29 @@ public class User implements Serializable {
     private String email;
     private String lastname;
     private String firstname;
-    private String confirmationHash;
+    private String emailToken;
     private Boolean confirmed;
     private Boolean admin;
     private Boolean banned;
+    private Boolean deleted;
+
+    @ManyToMany(mappedBy = )
     private List<Vote> startedVotes = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "members", cascade = {CascadeType.ALL})
     private List<PrivateVote> privateVoteList = new ArrayList<>();
+
     private List<VotedVote> votedVotes = new ArrayList<>();
 
     public User() {
     }
 
-    public User(int id, String email, String lastname, String firstname, String confirmationHash, Boolean confirmed, Boolean admin, Boolean banned) {
+    public User(int id, String email, String lastname, String firstname, String emailToken, Boolean confirmed, Boolean admin, Boolean banned) {
         this.id = id;
         this.email = email;
         this.lastname = lastname;
         this.firstname = firstname;
-        this.confirmationHash = confirmationHash;
+        this.emailToken = emailToken;
         this.confirmed = confirmed;
         this.admin = admin;
         this.banned = banned;
@@ -71,12 +75,12 @@ public class User implements Serializable {
         this.firstname = firstname;
     }
 
-    public String getConfirmationHash() {
-        return confirmationHash;
+    public String getEmailToken() {
+        return emailToken;
     }
 
-    public void setConfirmationHash(String confirmationHash) {
-        this.confirmationHash = confirmationHash;
+    public void setEmailToken(String confirmationHash) {
+        this.emailToken = confirmationHash;
     }
 
     public Boolean getConfirmed() {
@@ -101,6 +105,14 @@ public class User implements Serializable {
 
     public void setBanned(Boolean banned) {
         this.banned = banned;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     public List<Vote> getStartedVotes() {

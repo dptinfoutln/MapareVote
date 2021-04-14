@@ -1,9 +1,21 @@
 package fr.univtln.mapare.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
 import java.util.List;
 
+@Entity
+@Table(name = "CHOICE")
 public class Choice {
+
+    @Id //c chiant
     List<String> names;
+
+    @Id
+    @ManyToOne
     private Vote vote;
 
     public Choice() {

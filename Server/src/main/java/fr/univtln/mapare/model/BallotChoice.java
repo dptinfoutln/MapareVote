@@ -1,8 +1,19 @@
 package fr.univtln.mapare.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "BALLOT_CHOICE")
 public class BallotChoice {
+
+    @ManyToOne
+    @Id
     private Ballot ballot;
+
+    @ManyToOne
+    @Id
     private Choice choice;
+
     private int weight;
 
     public BallotChoice() {

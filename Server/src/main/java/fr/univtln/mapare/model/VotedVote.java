@@ -1,8 +1,21 @@
 package fr.univtln.mapare.model;
 
-public class VotedVote {
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+
+import java.io.Serializable;
+
+@Entity
+public class VotedVote implements Serializable {
+
+    @Id
     private String token;
+
+    @ManyToOne
     private Vote vote;
+
+    @ManyToOne
     private User user;
 
     public VotedVote() {
