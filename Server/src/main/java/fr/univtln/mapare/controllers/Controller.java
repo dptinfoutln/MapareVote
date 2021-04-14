@@ -1,21 +1,29 @@
 package fr.univtln.mapare.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Controller<E> {
-    private List<E> list = new ArrayList<>();
+    private Map<Integer, E> map = new HashMap<>();
 
-    public List<E> getList() {
-        return list;
+    public Collection<E> getList() {
+        return map.values();
     }
 
-    public void setList(List<E> list) {
-        this.list = list;
+    public Map<Integer, E> getMap() {
+        return map;
     }
 
-    public void listAdd(E e) {
-        if (!list.contains(e))
-            list.add(e);
+    public void setMap(Map<Integer, E> map) {
+        this.map = map;
+    }
+
+    public void mapAdd(int id, E e) {
+        map.put(id, e);
+    }
+
+    public E mapGet(int id) {
+        return map.get(id);
     }
 }
