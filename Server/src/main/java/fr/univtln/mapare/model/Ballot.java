@@ -10,7 +10,7 @@ public class Ballot {
     private LocalDateTime date;
     private Vote vote;
     private Optional<User> voter;
-    private List<Choice> choices = new ArrayList<>();
+    private List<BallotChoice> choices = new ArrayList<>();
 
     public Ballot() {
     }
@@ -53,16 +53,16 @@ public class Ballot {
         this.voter = voter;
     }
 
-    public List<Choice> getChoices() {
+    public List<BallotChoice> getChoices() {
         return choices;
     }
 
-    public void addChoice(Choice choice) {
+    public void addChoice(BallotChoice choice) {
         if (!choices.contains(choice))
             choices.add(choice);
     }
 
-    public void setChoices(List<Choice> choices) {
+    public void setChoices(List<BallotChoice> choices) {
         this.choices = choices;
     }
 }

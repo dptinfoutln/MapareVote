@@ -1,8 +1,13 @@
 package fr.univtln.mapare.model;
 
-public abstract class Choice {
+import java.util.List;
+
+public class Choice {
+    List<String> names;
     private Vote vote;
-    private int weight;
+
+    public Choice() {
+    }
 
     public Vote getVote() {
         return vote;
@@ -12,11 +17,16 @@ public abstract class Choice {
         this.vote = vote;
     }
 
-    public int getWeight() {
-        return weight;
+    public List<String> getNames() {
+        return names;
     }
 
-    public void setWeight(int weight) {
-        this.weight = weight;
+    public void setNames(List<String> names) {
+        this.names = names;
+    }
+
+    public void addName(String name) {
+        if (!names.contains(name))
+            names.add(name);
     }
 }
