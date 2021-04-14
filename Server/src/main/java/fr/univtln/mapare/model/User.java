@@ -8,10 +8,10 @@ public class User {
     private String email;
     private String lastname;
     private String firstname;
-    private String confirmationHash;
-    private Boolean confirmed;
-    private Boolean admin;
-    private Boolean banned;
+    private String emailToken;
+    private Boolean confirmed = false;
+    private Boolean admin = false;
+    private Boolean banned = false;
     private List<Vote> startedVotes = new ArrayList<>();
     private List<PrivateVote> privateVoteList = new ArrayList<>();
     private List<VotedVote> votedVotes = new ArrayList<>();
@@ -19,12 +19,12 @@ public class User {
     public User() {
     }
 
-    public User(int id, String email, String lastname, String firstname, String confirmationHash, Boolean confirmed, Boolean admin, Boolean banned) {
+    public User(int id, String email, String lastname, String firstname, String emailToken, Boolean confirmed, Boolean admin, Boolean banned) {
         this.id = id;
         this.email = email;
         this.lastname = lastname;
         this.firstname = firstname;
-        this.confirmationHash = confirmationHash;
+        this.emailToken = emailToken;
         this.confirmed = confirmed;
         this.admin = admin;
         this.banned = banned;
@@ -62,12 +62,12 @@ public class User {
         this.firstname = firstname;
     }
 
-    public String getConfirmationHash() {
-        return confirmationHash;
+    public String getEmailToken() {
+        return emailToken;
     }
 
-    public void setConfirmationHash(String confirmationHash) {
-        this.confirmationHash = confirmationHash;
+    public void setEmailToken(String emailToken) {
+        this.emailToken = emailToken;
     }
 
     public Boolean getConfirmed() {

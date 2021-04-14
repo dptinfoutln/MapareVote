@@ -3,14 +3,13 @@ package fr.univtln.mapare.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class Ballot {
     int id;
     private LocalDateTime date;
     private Vote vote;
-    private Optional<User> voter;
-    private List<Choice> choices = new ArrayList<>();
+    private User voter;
+    private List<BallotChoice> choices = new ArrayList<>();
 
     public Ballot() {
     }
@@ -45,24 +44,24 @@ public class Ballot {
         this.vote = vote;
     }
 
-    public Optional<User> getVoter() {
+    public User getVoter() {
         return voter;
     }
 
-    public void setVoter(Optional<User> voter) {
+    public void setVoter(User voter) {
         this.voter = voter;
     }
 
-    public List<Choice> getChoices() {
+    public List<BallotChoice> getChoices() {
         return choices;
     }
 
-    public void addChoice(Choice choice) {
+    public void addChoice(BallotChoice choice) {
         if (!choices.contains(choice))
             choices.add(choice);
     }
 
-    public void setChoices(List<Choice> choices) {
+    public void setChoices(List<BallotChoice> choices) {
         this.choices = choices;
     }
 }
