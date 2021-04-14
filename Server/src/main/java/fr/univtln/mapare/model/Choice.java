@@ -3,10 +3,19 @@ package fr.univtln.mapare.model;
 import java.util.List;
 
 public class Choice {
+    int id;
     List<String> names;
     private Vote vote;
 
     public Choice() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Vote getVote() {

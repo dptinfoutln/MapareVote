@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Main {
-    public static final String BASE_URI = "http://localhost:5431/maparevote";
+    public static final String BASE_URI = "http://localhost:5431/";
 
     public static HttpServer startServer() {
         Logger logger = Logger.getAnonymousLogger();
