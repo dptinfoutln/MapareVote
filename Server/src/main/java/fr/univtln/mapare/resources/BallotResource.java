@@ -2,6 +2,7 @@ package fr.univtln.mapare.resources;
 
 import fr.univtln.mapare.controllers.Controller;
 import fr.univtln.mapare.model.Ballot;
+import fr.univtln.mapare.model.BallotChoice;
 import jakarta.ws.rs.*;
 
 import java.util.Collection;
@@ -33,5 +34,12 @@ public class BallotResource {
         foo();
         ctrl.mapAdd(ballot.getId(), ballot);
         return ballot;
+    }
+
+    @POST
+    @Path("{id}/ballotchoice")
+    public int addChoice(@PathParam("id") int id, BallotChoice choice) {
+        ctrl.mapGet(id).addChoice(choice);
+        return 0;
     }
 }

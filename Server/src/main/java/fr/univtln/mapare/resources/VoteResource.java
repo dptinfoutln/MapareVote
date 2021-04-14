@@ -9,7 +9,7 @@ import java.util.Collection;
 
 @Path("votes")
 public class VoteResource {
-    Controller<Vote> ctrl = new Controller<>();
+    static Controller<Vote> ctrl = new Controller<>();
     static int lastId = 0; // init at highest ID + 1
 
     @GET
@@ -24,7 +24,7 @@ public class VoteResource {
     }
 
     @GET
-    @Path("{id}")
+    @Path("public/{id}")
     public Vote getVote(@PathParam("id") int id) {
         return ctrl.mapGet(id);
     }
