@@ -19,9 +19,9 @@ import { CreateComponent } from './vote/create/create.component';
 const appRoutes: Routes = [
   { path: 'auth/signup', component: SignupComponent },
   { path: 'auth/signin', component: SigninComponent },
-  { path: 'vote/create', component: CreateComponent },
-  { path: 'vote/private', component: PrivateComponent },
-  { path: 'vote/public', component: PublicComponent },
+  { path: 'votes/create', component: CreateComponent },
+  { path: 'votes/private', component: PrivateComponent },
+  { path: 'votes/public', component: PublicComponent },
 ];
 
 @NgModule({

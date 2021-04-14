@@ -7,13 +7,14 @@ import {Md5} from 'ts-md5';
   providedIn: 'root'
 })
 export class AuthService {
+  webserver = 'http://localhost:5431/';
 
   constructor(private http: HttpClient,
               private cookieService: CookieService
   ) { }
 
   createNewUser(email: string, password: string): Promise<void>{
-    const url = 'https://maparevote.siannos.fr:6666/auth/signup';
+    const url = this.webserver + 'auth/signup';
     const body = JSON.stringify({email, password});
     const headers = new HttpHeaders({'Content-Type': 'application/json; charset=utf-8'});
 
@@ -33,17 +34,29 @@ export class AuthService {
   }
 
   signInUser(email: string, password: string): Promise<void>{
-    const url = 'https://maparevote.siannos.fr:6666/auth/signin';
+    const url = this.webserver + 'auth/login';
     const body = JSON.stringify({email, password});
-    const headers = new HttpHeaders({'Content-Type': 'application/json; charset=utf-8'});
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json; charset=utf-8',
+      Accept: 'text/plain',
+      Authorization: 'Basic ' + btoa(email + ':' + password)
+    });
 
     return new Promise(
       (resolve , reject) => {
-        this.http.post(url, body, {headers} ).subscribe(
-          () => {
+        this.http.get(url, { headers, responseType: 'text' } ).subscribe(
+          token => {
+            console.log('token', token);
             resolve();
-          }, (error) => {
-            reject(error);
+          }, err => {
+            if (err.status === 401){
+              console.log(err);
+              reject('L\'adresse email our le mot de passe est incorrecte');
+            } else {
+              console.log(err);
+              reject('Erreur ' + err.status);
+            }
           }
         );
       }
@@ -51,7 +64,7 @@ export class AuthService {
   }
 
   signOutUser(email: string, password: string): Promise<void>{
-    const url = 'https://maparevote.siannos.fr:6666/auth/signout';
+    const url = this.webserver + 'auth/signout';
     return new Promise(
       (resolve , reject) => {
         this.http.get(url).subscribe(

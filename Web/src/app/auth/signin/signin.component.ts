@@ -24,7 +24,7 @@ export class SigninComponent implements OnInit {
   initForm(): void {
     this.signInForm = this.fromBuilder.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.pattern(/[0-9a-zA-Z]{6,}/)]]
+      password: ['', [Validators.required]]
     });
   }
 
@@ -33,7 +33,7 @@ export class SigninComponent implements OnInit {
     const password = this.signInForm.get('password').value;
     this.authService.signInUser(email, password).then(
       () => {
-        this.router.navigate(['/books']);
+        this.router.navigate(['/']);
       },
       (error) => {
         this.errorMessage = error;
