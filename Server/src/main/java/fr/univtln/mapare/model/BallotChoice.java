@@ -2,9 +2,11 @@ package fr.univtln.mapare.model;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+
 @Entity
-@Table(name = "BALLOT_CHOICE")
-public class BallotChoice {
+@Table(name = "\"BALLOT_CHOICE\"")
+public class BallotChoice implements Serializable {
 
     @ManyToOne
     @Id

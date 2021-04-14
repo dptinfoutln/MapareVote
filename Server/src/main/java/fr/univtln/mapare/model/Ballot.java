@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "BALLOT")
+@Table(name = "\"BALLOT\"")
 public class Ballot implements Serializable {
 
     @Id

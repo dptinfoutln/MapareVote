@@ -1,14 +1,11 @@
 package fr.univtln.mapare.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 
 @Entity
-@Table(name = "VOTED_VOTES")
+@Table(name = "\"VOTED_VOTES\"")
 public class VotedVote implements Serializable {
 
     @Id

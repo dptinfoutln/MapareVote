@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "USERS")
+@Table(name = "\"USERS\"")
 public class User implements Serializable {
     @Id
     @GeneratedValue
@@ -20,6 +20,7 @@ public class User implements Serializable {
 
     private String firstname;
 
+    @Column(name = "\"emailToken\"")
     private String emailToken;
 
     private Boolean confirmed;
@@ -31,9 +32,9 @@ public class User implements Serializable {
     private Boolean deleted;
 
     @OneToMany
-    @JoinTable(name = "STARTED_VOTES",
-            joinColumns = @JoinColumn(name = "votemaker"),
-            inverseJoinColumns = @JoinColumn(name = "vote"))
+    @JoinTable(name = "\"STARTED_VOTES\"",
+            joinColumns = @JoinColumn(name = "votemaker_id"),
+            inverseJoinColumns = @JoinColumn(name = "vote_id"))
     private List<Vote> startedVotes = new ArrayList<>();
 
     @ManyToMany(mappedBy = "members", cascade = {CascadeType.ALL})

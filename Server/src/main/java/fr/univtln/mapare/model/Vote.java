@@ -9,15 +9,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "VOTE")
+@Table(name = "\"VOTE\"")
 public class Vote implements Serializable {
     @Id
     @GeneratedValue
     private int id;
 
     private String label;
+
+    @Column(name = "\"startDate\"")
     private LocalDate startDate;
+
+    @Column(name = "\"endDate\"")
     private LocalDate endDate;
+
     private String algo; //TODO: find better name
     private Boolean anonymous;
 

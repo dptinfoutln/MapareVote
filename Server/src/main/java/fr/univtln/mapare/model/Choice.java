@@ -2,21 +2,22 @@ package fr.univtln.mapare.model;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "CHOICE")
-public class Choice {
+@Table(name = "\"CHOICE\"")
+public class Choice implements Serializable {
     @Id
     @GeneratedValue
     int id;
 
     @ElementCollection
-    @CollectionTable(name = "CHOICE_DETAILS",
+    @CollectionTable(name = "\"CHOICE_DETAILS\"",
             joinColumns = @JoinColumn(name = "id"))
     @Column(name = "choice")
-    @OrderColumn(name="order")
+    //@OrderColumn(name="order") not working
     private List<String> names = new ArrayList<>();
 
     @ManyToOne
