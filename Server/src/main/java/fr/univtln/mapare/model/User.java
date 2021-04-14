@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "USERS")
 public class User implements Serializable {
     @Id
     @GeneratedValue
@@ -45,8 +45,7 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(int id, String email, String lastname, String firstname, String emailToken, Boolean confirmed, Boolean admin, Boolean banned) {
-        this.id = id;
+    public User(String email, String lastname, String firstname, String emailToken, Boolean confirmed, Boolean admin, Boolean banned, Boolean deleted) {
         this.email = email;
         this.lastname = lastname;
         this.firstname = firstname;
@@ -54,6 +53,7 @@ public class User implements Serializable {
         this.confirmed = confirmed;
         this.admin = admin;
         this.banned = banned;
+        this.deleted = deleted;
     }
 
     public int getId() {

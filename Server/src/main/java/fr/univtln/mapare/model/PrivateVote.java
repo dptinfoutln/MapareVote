@@ -13,7 +13,7 @@ import java.util.List;
 @Table(name = "PRIVATE_VOTES")
 public class PrivateVote extends Vote implements Serializable {
 
-    @ManyToMany(mappedBy = "privateVoteList")
+    @ManyToMany
     private List<User> members = new ArrayList<>();
 
     public PrivateVote() {
