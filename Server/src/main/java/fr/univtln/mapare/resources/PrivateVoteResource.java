@@ -4,7 +4,7 @@ import fr.univtln.mapare.controllers.Controller;
 import fr.univtln.mapare.model.PrivateVote;
 import jakarta.ws.rs.*;
 
-@Path("privatevotes")
+@Path("votes/private")
 public class PrivateVoteResource {
     static Controller<PrivateVote> ctrl = new Controller<>();
     static int lastId = 0; // init at highest ID + 1

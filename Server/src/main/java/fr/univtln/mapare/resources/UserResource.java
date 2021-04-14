@@ -1,6 +1,7 @@
 package fr.univtln.mapare.resources;
 
 import fr.univtln.mapare.controllers.Controller;
+import fr.univtln.mapare.model.PrivateVote;
 import fr.univtln.mapare.model.User;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -13,6 +14,10 @@ public class UserResource {
     static int lastId = 0; // init at highest ID + 1
 
     //preload list
+
+    private static void foo() {
+        lastId++;
+    }
 
     @GET
     public Collection<User> getUsers(@DefaultValue("1") @QueryParam("page_num") int pagenum,
@@ -33,7 +38,7 @@ public class UserResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public User addUser(User user) {
-        user.setId(lastId++);
+        user.setId(lastId);
         ctrl.mapAdd(user.getId(), user);
         return user;
     }
