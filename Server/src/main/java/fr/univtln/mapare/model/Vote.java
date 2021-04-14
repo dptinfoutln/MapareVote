@@ -1,18 +1,35 @@
 package fr.univtln.mapare.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import jakarta.persistence.*;
+
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Vote {
+@Entity
+@Table(name = "VOTE")
+public class Vote implements Serializable {
+    @Id
+    @GeneratedValue
     private int id;
+
     private String label;
     private LocalDate startDate;
     private LocalDate endDate;
     private String algo; //TODO: find better name
     private Boolean anonymous;
+
+    @OneToOne
+    @JoinColumn(name = "votemaker")
+    @JsonIdentityReference(alwaysAsId = true)
     private User Votemaker;
+
+    @OneToMany(mappedBy = "owner", cascade = {CascadeType.ALL})
+    @JsonIdentityReference(alwaysAsId = true)
     private List<Ballot> ballots = new ArrayList<>();
+
     private List<Choice> choices = new ArrayList<>();
     private List<VotedVote> votedVotes = new ArrayList<>();
 

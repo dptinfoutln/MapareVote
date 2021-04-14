@@ -1,10 +1,19 @@
 package fr.univtln.mapare.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User {
+@Entity
+public class User implements Serializable {
+    @Id
+    @GeneratedValue
     private int id;
+
     private String email;
     private String lastname;
     private String firstname;
