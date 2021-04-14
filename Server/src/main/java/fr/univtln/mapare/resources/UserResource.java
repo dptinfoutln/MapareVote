@@ -10,6 +10,9 @@ import java.util.List;
 @Path("users")
 public class UserResource {
     static Controller<User> ctrl = new Controller<>();
+    static int lastId = 0; // init at highest ID + 1
+
+    //preload list
 
     @GET
     public List<User> getUsers(@QueryParam("page_num") int pagenum,
@@ -24,6 +27,7 @@ public class UserResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public User addUser(User user) {
+        user.setId(lastId++);
         ctrl.listAdd(user);
         return user;
     }
