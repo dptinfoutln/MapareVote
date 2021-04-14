@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AuthService} from '../../services/auth.service';
 import {Router} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
-
-class AuthService {
-}
 
 @Component({
   selector: 'app-signup',
@@ -18,8 +15,7 @@ export class SignupComponent implements OnInit {
 
   constructor(private fromBuilder: FormBuilder,
               private authService: AuthService,
-              private router: Router,
-              private http: HttpClient) { }
+              private router: Router) { }
 
   ngOnInit(): void {
     this.initForm();
@@ -28,14 +24,20 @@ export class SignupComponent implements OnInit {
   initForm(): void {
     this.signUpForm = this.fromBuilder.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]]
+      password: ['', [Validators.required]],
+      confirmPassword: ['', [Validators.required]]
     });
   }
 
   onSubmit(): void {
     const email = this.signUpForm.get('email').value;
     const password = this.signUpForm.get('password').value;
-    this.http.get('/test');
+    this.authService.createNewUser(email, password).then(
+      () => {
+        this.router.navigate(['/books']);
+      },
+      (error) => {
+        this.errorMessage = error;
+    });
   }
-
 }

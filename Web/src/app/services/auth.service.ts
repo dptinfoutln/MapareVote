@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Md5} from 'ts-md5/dist/md5';
 import {CookieService} from 'ngx-cookie-service';
-import {JsonArray} from '@angular/compiler-cli/ngcc/src/packages/entry_point';
+import {Md5} from 'ts-md5';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
 
   constructor(private http: HttpClient,
