@@ -42,7 +42,7 @@ public class AuthRessource {
     }
 
     @POST
-    @Path("signup")
+    @Path("signout")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
     public void signOut(String strJsonToken) {
