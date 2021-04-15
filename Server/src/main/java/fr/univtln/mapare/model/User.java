@@ -62,14 +62,13 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(String email, String lastname, String firstname, String emailToken, Boolean confirmed, Boolean admin, Boolean banned, Boolean deleted) {
+    public User(String email, String lastname, String firstname, String emailToken, Boolean confirmed, Boolean admin, Boolean banned) {
         this.email = email;
         this.lastname = lastname;
         this.firstname = firstname;
         this.emailToken = emailToken;
         this.confirmed = confirmed;
         this.admin = admin;
-        this.banned = banned;
     }
 
     public int getId() {
