@@ -65,13 +65,14 @@ public class Vote implements Serializable {
     public Vote() {
     }
 
-    public Vote(int id, String label, LocalDate startDate, LocalDate endDate, String algo, Boolean anonymous, User votemaker) {
+    public Vote(String label, LocalDate startDate, LocalDate endDate, String algo, Boolean anonymous, Boolean deleted, User votemaker) {
         this.id = id;
         this.label = label;
         this.startDate = startDate;
         this.endDate = endDate;
         this.algo = algo;
         this.anonymous = anonymous;
+        this.deleted = deleted;
         this.votemaker = votemaker;
     }
 

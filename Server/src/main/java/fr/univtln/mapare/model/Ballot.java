@@ -33,13 +33,13 @@ public class Ballot implements Serializable {
     @JoinColumn(name = "\"voter\"", nullable = true)
     private User voter;
 
-    @OneToMany(mappedBy = "ballot")
+    @OneToMany(mappedBy = "ballot", cascade = {CascadeType.ALL})
     private List<BallotChoice> choices = new ArrayList<>();
 
     public Ballot() {
     }
 
-    public Ballot(int id, LocalDateTime date, Vote vote) {
+    public Ballot(LocalDateTime date, Vote vote) {
         this.id = id;
         this.date = date;
         this.vote = vote;

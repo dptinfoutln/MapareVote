@@ -34,6 +34,11 @@ public class Choice implements Serializable {
     public Choice() {
     }
 
+    public Choice(List<String> names, Vote vote) {
+        this.names = names;
+        this.vote = vote;
+    }
+
     public int getId() {
         return id;
     }
