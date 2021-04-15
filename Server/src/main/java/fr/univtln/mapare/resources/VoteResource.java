@@ -1,20 +1,28 @@
 package fr.univtln.mapare.resources;
 
-import fr.univtln.mapare.controllers.Controller;
+import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.model.Choice;
 import fr.univtln.mapare.model.Vote;
 import jakarta.ws.rs.*;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
 @Path("votes")
 public class VoteResource {
-    static Controller<Vote> ctrl = new Controller<>();
-    static int lastId = 0; // init at highest ID + 1
-    static Map<Integer, Vote> publicVotes = new HashMap<>();
-    static Map<Integer, Vote> privateVotes = new HashMap<>();
+//    static Controller<Vote> ctrl = new Controller<>();
+    static int lastId = -1; // init at highest ID + 1
+
+    public VoteResource() {
+        if (lastId == -1) {
+            Controllers.loadPublicVotes();
+            int maxi = Controllers.PublicVotes.getList().stream().max(Comparator.comparingInt(Vote::getId)).get().getId();
+            lastId = maxi + 1;
+        }
+    }
+
 
     private static void foo() {
         lastId++;
@@ -24,13 +32,13 @@ public class VoteResource {
     @Path("public")
     public Collection<Vote> getVotes(@QueryParam("page_num") int pagenum,
                                      @QueryParam("page_size") int pagesize) {
-        return publicVotes.values();
+        return Controllers.PublicVotes.getList();
     }
 
     @GET
     @Path("public/{id}")
     public Vote getVote(@PathParam("id") int id) {
-        return publicVotes.get(id);
+        return Controllers.PublicVotes.mapGet(id);
     }
 
     @POST
@@ -38,15 +46,14 @@ public class VoteResource {
     public Vote addVote(Vote vote) {
         vote.setId(lastId);
         foo();
-        ctrl.mapAdd(vote.getId(), vote);
-        publicVotes.put(vote.getId(), vote);
+        Controllers.PublicVotes.mapAdd(vote.getId(), vote);
         return vote;
     }
 
     @GET
     @Path("private/{id}")
     public Vote getPrivateVote(@PathParam ("id") int id) {
-        return privateVotes.get(id);
+        return Controllers.PrivateVotes.mapGet(id);
     }
 
     @POST
@@ -54,15 +61,14 @@ public class VoteResource {
     public Vote addPrivateVote(Vote vote) {
         vote.setId(lastId);
         foo();
-        ctrl.mapAdd(vote.getId(), vote);
-        privateVotes.put(vote.getId(), vote);
+        Controllers.PrivateVotes.mapAdd(vote.getId(), vote);
         return vote;
     }
 
     @POST
     @Path("{id}/choice")
     public Choice addChoice(@PathParam("id") int id, Choice choice) {
-        Vote vote = ctrl.mapGet(id);
+        Vote vote = Controllers.PrivateVotes.mapGet(id);
         choice.setVote(vote);
         vote.addChoice(choice);
         return choice;
