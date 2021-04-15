@@ -11,12 +11,15 @@ import java.util.List;
 
 @Entity
 @Table(name = "\"CHOICE\"")
+@NamedQueries({
+        @NamedQuery(name = "Choice.findByVote", query = "SELECT C FROM Choice C WHERE C.vote = :vote")
+})
 public class Choice implements Serializable {
     @Id
     @GeneratedValue
     int id;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "\"CHOICE_DETAILS\"",
             joinColumns = @JoinColumn(name = "id"))
     @OrderColumn(name="\"order\"")

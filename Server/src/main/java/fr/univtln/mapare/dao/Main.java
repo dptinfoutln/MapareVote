@@ -1,8 +1,6 @@
 package fr.univtln.mapare.dao;
 
-import fr.univtln.mapare.model.User;
-import fr.univtln.mapare.model.Vote;
-import fr.univtln.mapare.model.VotedVote;
+import fr.univtln.mapare.model.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
@@ -62,13 +60,41 @@ public class Main {
         // Find the voted votes concerning a vote
         List<VotedVote> voteList2 = entityManager.createNamedQuery("VotedVotes.findByVote")
                 .setParameter("vote", )
-                .getResultList();*/
+                .getResultList();
 
         // Find public votes
         List<Vote> publicVoteList = entityManager.createNamedQuery("Vote.findPublic").getResultList();
         System.out.println(publicVoteList.get(0).getLabel());
+        */
+
+        // Find Vote by id
+        List<Vote> voteList = entityManager.createNamedQuery("Vote.findById")
+                .setParameter("id", 1)
+                .getResultList();
+
+        Vote vote1 = voteList.get(0);
+        System.out.println("Id vote : " + vote1.getId());
 
 
+        // Find Ballot by Vote
+        List<Ballot> ballotList = entityManager.createNamedQuery("Ballot.findByVote")
+                .setParameter("vote", vote1)
+                .getResultList();
+
+        Ballot ballot1 = ballotList.get(0);
+        System.out.println("Id ballot : " + ballot1.getId());
+
+        // Find Choices of a ballot
+        List<BallotChoice> ballotChoiceList = entityManager.createNamedQuery("Choices.findByBallot")
+                .setParameter("ballot", ballot1)
+                .getResultList();
+
+        for (BallotChoice B : ballotChoiceList) {
+            List<String> names = B.getChoice().getNames();
+            for (String c : names) {
+                System.out.println("choix : " + c);
+            }
+        };
 
         entityManager.close();
     }
