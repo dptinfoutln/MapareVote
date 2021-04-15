@@ -1,6 +1,8 @@
 package fr.univtln.mapare.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import org.eclipse.persistence.annotations.DiscriminatorClass;
@@ -13,6 +15,7 @@ import java.util.List;
 @EqualsAndHashCode(of = "id")
 
 @Entity
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
 @Table(name = "\"VOTE\"")
 @NamedQueries({
         @NamedQuery(name = "Vote.findById", query = "SELECT V FROM Vote V WHERE V.id = :id"),
@@ -171,14 +174,6 @@ public class Vote implements Serializable {
 
     public void setVotedVotes(List<VotedVote> votedVotes) {
         this.votedVotes = votedVotes;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
     }
 
     public List<User> getMembers() {

@@ -1,6 +1,7 @@
 package fr.univtln.mapare.resources;
 
 import fr.univtln.mapare.controllers.Controller;
+import fr.univtln.mapare.model.Choice;
 import fr.univtln.mapare.model.Vote;
 import jakarta.ws.rs.*;
 
@@ -13,7 +14,7 @@ public class VoteResource {
     static Controller<Vote> ctrl = new Controller<>();
     static int lastId = 0; // init at highest ID + 1
     static Map<Integer, Vote> publicVotes = new HashMap<>();
-    static Map<Integer, PrivateVote> privateVotes = new HashMap<>();
+    static Map<Integer, Vote> privateVotes = new HashMap<>();
 
     private static void foo() {
         lastId++;
@@ -44,13 +45,13 @@ public class VoteResource {
 
     @GET
     @Path("private/{id}")
-    public PrivateVote getPrivateVote(@PathParam ("id") int id) {
+    public Vote getPrivateVote(@PathParam ("id") int id) {
         return privateVotes.get(id);
     }
 
     @POST
     @Path("private")
-    public PrivateVote addVote(PrivateVote vote) {
+    public Vote addPrivateVote(Vote vote) {
         vote.setId(lastId);
         foo();
         ctrl.mapAdd(vote.getId(), vote);
