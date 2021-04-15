@@ -6,6 +6,9 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "\"BALLOT_CHOICE\"")
+@NamedQueries({
+        @NamedQuery(name = "Choices.findByBallot", query = "SELECT B FROM BallotChoice B WHERE B.ballot = :ballot")
+})
 public class BallotChoice implements Serializable {
 
     @Id
