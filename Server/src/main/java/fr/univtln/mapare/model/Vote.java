@@ -12,6 +12,7 @@ public class Vote {
     private String algo; //TODO: find better name
     private Boolean anonymous;
     private User Votemaker;
+    private Boolean deleted;
     private List<Ballot> ballots = new ArrayList<>();
     private List<Choice> choices = new ArrayList<>();
     private List<VotedVote> votedVotes = new ArrayList<>();
@@ -117,5 +118,13 @@ public class Vote {
 
     public void setVotedVotes(List<VotedVote> votedVotes) {
         this.votedVotes = votedVotes;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }
