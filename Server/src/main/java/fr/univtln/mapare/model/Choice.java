@@ -21,6 +21,7 @@ public class Choice implements Serializable {
     private List<String> names = new ArrayList<>();
 
     @ManyToOne
+    @JoinColumn(name = "\"vote\"")
     private Vote vote;
 
     public Choice() {

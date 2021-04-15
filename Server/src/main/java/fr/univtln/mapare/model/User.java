@@ -29,12 +29,10 @@ public class User implements Serializable {
 
     private Boolean banned;
 
-    private Boolean deleted;
-
     @OneToMany
     @JoinTable(name = "\"STARTED_VOTES\"",
-            joinColumns = @JoinColumn(name = "votemaker_id"),
-            inverseJoinColumns = @JoinColumn(name = "vote_id"))
+            joinColumns = @JoinColumn(name = "votemaker"),
+            inverseJoinColumns = @JoinColumn(name = "vote"))
     private List<Vote> startedVotes = new ArrayList<>();
 
     @ManyToMany(mappedBy = "members", cascade = {CascadeType.ALL})
@@ -54,7 +52,6 @@ public class User implements Serializable {
         this.confirmed = confirmed;
         this.admin = admin;
         this.banned = banned;
-        this.deleted = deleted;
     }
 
     public int getId() {
@@ -119,14 +116,6 @@ public class User implements Serializable {
 
     public void setBanned(Boolean banned) {
         this.banned = banned;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
     }
 
     public List<Vote> getStartedVotes() {

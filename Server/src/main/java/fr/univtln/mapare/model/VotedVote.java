@@ -12,9 +12,11 @@ public class VotedVote implements Serializable {
     private String token;
 
     @ManyToOne
+    @JoinColumn(name = "\"vote\"")
     private Vote vote;
 
     @ManyToOne
+    @JoinColumn(name = "\"user\"")
     private User user;
 
     public VotedVote() {

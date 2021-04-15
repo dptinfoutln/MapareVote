@@ -2,6 +2,7 @@ package fr.univtln.mapare.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import jakarta.persistence.*;
+import org.eclipse.persistence.annotations.DiscriminatorClass;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -25,8 +26,10 @@ public class Vote implements Serializable {
 
     private String algo; //TODO: find better name
     private Boolean anonymous;
+    private Boolean deleted;
 
     @OneToOne
+    @JoinColumn(name = "\"votemaker\"")
     private User votemaker;
 
     @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
@@ -97,6 +100,14 @@ public class Vote implements Serializable {
 
     public void setAnonymous(Boolean anonymous) {
         this.anonymous = anonymous;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     public User getVotemaker() {

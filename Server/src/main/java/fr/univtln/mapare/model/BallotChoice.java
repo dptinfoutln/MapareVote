@@ -10,10 +10,12 @@ public class BallotChoice implements Serializable {
 
     @ManyToOne
     @Id
+    @JoinColumn(name = "\"ballot\"")
     private Ballot ballot;
 
     @ManyToOne
     @Id
+    @JoinColumn(name = "\"choice\"")
     private Choice choice;
 
     private int weight;

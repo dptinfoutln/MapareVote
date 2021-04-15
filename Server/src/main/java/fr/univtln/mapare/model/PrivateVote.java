@@ -12,8 +12,8 @@ public class PrivateVote extends Vote{
 
     @ManyToMany
     @JoinTable(name = "\"PRIVATE_VOTES\"",
-            joinColumns = @JoinColumn(name = "vote_id"),
-            inverseJoinColumns = @JoinColumn(name = "member_id"))
+            joinColumns = @JoinColumn(name = "\"vote\""),
+            inverseJoinColumns = @JoinColumn(name = "\"member\""))
     private List<User> members = new ArrayList<>();
 
     public PrivateVote() {

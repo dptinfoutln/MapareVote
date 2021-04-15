@@ -19,10 +19,11 @@ public class Ballot implements Serializable {
     private LocalDateTime date;
 
     @ManyToOne
+    @JoinColumn(name = "\"vote\"")
     private Vote vote;
 
     @OneToOne
-    @JoinColumn(nullable = true)
+    @JoinColumn(name = "\"voter\"", nullable = true)
     private User voter;
 
     @OneToMany(mappedBy = "ballot")
