@@ -6,6 +6,9 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Main {
@@ -14,8 +17,8 @@ public class Main {
     public static void main(String[] args) {
 
         EntityManager entityManager = EMF.createEntityManager();
-        EntityTransaction transaction = entityManager.getTransaction();
-        transaction.begin();
+        /*EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();*/
 
         /*User personne = new User("test@test.com",
                 "TEST",
@@ -65,7 +68,7 @@ public class Main {
         // Find public votes
         List<Vote> publicVoteList = entityManager.createNamedQuery("Vote.findPublic").getResultList();
         System.out.println(publicVoteList.get(0).getLabel());
-        */
+
 
         // Find Vote by id
         List<Vote> voteList = entityManager.createNamedQuery("Vote.findById")
@@ -95,7 +98,18 @@ public class Main {
                 System.out.println("choix : " + c);
             }
         };
+        */
 
-        entityManager.close();
+        // Find Vote by id
+        Vote vote = (Vote) entityManager.createNamedQuery("Vote.findById")
+                .setParameter("id", 801)
+                .getResultList().get(0);
+
+        // Find an user by id
+        User personne = (User) entityManager.createNamedQuery("User.findById")
+                .setParameter("id", 551)
+                .getResultList().get(0);
+
+        BallotDAO.persist(Arrays.asList(new Choice(Arrays.asList("oui_test", "non_test", "blanc_test"), vote)), personne, vote, LocalDateTime.now());
     }
 }

@@ -26,6 +26,11 @@ public class BallotChoice implements Serializable {
     public BallotChoice() {
     }
 
+    public BallotChoice(Ballot ballot, Choice choice) {
+        this.ballot = ballot;
+        this.choice = choice;
+    }
+
     public Ballot getBallot() {
         return ballot;
     }

@@ -1,7 +1,6 @@
 package fr.univtln.mapare.model;
 
 import com.fasterxml.jackson.annotation.*;
-import fr.univtln.mapare.controllers.Controllers;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 
@@ -46,7 +45,6 @@ public class User implements Serializable {
     @Column(nullable = false)
     private Boolean banned;
 
-
     @OneToMany
     @JoinTable(name = "\"STARTED_VOTES\"",
             joinColumns = @JoinColumn(name = "votemaker"),
@@ -65,9 +63,7 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(int id, String email, String lastname, String firstname, String emailToken, Boolean confirmed, Boolean admin, Boolean banned) {
-        System.out.println("test2");
-        this.id = id;
+    public User(String email, String lastname, String firstname, String emailToken, Boolean confirmed, Boolean admin, Boolean banned) {
         this.email = email;
         this.lastname = lastname;
         this.firstname = firstname;
