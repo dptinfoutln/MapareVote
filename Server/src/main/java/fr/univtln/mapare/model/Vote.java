@@ -46,7 +46,7 @@ public class Vote implements Serializable {
 
     @OneToOne
     @JoinColumn(nullable = false, name = "\"votemaker\"")
-    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes"})
+    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "emailToken"})
     private User votemaker;
 
     @JsonIgnore

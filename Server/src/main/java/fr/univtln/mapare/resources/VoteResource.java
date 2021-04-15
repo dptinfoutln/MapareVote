@@ -1,10 +1,13 @@
 package fr.univtln.mapare.resources;
 
 import fr.univtln.mapare.controllers.Controllers;
+import fr.univtln.mapare.dao.BallotDAO;
+import fr.univtln.mapare.model.Ballot;
 import fr.univtln.mapare.model.Choice;
 import fr.univtln.mapare.model.Vote;
 import jakarta.ws.rs.*;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -44,6 +47,7 @@ public class VoteResource {
     @POST
     @Path("public") // Maybe remove later idk
     public Vote addVote(Vote vote) {
+        //TODO: make it work
         vote.setId(lastId);
         foo();
         Controllers.PublicVotes.mapAdd(vote.getId(), vote);
@@ -59,18 +63,27 @@ public class VoteResource {
     @POST
     @Path("private")
     public Vote addPrivateVote(Vote vote) {
+        //TODO: make it work
         vote.setId(lastId);
         foo();
         Controllers.PrivateVotes.mapAdd(vote.getId(), vote);
         return vote;
     }
 
+//    @POST
+//    @Path("{id}/choice")
+//    public Choice addChoice(@PathParam("id") int id, Choice choice) {
+//        Vote vote = Controllers.PrivateVotes.mapGet(id);
+//        choice.setVote(vote);
+//        vote.addChoice(choice);
+//        return choice;
+//    }
+
     @POST
-    @Path("{id}/choice")
-    public Choice addChoice(@PathParam("id") int id, Choice choice) {
-        Vote vote = Controllers.PrivateVotes.mapGet(id);
-        choice.setVote(vote);
-        vote.addChoice(choice);
-        return choice;
+    @Path("{id}/Ballots")
+    public Ballot addBallot(@PathParam ("id") int id, Ballot ballot) {
+        // check validity here
+        BallotDAO.persist(ballot);
+        return ballot;
     }
 }

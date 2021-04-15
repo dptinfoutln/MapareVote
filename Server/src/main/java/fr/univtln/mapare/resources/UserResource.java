@@ -2,6 +2,7 @@ package fr.univtln.mapare.resources;
 
 import fr.univtln.mapare.controllers.Controller;
 import fr.univtln.mapare.controllers.Controllers;
+import fr.univtln.mapare.model.Ballot;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.model.Vote;
 import jakarta.ws.rs.*;
@@ -20,6 +21,7 @@ public class UserResource {
     public UserResource() {
         if (lastId == -1) {
             Controllers.loadUsers();
+            Controllers.loadPublicVotes();
             int maxi = Controllers.Users.getList().stream().max(Comparator.comparingInt(User::getId)).get().getId();
             lastId = maxi + 1;
         }
@@ -53,5 +55,18 @@ public class UserResource {
         user.setId(lastId);
         Controllers.Users.mapAdd(user.getId(), user);
         return user;
+    }
+
+    @GET
+    @Path("{uid}/votedvotes/{vid}/ballot")
+    public Ballot getSpecificBalotforUser(@PathParam("uid") int uid, @PathParam("vid") int vid) {
+        if ((Controllers.PublicVotes.mapContainsKey(vid) && !Controllers.PublicVotes.mapGet(vid).getAnonymous())
+        || (Controllers.PrivateVotes.mapContainsKey(vid) && !Controllers.PrivateVotes.mapGet(vid).getAnonymous())) {
+            return (Ballot) Controllers.getEntityManager()
+                    .createNamedQuery("Ballot.findByVoter").setParameter("voter", Controllers.Users.mapGet(uid))
+                    .getResultList().get(0);
+        }
+        else
+            return null;
     }
 }

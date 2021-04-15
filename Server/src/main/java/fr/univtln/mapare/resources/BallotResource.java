@@ -22,11 +22,11 @@ public class BallotResource {
         lastId++;
     }
 
-    @GET
-    @Path("{id}")
-    public Ballot getBallot(@PathParam("id") int id) {
-        return ctrl.mapGet(id);
-    }
+//    @GET
+//    @Path("{id}")
+//    public Ballot getBallot(@PathParam("id") int id) {
+//        return ctrl.mapGet(id);
+//    }
 
 //    @POST
 //    public Ballot addBallot(Ballot ballot) {
