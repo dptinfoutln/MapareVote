@@ -1,26 +1,69 @@
 package fr.univtln.mapare.model;
 
+import com.fasterxml.jackson.annotation.*;
+import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User {
+@EqualsAndHashCode(of = "id")
+
+@Entity
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+@Table(name = "\"USERS\"")
+@NamedQueries({
+        @NamedQuery(name = "User.findById", query = "SELECT U FROM User U WHERE U.id = :id"),
+        @NamedQuery(name = "User.findByName", query = "SELECT U FROM User U WHERE U.lastname = :lastname"),
+        @NamedQuery(name = "User.findByEmail", query = "SELECT U FROM User U WHERE U.email = :email"),
+        @NamedQuery(name = "User.findAll", query = "SELECT U FROM User U")
+})
+public class User implements Serializable {
+    @Id
+    @GeneratedValue
     private int id;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String lastname;
+
+    @Column(nullable = false)
     private String firstname;
+
+    @Column(name = "\"emailToken\"")
     private String emailToken;
-    private Boolean confirmed = false;
-    private Boolean admin = false;
-    private Boolean banned = false;
+
+    @Column(nullable = false)
+    private Boolean confirmed;
+
+    @Column(nullable = false)
+    private Boolean admin;
+
+    @Column(nullable = false)
+    private Boolean banned;
+
+    @OneToMany
+    @JoinTable(name = "\"STARTED_VOTES\"",
+            joinColumns = @JoinColumn(name = "votemaker"),
+            inverseJoinColumns = @JoinColumn(name = "vote"))
     private List<Vote> startedVotes = new ArrayList<>();
-    private List<PrivateVote> privateVoteList = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "members")
+    @JoinTable(name = "\"PRIVATE_VOTES\"",
+            joinColumns = @JoinColumn(name = "\"user\""),
+            inverseJoinColumns = @JoinColumn(name = "\"vote\""))
+    private List<Vote> privateVoteList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     private List<VotedVote> votedVotes = new ArrayList<>();
 
     public User() {
     }
 
-    public User(int id, String email, String lastname, String firstname, String emailToken, Boolean confirmed, Boolean admin, Boolean banned) {
-        this.id = id;
+    public User(String email, String lastname, String firstname, String emailToken, Boolean confirmed, Boolean admin, Boolean banned) {
         this.email = email;
         this.lastname = lastname;
         this.firstname = firstname;
@@ -115,15 +158,15 @@ public class User {
         this.votedVotes = votedVotes;
     }
 
-    public List<PrivateVote> getPrivateVoteList() {
+    public List<Vote> getPrivateVoteList() {
         return privateVoteList;
     }
 
-    public void setPrivateVoteList(List<PrivateVote> privateVoteList) {
+    public void setPrivateVoteList(List<Vote> privateVoteList) {
         this.privateVoteList = privateVoteList;
     }
 
-    public void addPrivateVote(PrivateVote vote) {
+    public void addPrivateVote(Vote vote) {
         if (!privateVoteList.contains(vote))
             privateVoteList.add(vote);
     }

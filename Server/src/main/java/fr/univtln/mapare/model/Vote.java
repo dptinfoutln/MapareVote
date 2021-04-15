@@ -1,32 +1,84 @@
 package fr.univtln.mapare.model;
 
+import com.fasterxml.jackson.annotation.*;
+import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+import org.eclipse.persistence.annotations.DiscriminatorClass;
+
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Vote {
+@EqualsAndHashCode(of = "id")
+
+@Entity
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+@Table(name = "\"VOTE\"")
+@NamedQueries({
+        @NamedQuery(name = "Vote.findById", query = "SELECT V FROM Vote V WHERE V.id = :id"),
+        @NamedQuery(name = "Vote.findByVotemaker", query = "SELECT V FROM Vote V WHERE V.votemaker = :votemaker"),
+        @NamedQuery(name = "Vote.findPublic", query = "SELECT V FROM Vote V WHERE V.members IS EMPTY"),
+        @NamedQuery(name = "Vote.findPrivateByUser", query = "SELECT V FROM Vote V WHERE :user MEMBER OF V.members"),
+})
+public class Vote implements Serializable {
+    @Id
+    @GeneratedValue
     private int id;
+
+    @Column(nullable = false)
     private String label;
+
+    @Column(nullable = false, name = "\"startDate\"")
     private LocalDate startDate;
+
+    @Column(name = "\"endDate\"")
     private LocalDate endDate;
+
+    @Column(nullable = false)
     private String algo; //TODO: find better name
+
+    @Column(nullable = false)
     private Boolean anonymous;
-    private User Votemaker;
+
+    @Column(nullable = false)
+    private Boolean deleted;
+
+    @OneToOne
+    @JoinColumn(nullable = false, name = "\"votemaker\"")
+    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "emailToken"})
+    private User votemaker;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<Ballot> ballots = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<Choice> choices = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<VotedVote> votedVotes = new ArrayList<>();
+
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(name= "\"PRIVATE_VOTES\"",
+            joinColumns = @JoinColumn(name = "\"vote\""),
+            inverseJoinColumns = @JoinColumn(name = "\"user\""))
+    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes"})
+    private List<User> members = new ArrayList<>();
 
     public Vote() {
     }
 
-    public Vote(int id, String label, LocalDate startDate, LocalDate endDate, String algo, Boolean anonymous, User votemaker) {
+    public Vote(String label, LocalDate startDate, LocalDate endDate, String algo, Boolean anonymous, Boolean deleted, User votemaker) {
         this.id = id;
         this.label = label;
         this.startDate = startDate;
         this.endDate = endDate;
         this.algo = algo;
         this.anonymous = anonymous;
-        Votemaker = votemaker;
+        this.deleted = deleted;
+        this.votemaker = votemaker;
     }
 
     public int getId() {
@@ -77,12 +129,20 @@ public class Vote {
         this.anonymous = anonymous;
     }
 
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
     public User getVotemaker() {
-        return Votemaker;
+        return votemaker;
     }
 
     public void setVotemaker(User votemaker) {
-        Votemaker = votemaker;
+        this.votemaker = votemaker;
     }
 
     public List<Ballot> getBallots() {
@@ -117,5 +177,13 @@ public class Vote {
 
     public void setVotedVotes(List<VotedVote> votedVotes) {
         this.votedVotes = votedVotes;
+    }
+
+    public List<User> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<User> members) {
+        this.members = members;
     }
 }

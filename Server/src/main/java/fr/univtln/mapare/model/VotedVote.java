@@ -1,8 +1,32 @@
 package fr.univtln.mapare.model;
 
-public class VotedVote {
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+
+@EqualsAndHashCode(of = "token")
+
+@Entity
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="token")
+@Table(name = "\"VOTED_VOTES\"")
+@NamedQueries({
+        @NamedQuery(name = "VotedVotes.findByUser", query = "SELECT V FROM VotedVote V WHERE V.user = :user"),
+        @NamedQuery(name = "VotedVotes.findByVote", query = "SELECT V FROM VotedVote V WHERE V.vote = :vote")
+})
+public class VotedVote implements Serializable {
+
+    @Id
     private String token;
+
+    @ManyToOne
+    @JoinColumn(nullable = false, name = "\"vote\"")
     private Vote vote;
+
+    @ManyToOne
+    @JoinColumn(nullable = false, name = "\"user\"")
     private User user;
 
     public VotedVote() {
@@ -38,3 +62,4 @@ public class VotedVote {
         this.user = user;
     }
 }
+
