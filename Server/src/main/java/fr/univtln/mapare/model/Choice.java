@@ -1,10 +1,31 @@
 package fr.univtln.mapare.model;
 
+import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-public class Choice {
+@EqualsAndHashCode(of = "id")
+
+@Entity
+@Table(name = "\"CHOICE\"")
+public class Choice implements Serializable {
+    @Id
+    @GeneratedValue
     int id;
-    List<String> names;
+
+    @ElementCollection
+    @CollectionTable(name = "\"CHOICE_DETAILS\"",
+            joinColumns = @JoinColumn(name = "id"))
+    @OrderColumn(name="\"order\"")
+    @Column(nullable = false, name = "\"choice\"")
+    private List<String> names = new ArrayList<>();
+
+
+    @ManyToOne
+    @JoinColumn(nullable = false, name = "\"vote\"")
     private Vote vote;
 
     public Choice() {

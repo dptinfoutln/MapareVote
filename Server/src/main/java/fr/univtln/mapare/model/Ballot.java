@@ -1,14 +1,39 @@
 package fr.univtln.mapare.model;
 
+import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Ballot {
+@EqualsAndHashCode(of = "id")
+
+@Entity
+@Table(name = "\"BALLOT\"")
+@NamedQueries({
+        @NamedQuery(name = "Ballot.findByVoter", query = "SELECT B FROM Ballot B WHERE B.voter = :voter"),
+        @NamedQuery(name = "ballot.findByVote", query = "SELECT B FROM Ballot B WHERE B.vote = :vote"),
+})
+public class Ballot implements Serializable {
+
+    @Id
+    @GeneratedValue
     int id;
+
+    @Column(nullable = false)
     private LocalDateTime date;
+
+    @ManyToOne
+    @JoinColumn(nullable = false, name = "\"vote\"")
     private Vote vote;
+
+    @OneToOne
+    @JoinColumn(name = "\"voter\"", nullable = true)
     private User voter;
+
+    @OneToMany(mappedBy = "ballot")
     private List<BallotChoice> choices = new ArrayList<>();
 
     public Ballot() {

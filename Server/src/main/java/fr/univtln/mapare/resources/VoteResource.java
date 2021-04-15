@@ -1,8 +1,6 @@
 package fr.univtln.mapare.resources;
 
 import fr.univtln.mapare.controllers.Controller;
-import fr.univtln.mapare.model.Choice;
-import fr.univtln.mapare.model.PrivateVote;
 import fr.univtln.mapare.model.Vote;
 import jakarta.ws.rs.*;
 
