@@ -69,6 +69,7 @@ public class User implements Serializable {
         this.emailToken = emailToken;
         this.confirmed = confirmed;
         this.admin = admin;
+        this.banned = banned;
     }
 
     public int getId() {
