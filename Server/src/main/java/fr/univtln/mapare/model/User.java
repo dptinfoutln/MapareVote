@@ -46,6 +46,7 @@ public class User implements Serializable {
     @Column(nullable = false)
     private Boolean banned;
 
+
     @OneToMany
     @JoinTable(name = "\"STARTED_VOTES\"",
             joinColumns = @JoinColumn(name = "votemaker"),

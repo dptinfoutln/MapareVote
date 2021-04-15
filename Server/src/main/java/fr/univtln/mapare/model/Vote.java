@@ -1,8 +1,6 @@
 package fr.univtln.mapare.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import org.eclipse.persistence.annotations.DiscriminatorClass;
@@ -48,14 +46,17 @@ public class Vote implements Serializable {
 
     @OneToOne
     @JoinColumn(nullable = false, name = "\"votemaker\"")
+    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes"})
     private User votemaker;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<Ballot> ballots = new ArrayList<>();
 
     @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<Choice> choices = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<VotedVote> votedVotes = new ArrayList<>();
 
@@ -63,6 +64,7 @@ public class Vote implements Serializable {
     @JoinTable(name= "\"PRIVATE_VOTES\"",
             joinColumns = @JoinColumn(name = "\"vote\""),
             inverseJoinColumns = @JoinColumn(name = "\"user\""))
+    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes"})
     private List<User> members = new ArrayList<>();
 
     public Vote() {
