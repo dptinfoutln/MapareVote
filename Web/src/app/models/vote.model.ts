@@ -2,7 +2,7 @@ import { User } from './user.model';
 import { Choice } from './choise.model';
 
 export class Vote {
-  choice: Choice[] = [];
+  choices: Choice[] = [];
   results;
 
   constructor(
@@ -12,6 +12,6 @@ export class Vote {
     public endDate: Date,
     public algo: string,
     public anonymous: boolean,
-    public VoteMaker: User) {
+    public votemaker: User) {
   }
 }

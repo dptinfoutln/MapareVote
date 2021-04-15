@@ -2,7 +2,8 @@ import {Vote} from './vote.model';
 
 export class Choice {
   constructor(
-    public values: string[],
-    public vote: Vote
-) {}
+    public id: number,
+    public names: string[],
+    public vote: number
+  ) {}
 }
