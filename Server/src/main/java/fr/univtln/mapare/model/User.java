@@ -1,8 +1,7 @@
 package fr.univtln.mapare.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
+import fr.univtln.mapare.controllers.Controllers;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 
@@ -66,6 +65,7 @@ public class User implements Serializable {
     }
 
     public User(int id, String email, String lastname, String firstname, String emailToken, Boolean confirmed, Boolean admin, Boolean banned) {
+        System.out.println("test2");
         this.id = id;
         this.email = email;
         this.lastname = lastname;
