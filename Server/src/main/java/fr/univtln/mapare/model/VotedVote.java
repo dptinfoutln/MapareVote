@@ -6,6 +6,10 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "\"VOTED_VOTES\"")
+@NamedQueries({
+        @NamedQuery(name = "findVotedVotesWithUserId", query = "SELECT V.vote FROM VotedVote V WHERE V.user.id = :id")
+
+})
 public class VotedVote implements Serializable {
 
     @Id

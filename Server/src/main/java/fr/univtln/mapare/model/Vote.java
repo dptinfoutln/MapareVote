@@ -47,6 +47,12 @@ public class Vote implements Serializable {
     @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<VotedVote> votedVotes = new ArrayList<>();
 
+    @ManyToMany
+    @JoinTable(name = "\"PRIVATE_VOTES\"",
+            joinColumns = @JoinColumn(name = "\"vote\""),
+            inverseJoinColumns = @JoinColumn(name = "\"user\""))
+    private List<User> members = new ArrayList<>();
+
     public Vote() {
     }
 
@@ -156,5 +162,13 @@ public class Vote implements Serializable {
 
     public void setVotedVotes(List<VotedVote> votedVotes) {
         this.votedVotes = votedVotes;
+    }
+
+    public List<User> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<User> members) {
+        this.members = members;
     }
 }

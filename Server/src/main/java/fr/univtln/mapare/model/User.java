@@ -9,6 +9,13 @@ import java.util.List;
 
 @Entity
 @Table(name = "\"USERS\"")
+@NamedQueries({
+        @NamedQuery(name = "findUserWithId", query = "SELECT U FROM User U WHERE U.id = :id"),
+        @NamedQuery(name = "findUserWithName", query = "SELECT U FROM User U WHERE U.lastname = :lastname"),
+        @NamedQuery(name = "findUserWithEmail", query = "SELECT U FROM User U WHERE U.email = :email"),
+
+})
+
 public class User implements Serializable {
     @Id
     @GeneratedValue
@@ -41,8 +48,11 @@ public class User implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "vote"))
     private List<Vote> startedVotes = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "members", cascade = {CascadeType.ALL})
-    private List<PrivateVote> privateVoteList = new ArrayList<>();
+    @ManyToMany(mappedBy = "members")
+    @JoinTable(name = "\"PRIVATE_VOTES\"",
+            joinColumns = @JoinColumn(name = "\"user\""),
+            inverseJoinColumns = @JoinColumn(name = "\"vote\""))
+    private List<Vote> privateVoteList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     private List<VotedVote> votedVotes = new ArrayList<>();
@@ -145,15 +155,15 @@ public class User implements Serializable {
         this.votedVotes = votedVotes;
     }
 
-    public List<PrivateVote> getPrivateVoteList() {
+    public List<Vote> getPrivateVoteList() {
         return privateVoteList;
     }
 
-    public void setPrivateVoteList(List<PrivateVote> privateVoteList) {
+    public void setPrivateVoteList(List<Vote> privateVoteList) {
         this.privateVoteList = privateVoteList;
     }
 
-    public void addPrivateVote(PrivateVote vote) {
+    public void addPrivateVote(Vote vote) {
         if (!privateVoteList.contains(vote))
             privateVoteList.add(vote);
     }
