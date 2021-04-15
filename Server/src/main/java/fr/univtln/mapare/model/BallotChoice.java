@@ -8,13 +8,13 @@ import java.io.Serializable;
 @Table(name = "\"BALLOT_CHOICE\"")
 public class BallotChoice implements Serializable {
 
-    @ManyToOne
     @Id
+    @ManyToOne
     @JoinColumn(name = "\"ballot\"")
     private Ballot ballot;
 
-    @ManyToOne
     @Id
+    @ManyToOne
     @JoinColumn(name = "\"choice\"")
     private Choice choice;
 
