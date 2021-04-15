@@ -16,12 +16,12 @@ public class Choice implements Serializable {
     @ElementCollection
     @CollectionTable(name = "\"CHOICE_DETAILS\"",
             joinColumns = @JoinColumn(name = "id"))
-    @Column(name = "choice")
-    //@OrderColumn(name="order") not working
+    @Column(nullable = false, name = "choice")
+    //@OrderColumn(name="order") //not working
     private List<String> names = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "\"vote\"")
+    @JoinColumn(nullable = false, name = "\"vote\"")
     private Vote vote;
 
     public Choice() {

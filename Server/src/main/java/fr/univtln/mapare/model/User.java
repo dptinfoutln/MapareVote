@@ -14,19 +14,25 @@ public class User implements Serializable {
     @GeneratedValue
     private int id;
 
+    @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String lastname;
 
+    @Column(nullable = false)
     private String firstname;
 
     @Column(name = "\"emailToken\"")
     private String emailToken;
 
+    @Column(nullable = false)
     private Boolean confirmed;
 
+    @Column(nullable = false)
     private Boolean admin;
 
+    @Column(nullable = false)
     private Boolean banned;
 
     @OneToMany

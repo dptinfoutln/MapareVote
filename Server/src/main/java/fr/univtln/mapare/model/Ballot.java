@@ -16,10 +16,11 @@ public class Ballot implements Serializable {
     @GeneratedValue
     int id;
 
+    @Column(nullable = false)
     private LocalDateTime date;
 
     @ManyToOne
-    @JoinColumn(name = "\"vote\"")
+    @JoinColumn(nullable = false, name = "\"vote\"")
     private Vote vote;
 
     @OneToOne

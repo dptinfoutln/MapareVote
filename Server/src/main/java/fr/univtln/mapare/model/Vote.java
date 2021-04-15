@@ -16,20 +16,26 @@ public class Vote implements Serializable {
     @GeneratedValue
     private int id;
 
+    @Column(nullable = false)
     private String label;
 
-    @Column(name = "\"startDate\"")
+    @Column(nullable = false, name = "\"startDate\"")
     private LocalDate startDate;
 
     @Column(name = "\"endDate\"")
     private LocalDate endDate;
 
+    @Column(nullable = false)
     private String algo; //TODO: find better name
+
+    @Column(nullable = false)
     private Boolean anonymous;
+
+    @Column(nullable = false)
     private Boolean deleted;
 
     @OneToOne
-    @JoinColumn(name = "\"votemaker\"")
+    @JoinColumn(nullable = false, name = "\"votemaker\"")
     private User votemaker;
 
     @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
