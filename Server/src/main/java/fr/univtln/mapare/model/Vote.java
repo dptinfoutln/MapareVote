@@ -50,7 +50,7 @@ public class Vote implements Serializable {
     @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<Ballot> ballots = new ArrayList<>();
 
-    @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<Choice> choices = new ArrayList<>();
 
     @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
