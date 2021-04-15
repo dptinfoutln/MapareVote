@@ -21,7 +21,6 @@ public class VoteResource {
         lastId++;
     }
 
-
     @GET
     @Path("public")
     public Collection<Vote> getVotes(@QueryParam("page_num") int pagenum,
