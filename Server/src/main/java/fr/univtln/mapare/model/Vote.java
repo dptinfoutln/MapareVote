@@ -2,6 +2,7 @@ package fr.univtln.mapare.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import org.eclipse.persistence.annotations.DiscriminatorClass;
 
 import java.io.Serializable;
@@ -9,8 +10,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(of = "id")
+
 @Entity
 @Table(name = "\"VOTE\"")
+@NamedQueries({
+        @NamedQuery(name = "findVoteWithId", query = "SELECT V FROM Vote V WHERE V.id = :id"),
+        @NamedQuery(name = "findVoteWithVotemaker", query = "SELECT V FROM Vote V WHERE V.votemaker = :votemaker"),
+})
 public class Vote implements Serializable {
     @Id
     @GeneratedValue
@@ -47,7 +54,7 @@ public class Vote implements Serializable {
     @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<VotedVote> votedVotes = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(name = "\"PRIVATE_VOTES\"",
             joinColumns = @JoinColumn(name = "\"vote\""),
             inverseJoinColumns = @JoinColumn(name = "\"user\""))

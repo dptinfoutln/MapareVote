@@ -1,10 +1,13 @@
 package fr.univtln.mapare.model;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+@EqualsAndHashCode(of = "id")
 
 @Entity
 @Table(name = "\"CHOICE\"")

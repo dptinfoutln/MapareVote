@@ -2,10 +2,13 @@ package fr.univtln.mapare.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+@EqualsAndHashCode(of = "id")
 
 @Entity
 @Table(name = "\"USERS\"")
@@ -13,9 +16,7 @@ import java.util.List;
         @NamedQuery(name = "findUserWithId", query = "SELECT U FROM User U WHERE U.id = :id"),
         @NamedQuery(name = "findUserWithName", query = "SELECT U FROM User U WHERE U.lastname = :lastname"),
         @NamedQuery(name = "findUserWithEmail", query = "SELECT U FROM User U WHERE U.email = :email"),
-
 })
-
 public class User implements Serializable {
     @Id
     @GeneratedValue

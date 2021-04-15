@@ -1,15 +1,21 @@
 package fr.univtln.mapare.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(of = "id")
+
 @Entity
 @Table(name = "\"BALLOT\"")
+@NamedQueries({
+        @NamedQuery(name = "findBallotWithVoter", query = "SELECT B FROM Ballot B WHERE B.voter = :voter"),
+        @NamedQuery(name = "findBallotWithVote", query = "SELECT B FROM Ballot B WHERE B.vote = :vote"),
+})
 public class Ballot implements Serializable {
 
     @Id
