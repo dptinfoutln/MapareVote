@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../../services/auth.service';
 import {Router} from '@angular/router';
+import { HeaderComponent } from "../../header/header.component";
 
 @Component({
   selector: 'app-signin',
@@ -33,7 +34,7 @@ export class SigninComponent implements OnInit {
     const password = this.signInForm.get('password').value;
     this.authService.signInUser(email, password).then(
       () => {
-        this.router.navigate(['/']);
+        this.router.navigate(['votes/', 'public']);
       },
       (error) => {
         this.errorMessage = error;
