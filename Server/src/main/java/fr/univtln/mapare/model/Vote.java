@@ -17,7 +17,7 @@ import java.util.List;
 @NamedQueries({
         @NamedQuery(name = "Vote.findById", query = "SELECT V FROM Vote V WHERE V.id = :id"),
         @NamedQuery(name = "Vote.findByVotemaker", query = "SELECT V FROM Vote V WHERE V.votemaker = :votemaker"),
-        //@NamedQuery(name = "Vote.findPublic", query = "SELECT V FROM Vote V WHERE V.members IS NULL")
+        @NamedQuery(name = "Vote.findPublic", query = "SELECT V FROM Vote V WHERE V.members IS EMPTY")
 })
 public class Vote implements Serializable {
     @Id
@@ -56,7 +56,7 @@ public class Vote implements Serializable {
     private List<VotedVote> votedVotes = new ArrayList<>();
 
     @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(name = "\"PRIVATE_VOTES\"",
+    @JoinTable(name= "\"PRIVATE_VOTES\"",
             joinColumns = @JoinColumn(name = "\"vote\""),
             inverseJoinColumns = @JoinColumn(name = "\"user\""))
     private List<User> members = new ArrayList<>();

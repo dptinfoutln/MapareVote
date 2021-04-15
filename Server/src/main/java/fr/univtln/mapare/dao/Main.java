@@ -42,7 +42,7 @@ public class Main {
             System.out.println(u.getLastname());
         }*/
 
-        // Find an user by his id
+        /*// Find an user by his id
         List<User> personneList = entityManager.createNamedQuery("User.findById")
                 .setParameter("id", 1)
                 .getResultList();
@@ -61,12 +61,13 @@ public class Main {
 
         // Find the voted votes concerning a vote
         List<VotedVote> voteList2 = entityManager.createNamedQuery("VotedVotes.findByVote")
-                .setParameter("user", personneList.get(0))
-                .getResultList();
+                .setParameter("vote", )
+                .getResultList();*/
 
-        /*// Find public votes
+        // Find public votes
         List<Vote> publicVoteList = entityManager.createNamedQuery("Vote.findPublic").getResultList();
-        System.out.println(publicVoteList);*/
+        System.out.println(publicVoteList.get(0).getLabel());
+
 
 
         entityManager.close();
