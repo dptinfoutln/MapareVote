@@ -2,19 +2,20 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {CookieService} from 'ngx-cookie-service';
 import {Md5} from 'ts-md5';
+import { environment } from '../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  webserver = 'http://localhost:5431/';
 
   constructor(private http: HttpClient,
               private cookieService: CookieService
   ) { }
 
   createNewUser(email: string, password: string): Promise<void>{
-    const url = this.webserver + 'auth/signup';
+    const url = environment.apiURL + 'auth/signup';
     const body = JSON.stringify({email, password});
     const headers = new HttpHeaders({'Content-Type': 'application/json; charset=utf-8'});
 
@@ -34,7 +35,7 @@ export class AuthService {
   }
 
   signInUser(email: string, password: string): Promise<void>{
-    const url = this.webserver + 'auth/login';
+    const url = environment.apiURL + 'auth/login';
     const body = JSON.stringify({email, password});
 
     const headers = new HttpHeaders({
@@ -64,7 +65,7 @@ export class AuthService {
   }
 
   signOutUser(email: string, password: string): Promise<void>{
-    const url = this.webserver + 'auth/signout';
+    const url = environment.apiURL + 'auth/signout';
     return new Promise(
       (resolve , reject) => {
         this.http.get(url).subscribe(

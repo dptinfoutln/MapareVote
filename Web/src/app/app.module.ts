@@ -7,6 +7,7 @@ import { SigninComponent } from './auth/signin/signin.component';
 import { HeaderComponent } from './header/header.component';
 import { AuthService} from './services/auth.service';
 import { AuthGuardService} from './services/auth-guard.service';
+import { VoteService } from './services/vote.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
@@ -44,6 +45,7 @@ const appRoutes: Routes = [
   providers: [
     AuthService,
     AuthGuardService,
+    VoteService,
     CookieService,
     Md5
   ],
