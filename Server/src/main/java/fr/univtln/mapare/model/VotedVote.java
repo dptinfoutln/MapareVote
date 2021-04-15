@@ -10,8 +10,8 @@ import java.io.Serializable;
 @Entity
 @Table(name = "\"VOTED_VOTES\"")
 @NamedQueries({
-        @NamedQuery(name = "findVotedVotesWithUser", query = "SELECT V.vote FROM VotedVote V WHERE V.user = :user"),
-        @NamedQuery(name = "findUserWithVotedVoteVote", query = "SELECT V.user FROM VotedVote V WHERE V.vote = :vote")
+        @NamedQuery(name = "VotedVotes.findByUser", query = "SELECT V FROM VotedVote V WHERE V.user = :user"),
+        @NamedQuery(name = "VotedVotes.findByVote", query = "SELECT V FROM VotedVote V WHERE V.vote = :vote")
 })
 public class VotedVote implements Serializable {
 

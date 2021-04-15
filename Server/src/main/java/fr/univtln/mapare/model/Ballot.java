@@ -13,8 +13,8 @@ import java.util.List;
 @Entity
 @Table(name = "\"BALLOT\"")
 @NamedQueries({
-        @NamedQuery(name = "findBallotWithVoter", query = "SELECT B FROM Ballot B WHERE B.voter = :voter"),
-        @NamedQuery(name = "findBallotWithVote", query = "SELECT B FROM Ballot B WHERE B.vote = :vote"),
+        @NamedQuery(name = "Ballot.findByVoter", query = "SELECT B FROM Ballot B WHERE B.voter = :voter"),
+        @NamedQuery(name = "ballot.findByVote", query = "SELECT B FROM Ballot B WHERE B.vote = :vote"),
 })
 public class Ballot implements Serializable {
 

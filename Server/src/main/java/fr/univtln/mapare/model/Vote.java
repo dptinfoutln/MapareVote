@@ -15,8 +15,9 @@ import java.util.List;
 @Entity
 @Table(name = "\"VOTE\"")
 @NamedQueries({
-        @NamedQuery(name = "findVoteWithId", query = "SELECT V FROM Vote V WHERE V.id = :id"),
-        @NamedQuery(name = "findVoteWithVotemaker", query = "SELECT V FROM Vote V WHERE V.votemaker = :votemaker"),
+        @NamedQuery(name = "Vote.findById", query = "SELECT V FROM Vote V WHERE V.id = :id"),
+        @NamedQuery(name = "Vote.findByVotemaker", query = "SELECT V FROM Vote V WHERE V.votemaker = :votemaker"),
+        //@NamedQuery(name = "Vote.findPublic", query = "SELECT V FROM Vote V WHERE V.members IS NULL")
 })
 public class Vote implements Serializable {
     @Id
