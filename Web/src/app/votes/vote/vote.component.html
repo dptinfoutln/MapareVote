@@ -1,0 +1,22 @@
+<button class="btn btn-default" (click)="onBack()">Retour</button>
+<div class="row">
+  <div class="col-sm-8 col-sm-offset-2">
+    <h1>{{ vote.label }}</h1>
+    <div class="text-right">
+      <h6>Vote créé par {{ vote.votemaker.firstname }} {{ vote.votemaker.lastname }},
+        le {{ vote.startDate | date : 'dd MMMM YYYY': '' : 'fr-FR' }}</h6>
+      <h6 *ngIf="vote.endDate"> Prend fin le {{ vote.endDate | date : 'dd MMMM YYYY': '' : 'fr-FR' }}</h6>
+    </div>
+    <form [formGroup]="voteForm" name="voteForm" (ngSubmit)="onSubmit()">
+      <ul class="list-group">
+        <li class="{{ btnType }} list-group-item" *ngFor="let choice of vote.choices">
+          <label style="font-size: large">
+            <input type="{{ btnType }}" name="choices" value="{{choice.id}}">
+            {{choice.names}}
+          </label>
+        </li>
+      </ul>
+      <button class="btn btn-primary" [disabled]="voteForm.invalid" type="submit">Valider</button>
+    </form>
+  </div>
+</div>
