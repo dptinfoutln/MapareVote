@@ -39,4 +39,23 @@ public class BallotDAO {
         transaction.commit();
         entityManager.close();
     }
+
+
+    /*public static void persist(List<BallotChoice> choices) {
+        EntityManager entityManager = EMF.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+        for ( Choice C : choices) {
+            // Persist BallotChoice
+            entityManager.persist(BC);
+            entityManager.flush();
+            // Updates Ballot
+            B.addChoice(BC);
+            entityManager.persist(B);
+            entityManager.flush();
+        }
+        transaction.commit();
+        entityManager.close();
+    }*/
 }

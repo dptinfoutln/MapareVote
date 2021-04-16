@@ -36,7 +36,7 @@ public class Ballot implements Serializable {
     @JoinColumn(name = "\"voter\"", nullable = true)
     private User voter;
 
-    @OneToMany(mappedBy = "ballot", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "ballot")
     private List<BallotChoice> choices = new ArrayList<>();
 
     public Ballot() {
