@@ -11,6 +11,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.ws.rs.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -87,5 +88,12 @@ public class VoteResource {
         // TODO: check validity here
         BallotDAO.persist(ballot, id, 1);
         return ballot;
+    }
+
+    @PATCH
+    @Path("{id}")
+    public int modifyDate(@PathParam ("id") int id, LocalDate date) {
+        Controllers.PublicVotes.mapGet(id).setEndDate(date);
+        return 0;
     }
 }
