@@ -1,17 +1,18 @@
 package fr.univtln.mapare.resources;
 
+import fr.univtln.mapare.controllers.Controller;
 import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.dao.BallotDAO;
 import fr.univtln.mapare.model.Ballot;
+import fr.univtln.mapare.model.BallotChoice;
 import fr.univtln.mapare.model.Choice;
 import fr.univtln.mapare.model.Vote;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.ws.rs.*;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Path("votes")
 public class VoteResource {
@@ -21,6 +22,7 @@ public class VoteResource {
     public VoteResource() {
         if (lastId == -1) {
             Controllers.loadPublicVotes();
+            Controllers.loadUsers();
             int maxi = Controllers.PublicVotes.getList().stream().max(Comparator.comparingInt(Vote::getId)).get().getId();
             lastId = maxi + 1;
         }
@@ -80,10 +82,27 @@ public class VoteResource {
 //    }
 
     @POST
-    @Path("{id}/Ballots")
+    @Path("{id}/ballots")
     public Ballot addBallot(@PathParam ("id") int id, Ballot ballot) {
-        // check validity here
-        BallotDAO.persist(ballot);
+        // TODO: check validity here
+        Vote vote = Controllers.PublicVotes.mapGet(id);
+        ballot.setVote(vote);
+        ballot.setVoter(Controllers.Users.mapGet(1));
+        List<BallotChoice> templist = ballot.getChoices();
+        ballot.setChoices(null);
+        EntityManager EM = Controllers.getEntityManager();
+        EntityTransaction trans = EM.getTransaction();
+        trans.begin();
+        EM.persist(ballot);
+        EM.flush();
+        for (BallotChoice bc : templist) {
+            bc.setBallot(ballot);
+            bc.getChoice().setVote(vote);
+            EM.persist(bc);
+        }
+        EM.flush();
+        trans.commit();
+        ballot.setChoices(templist);
         return ballot;
     }
 }

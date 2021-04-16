@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
-import jwt_decode, {JwtPayload} from "jwt-decode";
+import jwt_decode, {JwtPayload} from 'jwt-decode';
 import { environment } from '../../environments/environment';
-import {Observable, Subject} from "rxjs";
-import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree} from "@angular/router";
-import {resolve} from "@angular/compiler-cli/src/ngtsc/file_system";
+import { Subject } from 'rxjs';
+import { Router } from '@angular/router';
 
 
 
@@ -108,10 +107,10 @@ export class AuthService{
     this.cookieService.delete('token');
   }
 
-  getTokenExpirationDate() {
-    let decode = (jwt_decode(this.getToken())) as JwtPayload;
+  getTokenExpirationDate(): Date {
+    const decode = (jwt_decode(this.getToken())) as JwtPayload;
 
-    if (decode.exp === undefined) return null;
+    if (decode.exp === undefined) { return null; }
     const date = new Date(0);
 
     date.setUTCSeconds(decode.exp);
@@ -120,15 +119,15 @@ export class AuthService{
 
   isTokenExpired(): boolean {
 
-    if(!this.getToken()) return true;
+    if (!this.getToken()) { return true; }
 
     const date = this.getTokenExpirationDate();
-    if(date === undefined) return false;
+    if (date === undefined) { return false; }
     return !(date.valueOf() > new Date().valueOf());
   }
 
-  getInfo() {
-    return (jwt_decode(this.getToken()))
+  getInfo(): string {
+    return (jwt_decode(this.getToken()));
   }
 
   isStillAuth(): boolean {
