@@ -85,24 +85,7 @@ public class VoteResource {
     @Path("{id}/ballots")
     public Ballot addBallot(@PathParam ("id") int id, Ballot ballot) {
         // TODO: check validity here
-        Vote vote = Controllers.PublicVotes.mapGet(id);
-        ballot.setVote(vote);
-        ballot.setVoter(Controllers.Users.mapGet(1));
-        List<BallotChoice> templist = ballot.getChoices();
-        ballot.setChoices(null);
-        EntityManager EM = Controllers.getEntityManager();
-        EntityTransaction trans = EM.getTransaction();
-        trans.begin();
-        EM.persist(ballot);
-        EM.flush();
-        for (BallotChoice bc : templist) {
-            bc.setBallot(ballot);
-            bc.getChoice().setVote(vote);
-            EM.persist(bc);
-        }
-        EM.flush();
-        trans.commit();
-        ballot.setChoices(templist);
+        BallotDAO.persist(ballot, id, 1);
         return ballot;
     }
 }
