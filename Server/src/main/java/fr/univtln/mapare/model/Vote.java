@@ -67,11 +67,13 @@ public class Vote implements Serializable {
     @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes"})
     private List<User> members = new ArrayList<>();
 
+    @Transient
+    private VoteResult result;
+
     public Vote() {
     }
 
     public Vote(String label, LocalDate startDate, LocalDate endDate, String algo, Boolean anonymous, Boolean deleted, User votemaker) {
-        this.id = id;
         this.label = label;
         this.startDate = startDate;
         this.endDate = endDate;
