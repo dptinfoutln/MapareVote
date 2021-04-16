@@ -1,5 +1,6 @@
 package fr.univtln.mapare.dao;
 
+
 import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.model.*;
 import jakarta.persistence.EntityManager;
@@ -62,8 +63,8 @@ public class BallotDAO {
         ballot.setChoices(templist);
     }
 
-
-    /*public static void persist(List<BallotChoice> choices) {
+/*
+    public static void persist(List<BallotChoice> choices) {
         EntityManager entityManager = EMF.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
