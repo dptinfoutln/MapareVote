@@ -126,7 +126,7 @@ public class AuthResource {
      * @return the base64 encoded JWT Token.
      */
     @GET
-    @Path("login")
+    @Path("signin")
     @RolesAllowed({"USER", "ADMIN"})
     @BasicAuth
     @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
