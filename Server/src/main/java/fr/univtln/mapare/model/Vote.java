@@ -49,7 +49,7 @@ public class Vote implements Serializable {
     @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "emailToken"})
     private User votemaker;
 
-//    @JsonIgnore
+    @JsonIgnore
     @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<Ballot> ballots = new ArrayList<>();
 
