@@ -2,7 +2,7 @@ package fr.univtln.mapare.model;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.EqualsAndHashCode;
 import org.eclipse.persistence.annotations.DiscriminatorClass;
 
 import java.io.Serializable;
@@ -10,10 +10,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@EqualsAndHashCode(of = {"label", "votemaker"})
-@AllArgsConstructor
-@NoArgsConstructor
+@EqualsAndHashCode(of = "id")
+
 @Entity
 @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
 @Table(name = "\"VOTE\"")
@@ -25,7 +23,7 @@ import java.util.List;
 })
 public class Vote implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private int id;
 
     @Column(nullable = false)
@@ -40,14 +38,14 @@ public class Vote implements Serializable {
     @Column(nullable = false)
     private String algo; //TODO: find better name
 
+    @Transient
+    private Boolean _private;
+
     @Column(nullable = false)
     private Boolean anonymous;
 
     @Column(nullable = false)
-    private Boolean deleted = false;
-
-    @Transient
-    private Boolean _private;
+    private Boolean deleted;
 
     @OneToOne
     @JoinColumn(nullable = false, name = "\"votemaker\"")
@@ -55,17 +53,17 @@ public class Vote implements Serializable {
     private User votemaker;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<Ballot> ballots = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "vote", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<Choice> choices = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<VotedVote> votedVotes = new ArrayList<>();
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(name= "\"PRIVATE_VOTES\"",
             joinColumns = @JoinColumn(name = "\"vote\""),
             inverseJoinColumns = @JoinColumn(name = "\"user\""))
@@ -75,15 +73,89 @@ public class Vote implements Serializable {
     @Transient
     private VoteResult result;
 
-    @Builder
-    @SneakyThrows
-    public Vote(String label, LocalDate startDate, LocalDate endDate, String algo, Boolean anonymous, User votemaker) {
+    public Vote() {
+    }
+
+    public Vote(String label, LocalDate startDate, LocalDate endDate, String algo, Boolean anonymous, Boolean deleted, User votemaker) {
         this.label = label;
         this.startDate = startDate;
         this.endDate = endDate;
         this.algo = algo;
         this.anonymous = anonymous;
+        this.deleted = deleted;
         this.votemaker = votemaker;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getAlgo() {
+        return algo;
+    }
+
+    public void setAlgo(String algo) {
+        this.algo = algo;
+    }
+
+    public Boolean getAnonymous() {
+        return anonymous;
+    }
+
+    public void setAnonymous(Boolean anonymous) {
+        this.anonymous = anonymous;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public User getVotemaker() {
+        return votemaker;
+    }
+
+    public void setVotemaker(User votemaker) {
+        this.votemaker = votemaker;
+    }
+
+    public List<Ballot> getBallots() {
+        return ballots;
+    }
+
+    public void setBallots(List<Ballot> ballots) {
+        this.ballots = ballots;
     }
 
     public void addBallot(Ballot ballot) {
@@ -91,8 +163,49 @@ public class Vote implements Serializable {
             ballots.add(ballot);
     }
 
+    public List<Choice> getChoices() {
+        return choices;
+    }
+
+    public void setChoices(List<Choice> choices) {
+        this.choices = choices;
+    }
+
     public void addChoice(Choice choice) {
         if (!choices.contains(choice))
             choices.add(choice);
+    }
+
+    public List<VotedVote> getVotedVotes() {
+        return votedVotes;
+    }
+
+    public void setVotedVotes(List<VotedVote> votedVotes) {
+        this.votedVotes = votedVotes;
+    }
+
+    public List<User> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<User> members) {
+        this.members = members;
+    }
+
+
+    public Boolean get_private() {
+        return _private;
+    }
+
+    public void set_private(Boolean _private) {
+        this._private = _private;
+    }
+
+    public VoteResult getResult() {
+        return result;
+    }
+
+    public void setResult(VoteResult result) {
+        this.result = result;
     }
 }

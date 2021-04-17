@@ -43,7 +43,7 @@ public class BallotDAO {
 //    }
 
     public static void persist(Ballot ballot, int voteId, int userId) {
-        Vote vote = Controllers.PublicVotes.mapGet(voteId);
+        Vote vote = Controllers.Votes.mapGet(voteId);
         ballot.setVote(vote);
         ballot.setVoter(Controllers.Users.mapGet(userId));
         List<BallotChoice> templist = ballot.getChoices();
