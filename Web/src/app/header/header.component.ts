@@ -20,7 +20,7 @@ export class HeaderComponent implements OnInit {
       (isAuth: boolean) => {
         this.isAuth = isAuth;
         if (isAuth){
-          this.userInfo = this.authService.getInfo();
+          this.userInfo = this.authService.getTokenInfo();
           this.userName = this.userInfo.firstname + ' ' + this.userInfo.lastname
         }
       }
