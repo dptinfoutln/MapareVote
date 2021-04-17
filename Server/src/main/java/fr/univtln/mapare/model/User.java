@@ -1,6 +1,6 @@
 package fr.univtln.mapare.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 
@@ -11,6 +11,7 @@ import java.util.List;
 @EqualsAndHashCode(of = "id")
 
 @Entity
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
 @Table(name = "\"USERS\"")
 @NamedQueries({
         @NamedQuery(name = "User.findById", query = "SELECT U FROM User U WHERE U.id = :id"),
@@ -108,8 +109,8 @@ public class User implements Serializable {
         return emailToken;
     }
 
-    public void setEmailToken(String confirmationHash) {
-        this.emailToken = confirmationHash;
+    public void setEmailToken(String emailToken) {
+        this.emailToken = emailToken;
     }
 
     public Boolean getConfirmed() {

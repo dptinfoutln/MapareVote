@@ -22,9 +22,10 @@ package M {
     }
     
     class User {
+        int id
         String email
-        String nom
-        String prenom
+        String lastname
+        String firstname
         String confirmationHash
         Boolean confirmed
         Boolean admin

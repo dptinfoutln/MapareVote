@@ -1,5 +1,7 @@
 package fr.univtln.mapare.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 
@@ -8,6 +10,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(of = "token")
 
 @Entity
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="token")
 @Table(name = "\"VOTED_VOTES\"")
 @NamedQueries({
         @NamedQuery(name = "VotedVotes.findByUser", query = "SELECT V FROM VotedVote V WHERE V.user = :user"),

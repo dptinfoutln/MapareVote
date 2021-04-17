@@ -1,6 +1,6 @@
 package fr.univtln.mapare.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import org.eclipse.persistence.annotations.DiscriminatorClass;
@@ -13,6 +13,7 @@ import java.util.List;
 @EqualsAndHashCode(of = "id")
 
 @Entity
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
 @Table(name = "\"VOTE\"")
 @NamedQueries({
         @NamedQuery(name = "Vote.findById", query = "SELECT V FROM Vote V WHERE V.id = :id"),
@@ -45,14 +46,17 @@ public class Vote implements Serializable {
 
     @OneToOne
     @JoinColumn(nullable = false, name = "\"votemaker\"")
+    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "emailToken"})
     private User votemaker;
 
-    @OneToMany(mappedBy = "vote", cascade = {CascadeType.REMOVE})
+    @JsonIgnore
+    @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<Ballot> ballots = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<Choice> choices = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "vote", cascade = {CascadeType.ALL})
     private List<VotedVote> votedVotes = new ArrayList<>();
 
@@ -60,13 +64,16 @@ public class Vote implements Serializable {
     @JoinTable(name= "\"PRIVATE_VOTES\"",
             joinColumns = @JoinColumn(name = "\"vote\""),
             inverseJoinColumns = @JoinColumn(name = "\"user\""))
+    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes"})
     private List<User> members = new ArrayList<>();
+
+    @Transient
+    private VoteResult result;
 
     public Vote() {
     }
 
     public Vote(String label, LocalDate startDate, LocalDate endDate, String algo, Boolean anonymous, Boolean deleted, User votemaker) {
-        this.id = id;
         this.label = label;
         this.startDate = startDate;
         this.endDate = endDate;
