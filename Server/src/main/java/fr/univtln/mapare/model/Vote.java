@@ -38,6 +38,9 @@ public class Vote implements Serializable {
     @Column(nullable = false)
     private String algo; //TODO: find better name
 
+    @Transient
+    private Boolean _private;
+
     @Column(nullable = false)
     private Boolean anonymous;
 
@@ -187,5 +190,22 @@ public class Vote implements Serializable {
 
     public void setMembers(List<User> members) {
         this.members = members;
+    }
+
+
+    public Boolean get_private() {
+        return _private;
+    }
+
+    public void set_private(Boolean _private) {
+        this._private = _private;
+    }
+
+    public VoteResult getResult() {
+        return result;
+    }
+
+    public void setResult(VoteResult result) {
+        this.result = result;
     }
 }
