@@ -48,17 +48,17 @@ public class BallotDAO {
         ballot.setVoter(Controllers.Users.mapGet(userId));
         List<BallotChoice> templist = ballot.getChoices();
         ballot.setChoices(null);
-        EntityManager EM = Controllers.getEntityManager();
-        EntityTransaction trans = EM.getTransaction();
+        EntityManager entityManager = Controllers.getEntityManager();
+        EntityTransaction trans = entityManager.getTransaction();
         trans.begin();
-        EM.persist(ballot);
-        EM.flush();
+        entityManager.persist(ballot);
+        entityManager.flush();
         for (BallotChoice bc : templist) {
             bc.setBallot(ballot);
             bc.getChoice().setVote(vote);
-            EM.persist(bc);
+            entityManager.persist(bc);
         }
-        EM.flush();
+        entityManager.flush();
         trans.commit();
         ballot.setChoices(templist);
     }

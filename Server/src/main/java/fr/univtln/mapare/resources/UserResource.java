@@ -2,9 +2,12 @@ package fr.univtln.mapare.resources;
 
 import fr.univtln.mapare.controllers.Controller;
 import fr.univtln.mapare.controllers.Controllers;
+import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.model.Ballot;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.model.Vote;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
@@ -52,7 +55,15 @@ public class UserResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public User addUser(User user) {
-        user.setId(lastId);
+        user.setId(0);
+        user.setVotedVotes(null);
+        user.setPrivateVoteList(null);
+        user.setStartedVotes(null);
+        user.setConfirmed(false);
+        user.setAdmin(false);
+        user.setBanned(false);
+        //user.setEmailToken("inserttokenhere");
+        UserDAO.persist(user);
         Controllers.Users.mapAdd(user.getId(), user);
         return user;
     }
