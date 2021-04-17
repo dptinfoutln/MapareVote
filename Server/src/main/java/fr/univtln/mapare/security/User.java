@@ -46,6 +46,7 @@ public class User implements Principal {
         this.roles = roles;
 
         random.nextBytes(salt);
+
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         passwordHash = factory.generateSecret(spec).getEncoded();

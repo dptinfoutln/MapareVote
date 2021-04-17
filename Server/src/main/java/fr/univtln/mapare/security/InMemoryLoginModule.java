@@ -22,7 +22,7 @@ public class InMemoryLoginModule {
     /**
      * The constant USER_DATABASE mocks a user database in memory.
      */
-    public static final InMemoryLoginModule USER_DATABASE = new InMemoryLoginModule();
+    public static final InMemoryLoginModule SESSION = new InMemoryLoginModule();
 
     /**
      * The constant KEY is used as a signing key for the bearer JWT token.
@@ -31,21 +31,21 @@ public class InMemoryLoginModule {
     public static final Key KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private static final Logger log = Logger.getLogger(InMemoryLoginModule.class.getName());
 
+    private final Map<String, User> users = new HashMap<>();
+
     //We add three demo users.
     static {
         try {
-            USER_DATABASE.addUser("John", "Doe", "john.doe@nowhere.com", "admin", EnumSet.of(Role.ADMIN));
-            USER_DATABASE.addUser("William", "Smith", "william.smith@here.net", "user", EnumSet.of(Role.USER));
-            USER_DATABASE.addUser("Mary", "Robert", "mary.roberts@here.net", "user", EnumSet.of(Role.USER));
+            SESSION.addUser("John", "Doe", "john.doe@nowhere.com", "admin", EnumSet.of(Role.ADMIN));
+            SESSION.addUser("William", "Smith", "william.smith@here.net", "user", EnumSet.of(Role.USER));
+            SESSION.addUser("Mary", "Robert", "mary.roberts@here.net", "user", EnumSet.of(Role.USER));
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             log.severe("In memory user database error "+e.getLocalizedMessage());
         }
     }
 
-    private final Map<String, User> users = new HashMap<>();
-
     public static boolean isInRoles(Set<Role> rolesSet, String username) {
-        return !(Collections.disjoint(rolesSet, InMemoryLoginModule.USER_DATABASE.getUserRoles(username)));
+        return !(Collections.disjoint(rolesSet, InMemoryLoginModule.SESSION.getUserRoles(username)));
     }
 
     /**
