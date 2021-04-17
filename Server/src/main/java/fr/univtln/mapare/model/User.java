@@ -2,14 +2,24 @@ package fr.univtln.mapare.model;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import java.io.Serializable;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
-@EqualsAndHashCode(of = "id")
-
+@Data
+@EqualsAndHashCode(of = "email")
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
 @Table(name = "\"USERS\"")
@@ -21,7 +31,7 @@ import java.util.List;
 })
 public class User implements Serializable {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(unique = true, nullable = false)
@@ -45,6 +55,12 @@ public class User implements Serializable {
     @Column(nullable = false)
     private Boolean banned;
 
+    @Column(nullable = false)
+    byte[] passwordHash;
+
+    @Column(nullable = false)
+    byte[] salt = new byte[16];
+
     @OneToMany
     @JoinTable(name = "\"STARTED_VOTES\"",
             joinColumns = @JoinColumn(name = "votemaker"),
@@ -60,89 +76,22 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     private List<VotedVote> votedVotes = new ArrayList<>();
 
-    public User() {
-    }
-
-    public User(String email, String lastname, String firstname, String emailToken, Boolean confirmed, Boolean admin, Boolean banned) {
+    @Builder
+    @SneakyThrows
+    public User(String email, String lastname, String firstname, String password) {
         this.email = email;
         this.lastname = lastname;
         this.firstname = firstname;
-        this.emailToken = emailToken;
-        this.confirmed = confirmed;
-        this.admin = admin;
-        this.banned = banned;
-    }
+        this.emailToken = UUID.randomUUID().toString();
+        this.confirmed = false;
+        this.admin = false;
+        this.banned = false;
 
-    public int getId() {
-        return id;
-    }
+        new SecureRandom().nextBytes(salt);
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public String getEmailToken() {
-        return emailToken;
-    }
-
-    public void setEmailToken(String emailToken) {
-        this.emailToken = emailToken;
-    }
-
-    public Boolean getConfirmed() {
-        return confirmed;
-    }
-
-    public void setConfirmed(Boolean confirmed) {
-        this.confirmed = confirmed;
-    }
-
-    public Boolean getAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(Boolean admin) {
-        this.admin = admin;
-    }
-
-    public Boolean getBanned() {
-        return banned;
-    }
-
-    public void setBanned(Boolean banned) {
-        this.banned = banned;
-    }
-
-    public List<Vote> getStartedVotes() {
-        return startedVotes;
-    }
-
-    public void setStartedVotes(List<Vote> startedVotes) {
-        this.startedVotes = startedVotes;
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        passwordHash = factory.generateSecret(spec).getEncoded();
     }
 
     public void addStartedVote(Vote vote) {
@@ -150,24 +99,16 @@ public class User implements Serializable {
             startedVotes.add(vote);
     }
 
-    public List<VotedVote> getVotedVotes() {
-        return votedVotes;
-    }
-
-    public void setVotedVotes(List<VotedVote> votedVotes) {
-        this.votedVotes = votedVotes;
-    }
-
-    public List<Vote> getPrivateVoteList() {
-        return privateVoteList;
-    }
-
-    public void setPrivateVoteList(List<Vote> privateVoteList) {
-        this.privateVoteList = privateVoteList;
-    }
-
     public void addPrivateVote(Vote vote) {
         if (!privateVoteList.contains(vote))
             privateVoteList.add(vote);
+    }
+
+    @SneakyThrows
+    public boolean checkPassword(String password) {
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        byte[] submittedPasswordHash = factory.generateSecret(spec).getEncoded();
+        return Arrays.equals(passwordHash, submittedPasswordHash);
     }
 }

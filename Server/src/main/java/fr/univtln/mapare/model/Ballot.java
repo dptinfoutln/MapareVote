@@ -22,7 +22,7 @@ import java.util.List;
 public class Ballot implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
 
     @Column(nullable = false)

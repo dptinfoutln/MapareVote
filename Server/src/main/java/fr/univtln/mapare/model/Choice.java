@@ -19,7 +19,7 @@ import java.util.List;
 })
 public class Choice implements Serializable {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
 
     @ElementCollection(fetch = FetchType.EAGER)

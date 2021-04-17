@@ -1,4 +1,5 @@
 package fr.univtln.mapare.dao;
+/*
 
 import fr.univtln.mapare.model.*;
 import jakarta.persistence.EntityManager;
@@ -17,10 +18,13 @@ public class Main {
     public static void main(String[] args) {
 
         EntityManager entityManager = EMF.createEntityManager();
-        /*EntityTransaction transaction = entityManager.getTransaction();
-        transaction.begin();*/
+        */
+/*EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();*//*
 
-        /*User personne = new User("test@test.com",
+
+        */
+/*User personne = new User("test@test.com",
                 "TEST",
                 "test",
                 "AZERTY",
@@ -33,17 +37,22 @@ public class Main {
 
         entityManager.flush();
 
-        transaction.commit();*/
+        transaction.commit();*//*
 
-        /*List<User> userList = entityManager.createNamedQuery("findUserWithId")
+
+        */
+/*List<User> userList = entityManager.createNamedQuery("findUserWithId")
                 .setParameter("id", 1)
                 .getResultList();
 
         for (User u : userList) {
             System.out.println(u.getLastname());
-        }*/
+        }*//*
 
-        /*// Find an user by his id
+
+        */
+/*//*
+/ Find an user by his id
         List<User> personneList = entityManager.createNamedQuery("User.findById")
                 .setParameter("id", 1)
                 .getResultList();
@@ -98,7 +107,8 @@ public class Main {
                 System.out.println("choix : " + c);
             }
         };
-        */
+        *//*
+
 
         // Find Vote by id
         Vote vote = (Vote) entityManager.createNamedQuery("Vote.findById")
@@ -110,6 +120,7 @@ public class Main {
                 .setParameter("id", 551)
                 .getResultList().get(0);
 
-        BallotDAO.persist(Arrays.asList(new Choice(Arrays.asList("oui_test", "non_test", "blanc_test"), vote)), personne, vote, LocalDateTime.now());
+        //BallotDAO.persist(Arrays.asList(new Choice(Arrays.asList("oui_test", "non_test", "blanc_test"), vote)), personne, vote, LocalDateTime.now());
     }
 }
+*/
