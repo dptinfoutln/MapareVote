@@ -110,6 +110,6 @@ public class Main {
                 .setParameter("id", 551)
                 .getResultList().get(0);
 
-        BallotDAO.persist(Arrays.asList(new Choice(Arrays.asList("oui_test", "non_test", "blanc_test"), vote)), personne, vote, LocalDateTime.now());
+        //BallotDAO.persist(Arrays.asList(new Choice(Arrays.asList("oui_test", "non_test", "blanc_test"), vote)), personne, vote, LocalDateTime.now());
     }
 }
