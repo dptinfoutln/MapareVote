@@ -44,6 +44,9 @@ public class Vote implements Serializable {
     @Column(nullable = false)
     private Boolean deleted;
 
+    @Transient
+    private Boolean _private;
+
     @OneToOne
     @JoinColumn(nullable = false, name = "\"votemaker\"")
     @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "emailToken"})
@@ -139,6 +142,14 @@ public class Vote implements Serializable {
         this.deleted = deleted;
     }
 
+    public Boolean get_private() {
+        return _private;
+    }
+
+    public void set_private(Boolean _private) {
+        this._private = _private;
+    }
+
     public User getVotemaker() {
         return votemaker;
     }
@@ -187,5 +198,13 @@ public class Vote implements Serializable {
 
     public void setMembers(List<User> members) {
         this.members = members;
+    }
+
+    public VoteResult getResult() {
+        return result;
+    }
+
+    public void setResult(VoteResult result) {
+        this.result = result;
     }
 }
