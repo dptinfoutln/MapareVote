@@ -72,7 +72,7 @@ public class VoteResource {
     @Path("{id}/ballots")
     public Ballot addBallot(@PathParam ("id") int id, Ballot ballot) {
         // TODO: check validity here
-        BallotDAO.persist(ballot, id, 1);
+        //BallotDAO.persist(ballot, id, 1);
         return ballot;
     }
 

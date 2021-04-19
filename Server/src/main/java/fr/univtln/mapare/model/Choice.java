@@ -18,6 +18,7 @@ import java.util.List;
 @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
 @Table(name = "\"CHOICE\"")
 @NamedQueries({
+        @NamedQuery(name = "Choice.findAll", query = "SELECT C FROM Choice C"),
         @NamedQuery(name = "Choice.findByVote", query = "SELECT C FROM Choice C WHERE C.vote = :vote")
 })
 public class Choice implements Serializable {
@@ -47,5 +48,14 @@ public class Choice implements Serializable {
     public void addName(String name) {
         if (!names.contains(name))
             names.add(name);
+    }
+
+    @Override
+    public String toString() {
+        return "Choice{" +
+                "id=" + id +
+                ", names=" + names +
+                ", vote=" + vote.getId() +
+                '}';
     }
 }
