@@ -141,17 +141,18 @@ public class Main {
 //                anonymous(false).
 //                algo("algoDeTest").
 //                votemaker(userTest).build();
-//
-//        entityManager.persist(voteTest);
-//        transaction.commit();
-//        entityManager.close();
+
+        Vote voteTest = (Vote) entityManager.createNamedQuery("Vote.findById").setParameter("id", 5).getResultList().get(0);
+
+        //voteTest.addChoice(Choice.builder().vote(voteTest).names(Arrays.asList("Oui_Test", "OuiBis_Test")).build());
+        voteTest.setChoices(new ArrayList<>());
+        voteTest.setLabel("2.0 Les tests sont-ils toujours utiles ?");
+        entityManager.merge(voteTest);
+        transaction.commit();
+        entityManager.close();
 
         //Vote voteTest = new Vote("Les tests sont-ils toujours utiles ?", LocalDate.now(), null, "algoDeTest", false, false, userTest);
         //System.out.println(voteTest);
-        Vote voteTest = (Vote) entityManager.createNamedQuery("Vote.findById").setParameter("id", 3).getResultList().get(0);
-        entityManager.remove(voteTest);
-        transaction.commit();
-        entityManager.close();
     }
 
 }
