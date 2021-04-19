@@ -18,6 +18,7 @@ import java.util.List;
 @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
 @Table(name = "\"CHOICE\"")
 @NamedQueries({
+        @NamedQuery(name = "Choice.findAll", query = "SELECT C FROM Choice C"),
         @NamedQuery(name = "Choice.findByVote", query = "SELECT C FROM Choice C WHERE C.vote = :vote")
 })
 public class Choice implements Serializable {

@@ -15,8 +15,9 @@ import java.io.Serializable;
 @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="token")
 @Table(name = "\"VOTED_VOTES\"")
 @NamedQueries({
-        @NamedQuery(name = "VotedVotes.findByUser", query = "SELECT V FROM VotedVote V WHERE V.user = :user"),
-        @NamedQuery(name = "VotedVotes.findByVote", query = "SELECT V FROM VotedVote V WHERE V.vote = :vote")
+        @NamedQuery(name = "VotedVotes.findByToken", query = "SELECT V FROM VotedVote V WHERE V.token = :token"),
+        @NamedQuery(name = "VotedVotes.findByVote", query = "SELECT V FROM VotedVote V WHERE V.vote = :vote"),
+        @NamedQuery(name = "VotedVotes.findByUser", query = "SELECT V FROM VotedVote V WHERE V.user = :user")
 })
 public class VotedVote implements Serializable {
 
