@@ -85,7 +85,7 @@ export class VoteComponent implements OnInit {
       date: new Date(),
       choices: tmpChoices
     };
-    // const newBallot = this.votesService.sendBallot(this.vote.id, toSend);
-    console.log(toSend);
+    const newBallot = this.votesService.sendBallot(this.vote.id, toSend);
+    console.log(newBallot);
   }
 }
