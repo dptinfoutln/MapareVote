@@ -76,8 +76,8 @@ public class Vote implements Serializable {
     @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes"})
     private List<User> members = new ArrayList<>();
 
-    @Transient
-    private VoteResult result;
+    @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
+    private List<VoteResult> resultList;
 
     @Builder
     @SneakyThrows
@@ -118,7 +118,7 @@ public class Vote implements Serializable {
                 ", deleted=" + deleted +
                 ", votemaker=" + votemaker.getId() +
                 ", choices=" + choices +
-                ", result=" + result +
+                ", resultList=" + resultList +
                 '}';
     }
 }
