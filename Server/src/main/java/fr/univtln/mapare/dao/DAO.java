@@ -2,7 +2,6 @@ package fr.univtln.mapare.dao;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
