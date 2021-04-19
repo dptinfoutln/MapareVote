@@ -40,18 +40,21 @@ public class Vote implements Serializable {
     @Column(nullable = false)
     private String algo; //TODO: find better name
 
+    @JsonIgnore
     @Transient
     private Boolean _private;
 
     @Column(nullable = false)
     private Boolean anonymous;
 
+    @JsonIgnore
     @Column(nullable = false)
     private Boolean deleted = false;
 
     @OneToOne
     @JoinColumn(nullable = false, name = "\"votemaker\"")
-    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "emailToken"})
+    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "confirmed", "admin", "banned",
+            "passwordHash", "salt", "emailToken"})
     private User votemaker;
 
     @JsonIgnore
@@ -69,7 +72,8 @@ public class Vote implements Serializable {
     @JoinTable(name= "\"PRIVATE_VOTES\"",
             joinColumns = @JoinColumn(name = "\"vote\""),
             inverseJoinColumns = @JoinColumn(name = "\"user\""))
-    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes"})
+    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "confirmed", "admin", "banned",
+            "passwordHash", "salt", "emailToken"})
     private List<User> members = new ArrayList<>();
 
     @Transient
