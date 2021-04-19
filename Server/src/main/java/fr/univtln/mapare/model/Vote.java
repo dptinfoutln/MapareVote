@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.eclipse.persistence.annotations.DiscriminatorClass;
+import org.eclipse.persistence.annotations.PrivateOwned;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -18,10 +19,10 @@ import java.util.List;
 @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
 @Table(name = "\"VOTE\"")
 @NamedQueries({
-        @NamedQuery(name = "Vote.findById", query = "SELECT V FROM Vote V WHERE V.id = :id"),
         @NamedQuery(name = "Vote.findByVotemaker", query = "SELECT V FROM Vote V WHERE V.votemaker = :votemaker"),
-        @NamedQuery(name = "Vote.findPublic", query = "SELECT V FROM Vote V WHERE V.members IS EMPTY"),
-        @NamedQuery(name = "Vote.findPrivateByUser", query = "SELECT V FROM Vote V WHERE :user MEMBER OF V.members"),
+        @NamedQuery(name = "Vote.findPublic", query = "SELECT V FROM Vote V WHERE V.members IS EMPTY AND V.deleted = false"),
+        @NamedQuery(name = "Vote.findPrivateByUser", query = "SELECT V FROM Vote V WHERE :user MEMBER OF V.members AND V.deleted = false"),
+        @NamedQuery(name = "Vote.findAll", query = "SELECT V FROM Vote V")
 })
 public class Vote implements Serializable {
     @Id
@@ -40,17 +41,20 @@ public class Vote implements Serializable {
     @Column(nullable = false)
     private String algo; //TODO: find better name
 
+    @Transient
+    private Boolean _private;
+
     @Column(nullable = false)
     private Boolean anonymous;
 
-    @JsonIgnore
     @Column(nullable = false)
     private Boolean deleted = false;
 
-    @OneToOne
-    @JoinColumn(nullable = false, name = "\"votemaker\"")
-    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "confirmed", "admin", "banned",
-            "passwordHash", "salt", "emailToken"})
+    @ManyToOne
+    @JoinTable(name = "\"STARTED_VOTES\"",
+            joinColumns = @JoinColumn(name = "\"vote\""),
+            inverseJoinColumns = @JoinColumn(name = "\"votemaker\""))
+    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "emailToken"})
     private User votemaker;
 
     @JsonIgnore
@@ -58,6 +62,7 @@ public class Vote implements Serializable {
     private List<Ballot> ballots = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "vote", cascade = CascadeType.ALL)
+    @PrivateOwned   // Permert d'update la bd à partir de la liste actuelle (pour les remove par ex)
     private List<Choice> choices = new ArrayList<>();
 
     @JsonIgnore
@@ -68,12 +73,11 @@ public class Vote implements Serializable {
     @JoinTable(name= "\"PRIVATE_VOTES\"",
             joinColumns = @JoinColumn(name = "\"vote\""),
             inverseJoinColumns = @JoinColumn(name = "\"user\""))
-    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "confirmed", "admin", "banned",
-            "passwordHash", "salt", "emailToken"})
+    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes"})
     private List<User> members = new ArrayList<>();
 
-    @Transient
-    private VoteResult result;
+    @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
+    private List<VoteResult> resultList;
 
     @Builder
     @SneakyThrows
@@ -96,7 +100,25 @@ public class Vote implements Serializable {
             choices.add(choice);
     }
 
-    public Boolean isPrivate() {
-        return members.isEmpty();
+    public void addMember(User member) {
+        if (!members.contains(member))
+            members.add(member);
+    }
+
+    @Override
+    public String toString() {
+        return "Vote{" +
+                "id=" + id +
+                ", label='" + label + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", algo='" + algo + '\'' +
+                ", _private=" + _private +
+                ", anonymous=" + anonymous +
+                ", deleted=" + deleted +
+                ", votemaker=" + votemaker.getId() +
+                ", choices=" + choices +
+                ", resultList=" + resultList +
+                '}';
     }
 }

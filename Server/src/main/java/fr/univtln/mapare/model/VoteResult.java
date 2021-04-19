@@ -1,29 +1,35 @@
 package fr.univtln.mapare.model;
 
-import org.glassfish.grizzly.utils.Pair;
+import jakarta.persistence.*;
+import lombok.*;
 
-import java.util.List;
+import java.io.Serializable;
 
-public class VoteResult {
-    private List<Pair<Choice, Integer>> resultList;
+@Data
+@EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Entity
+@Table(name = "\"VOTE_RESULT\"")
+public class VoteResult implements Serializable {
+    @Id
+    @OneToOne
+    @JoinColumn(name = "\"choice\"", nullable = false)
+    private Choice choice;
+
+    @ManyToOne
+    @JoinColumn(name = "\"vote\"", nullable = false)
     private Vote vote;
 
-    public VoteResult() {
-    }
+    @Column(name = "\"result\"")
+    private int result;
 
-    public List<Pair<Choice, Integer>> getResultList() {
-        return resultList;
-    }
-
-    public void setResultList(List<Pair<Choice, Integer>> resultList) {
-        this.resultList = resultList;
-    }
-
-    public Vote getVote() {
-        return vote;
-    }
-
-    public void setVote(Vote vote) {
-        this.vote = vote;
+    @Override
+    public String toString() {
+        return "VoteResult{" +
+                "choice=" + choice +
+                ", result=" + result +
+                '}';
     }
 }
