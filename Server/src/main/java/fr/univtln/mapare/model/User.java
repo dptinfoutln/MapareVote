@@ -6,7 +6,9 @@ import lombok.*;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.security.auth.Subject;
 import java.io.Serializable;
+import java.security.Principal;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ import java.util.UUID;
         @NamedQuery(name = "User.findByEmail", query = "SELECT U FROM User U WHERE U.email = :email"),
         @NamedQuery(name = "User.findAll", query = "SELECT U FROM User U")
 })
-public class User implements Serializable {
+public class User implements Serializable, Principal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -72,6 +74,7 @@ public class User implements Serializable {
     @Builder
     @SneakyThrows
     public User(String email, String lastname, String firstname, String password) {
+        this.id = 0;
         this.email = email;
         this.lastname = lastname;
         this.firstname = firstname;
@@ -82,6 +85,14 @@ public class User implements Serializable {
 
         new SecureRandom().nextBytes(salt);
 
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        passwordHash = factory.generateSecret(spec).getEncoded();
+    }
+
+    @SneakyThrows
+    public void setPassword(String password) {
+        new SecureRandom().nextBytes(salt);
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         passwordHash = factory.generateSecret(spec).getEncoded();
@@ -105,5 +116,10 @@ public class User implements Serializable {
         return Arrays.equals(passwordHash, submittedPasswordHash);
     }
 
+    @Override
+    @JsonIgnore
+    public String getName() {
+        return lastname + ", " + firstname+" <"+email+">";
+    }
 
 }

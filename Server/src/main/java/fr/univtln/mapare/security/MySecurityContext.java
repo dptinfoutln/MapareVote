@@ -24,13 +24,12 @@ public class MySecurityContext implements SecurityContext {
     //the authenticated user
     @Override
     public Principal getUserPrincipal() {
-        return InMemoryLoginModule.SESSION.getUser(username);
+        return LoginModule.getUser(username);
     }
 
-    //A method to check if a user belongs to a role
     @Override
-    public boolean isUserInRole(String role) {
-        return InMemoryLoginModule.SESSION.getUserRoles(username).contains(InMemoryLoginModule.Role.valueOf(role));
+    public boolean isUserInRole(String s) {
+        return false;
     }
 
     //Say the access has been secured
