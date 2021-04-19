@@ -1,15 +1,11 @@
 package fr.univtln.mapare.dao;
 
-
-import fr.univtln.mapare.controllers.Controllers;
-import fr.univtln.mapare.model.Ballot;
-import fr.univtln.mapare.model.User;
-import fr.univtln.mapare.model.Vote;
+import fr.univtln.mapare.model.*;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
 
-public class BallotDAO extends DAO<Ballot> {
+public class BallotDAO extends GenericIdDAO<Ballot> {
 
     public static BallotDAO of(EntityManager entityManager) {
         return new BallotDAO(entityManager);
@@ -32,28 +28,15 @@ public class BallotDAO extends DAO<Ballot> {
         return entityManager.createNamedQuery("Ballot.findByVote", Ballot.class).setParameter("vote", vote).getResultList();
     }
 
-//    public static void persist(Ballot ballot, int voteId, int userId) {
-////        Vote vote = Controllers.Votes.mapGet(voteId);
-//        EntityManager entityManager = Controllers.getEntityManager();
-//        EntityTransaction trans = entityManager.getTransaction();
-//        trans.begin();
-//        Vote vote = (Vote) Controllers.executeParamRequest("Vote.findById", "id", voteId).get(0);
-//        ballot.setVote(vote);
-////        ballot.setVoter(Controllers.Users.mapGet(userId));
-//        ballot.setVoter((User) Controllers.executeParamRequest("User.findById", "id", userId).get(0));
-//        List<BallotChoice> templist = ballot.getChoices();
-//        ballot.setChoices(null);
-//        entityManager.persist(ballot);
-//        entityManager.flush();
-//        for (BallotChoice bc : templist) {
-//            bc.setBallot(ballot);
-//            bc.getChoice().setVote(vote);
-//            entityManager.persist(bc);
-//        }
-//        entityManager.flush();
-//        trans.commit();
-//        ballot.setChoices(templist);
-//
-//    }
+    @Override
+    public void persist(Ballot ballot) {
+        VotedVoteDAO votedVoteDAO = VotedVoteDAO.of(entityManager);
+
+        if (votedVoteDAO.findByUserVote(ballot.getVoter(), ballot.getVote()) == null) {
+            super.persist(ballot);
+            votedVoteDAO.persist(VotedVote.builder().user(ballot.getVoter()).vote(ballot.getVote()).build());
+        }
+        //TODO (else) exception déjà voté
+    }
 
 }

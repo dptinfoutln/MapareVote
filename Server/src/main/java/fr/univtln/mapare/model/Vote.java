@@ -20,8 +20,8 @@ import java.util.List;
 @Table(name = "\"VOTE\"")
 @NamedQueries({
         @NamedQuery(name = "Vote.findByVotemaker", query = "SELECT V FROM Vote V WHERE V.votemaker = :votemaker"),
-        @NamedQuery(name = "Vote.findPublic", query = "SELECT V FROM Vote V WHERE V.members IS EMPTY"),
-        @NamedQuery(name = "Vote.findPrivateByUser", query = "SELECT V FROM Vote V WHERE :user MEMBER OF V.members"),
+        @NamedQuery(name = "Vote.findPublic", query = "SELECT V FROM Vote V WHERE V.members IS EMPTY AND V.deleted = false"),
+        @NamedQuery(name = "Vote.findPrivateByUser", query = "SELECT V FROM Vote V WHERE :user MEMBER OF V.members AND V.deleted = false"),
         @NamedQuery(name = "Vote.findAll", query = "SELECT V FROM Vote V")
 })
 public class Vote implements Serializable {
@@ -50,7 +50,7 @@ public class Vote implements Serializable {
     @Column(nullable = false)
     private Boolean deleted = false;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(nullable = false, name = "\"votemaker\"")
     @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "emailToken"})
     private User votemaker;
@@ -96,5 +96,22 @@ public class Vote implements Serializable {
     public void addChoice(Choice choice) {
         if (!choices.contains(choice))
             choices.add(choice);
+    }
+
+    @Override
+    public String toString() {
+        return "Vote{" +
+                "id=" + id +
+                ", label='" + label + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", algo='" + algo + '\'' +
+                ", _private=" + _private +
+                ", anonymous=" + anonymous +
+                ", deleted=" + deleted +
+                ", votemaker=" + votemaker.getId() +
+                ", choices=" + choices +
+                ", result=" + result +
+                '}';
     }
 }

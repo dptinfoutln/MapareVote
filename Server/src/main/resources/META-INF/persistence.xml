@@ -28,7 +28,7 @@
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
              version="3.0">
 
-    <persistence-unit name="maparevotedb" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="maparevotedev" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
 
@@ -37,7 +37,7 @@
             <!-- property name="jakarta.persistence.target-database" value="postgresql" /-->
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver" />
 <!--            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:6667/maparevotedb"/>-->
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://siannos.fr:5432/maparevotedb"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://siannos.fr:5432/maparevotedev"/>
             <property name="jakarta.persistence.jdbc.user" value="mapare" />
             <property name="jakarta.persistence.jdbc.password" value="alfrni666" />
 

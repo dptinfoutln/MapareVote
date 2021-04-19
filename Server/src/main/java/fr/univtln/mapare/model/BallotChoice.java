@@ -28,4 +28,13 @@ public class BallotChoice implements Serializable {
     private Choice choice;
 
     private int weight;
+
+    @Override
+    public String toString() {
+        return "BallotChoice{" +
+                "ballot=" + ballot.getId() +
+                ", choice=" + choice +
+                ", weight=" + weight +
+                '}';
+    }
 }
