@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
-    public static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("maparevotedb");
+    public static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("maparevotedev");
 
     public static void main(String[] args) {
 
@@ -22,6 +22,7 @@ public class Main {
 
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
+
 
 
         /*
@@ -136,22 +137,43 @@ public class Main {
         User userTest = (User) entityManager.createNamedQuery("User.findByEmail").setParameter("email", "test@test.com").getResultList().get(0);
 
         // Test persist pour vote
-//        Vote voteTest = Vote.builder().label("2.0 Les tests sont-ils toujours utiles ?").
-//                startDate(LocalDate.now()).
-//                anonymous(false).
-//                algo("algoDeTest").
-//                votemaker(userTest).build();
-//
-//        entityManager.persist(voteTest);
+        Vote voteTest = Vote.builder().label("Aimez-vous les pâtes?").
+                startDate(LocalDate.now()).
+                anonymous(false).
+                algo("algoDeTest").
+                votemaker(userTest).build();
+        voteTest.addMember(userTest);
+        System.out.println(voteTest);
+        VoteDAO.of(entityManager).persist(voteTest);
+        transaction.commit();
+        System.out.println(voteTest);
+
+//        VoteDAO voteDAO = VoteDAO.of(entityManager);
+//        Vote voteTest = voteDAO.findById(2);
+
+//        voteTest.addChoice(Choice.builder().vote(voteTest).names(Arrays.asList("Oui_Test")).build());
+//        voteTest.addChoice(Choice.builder().vote(voteTest).names(Arrays.asList("Non_Test")).build());
+//        entityManager.merge(voteTest);
 //        transaction.commit();
 //        entityManager.close();
 
         //Vote voteTest = new Vote("Les tests sont-ils toujours utiles ?", LocalDate.now(), null, "algoDeTest", false, false, userTest);
         //System.out.println(voteTest);
-        Vote voteTest = (Vote) entityManager.createNamedQuery("Vote.findById").setParameter("id", 3).getResultList().get(0);
-        entityManager.remove(voteTest);
-        transaction.commit();
-        entityManager.close();
+
+        // Exemple of ballot
+//        Choice myChoice = ChoiceDAO.of(entityManager).findByVote(voteTest).get(0);
+//
+//        BallotDAO ballotDAO = BallotDAO.of(entityManager);
+//        Ballot myBallot = Ballot.builder().date(LocalDateTime.now()).voter(userTest).vote(voteTest).build();
+//        myBallot.addChoice(BallotChoice.builder().ballot(myBallot).choice(myChoice).build());
+//        System.out.println(myBallot);
+//        ballotDAO.persist(myBallot);
+//        transaction.commit();
+//        entityManager.close();
+
+        //System.out.println(UserDAO.of(entityManager).findById(1));
+//        UserDAO.of(entityManager).findAll();
+
     }
 
 }

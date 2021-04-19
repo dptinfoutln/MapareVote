@@ -22,8 +22,6 @@ import java.util.UUID;
 @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
 @Table(name = "\"USERS\"")
 @NamedQueries({
-        @NamedQuery(name = "User.findById", query = "SELECT U FROM User U WHERE U.id = :id"),
-        @NamedQuery(name = "User.findByName", query = "SELECT U FROM User U WHERE U.lastname = :lastname"),
         @NamedQuery(name = "User.findByEmail", query = "SELECT U FROM User U WHERE U.email = :email"),
         @NamedQuery(name = "User.findAll", query = "SELECT U FROM User U")
 })
@@ -59,10 +57,7 @@ public class User implements Serializable {
     @Column(nullable = false)
     byte[] salt = new byte[16];
 
-    @OneToMany
-    @JoinTable(name = "\"STARTED_VOTES\"",
-            joinColumns = @JoinColumn(name = "votemaker"),
-            inverseJoinColumns = @JoinColumn(name = "vote"))
+    @OneToMany(mappedBy = "votemaker", cascade = CascadeType.ALL)
     private List<Vote> startedVotes = new ArrayList<>();
 
     @ManyToMany(mappedBy = "members", cascade = CascadeType.ALL)

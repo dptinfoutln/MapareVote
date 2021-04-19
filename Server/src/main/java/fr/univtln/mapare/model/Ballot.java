@@ -21,6 +21,7 @@ import java.util.List;
 @NamedQueries({
         @NamedQuery(name = "Ballot.findByVoter", query = "SELECT B FROM Ballot B WHERE B.voter = :voter"),
         @NamedQuery(name = "Ballot.findByVote", query = "SELECT B FROM Ballot B WHERE B.vote = :vote"),
+        @NamedQuery(name = "Ballot.findAll", query = "SELECT B FROM Ballot B")
 })
 public class Ballot implements Serializable {
 

@@ -1,13 +1,19 @@
 package fr.univtln.mapare.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.io.Serializable;
 
+@Data
+@Builder
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "\"BALLOT_CHOICE\"")
 @NamedQueries({
-        @NamedQuery(name = "Choices.findByBallot", query = "SELECT B FROM BallotChoice B WHERE B.ballot = :ballot")
+        @NamedQuery(name = "BallotChoice.findByBallot", query = "SELECT B FROM BallotChoice B WHERE B.ballot = :ballot"),
+        @NamedQuery(name = "BallotChoice.findAll", query = "SELECT B FROM BallotChoice B")
 })
 public class BallotChoice implements Serializable {
 
@@ -23,35 +29,12 @@ public class BallotChoice implements Serializable {
 
     private int weight;
 
-    public BallotChoice() {
-    }
-
-    public BallotChoice(Ballot ballot, Choice choice) {
-        this.ballot = ballot;
-        this.choice = choice;
-    }
-
-    public Ballot getBallot() {
-        return ballot;
-    }
-
-    public void setBallot(Ballot ballot) {
-        this.ballot = ballot;
-    }
-
-    public Choice getChoice() {
-        return choice;
-    }
-
-    public void setChoice(Choice choice) {
-        this.choice = choice;
-    }
-
-    public int getWeight() {
-        return weight;
-    }
-
-    public void setWeight(int weight) {
-        this.weight = weight;
+    @Override
+    public String toString() {
+        return "BallotChoice{" +
+                "ballot=" + ballot.getId() +
+                ", choice=" + choice +
+                ", weight=" + weight +
+                '}';
     }
 }

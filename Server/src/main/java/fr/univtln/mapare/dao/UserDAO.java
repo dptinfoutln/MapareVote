@@ -1,19 +1,27 @@
 package fr.univtln.mapare.dao;
 
-import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.model.User;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
 
-public class UserDAO {
-    private UserDAO() {}
+import java.util.List;
 
-    public static void persist(User user) {
-        EntityManager entityManager = Controllers.getEntityManager();
-        EntityTransaction trans = entityManager.getTransaction();
-        trans.begin();
-        entityManager.persist(user);
-        entityManager.flush();
-        trans.commit();
+public class UserDAO extends GenericIdDAO<User> {
+
+    public static UserDAO of(EntityManager entityManager) {
+        return new UserDAO(entityManager);
+    }
+
+    private UserDAO(EntityManager entityManager) {
+        super(entityManager);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return entityManager.createNamedQuery("User.findAll", User.class).getResultList();
+    }
+
+    public User findByEmail(String email) {
+        List<User> userList  = entityManager.createNamedQuery("User.findByEmail", User.class).setParameter("email", email).getResultList();
+        return userList.isEmpty() ? null : userList.get(0);
     }
 }

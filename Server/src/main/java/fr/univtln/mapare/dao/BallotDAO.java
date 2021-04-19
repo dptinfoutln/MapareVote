@@ -1,84 +1,42 @@
 package fr.univtln.mapare.dao;
 
-
-import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.model.*;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.Persistence;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-public class BallotDAO {
-    public static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("maparevotedb");
+public class BallotDAO extends GenericIdDAO<Ballot> {
 
-//    public static void persist(List<Choice> choices, User voter, Vote vote, LocalDateTime time) {
-//        EntityManager entityManager = EMF.createEntityManager();
-//        EntityTransaction transaction = entityManager.getTransaction();
-//        transaction.begin();
-//
-//        // Persist Ballot
-//        Ballot B = new Ballot(time, vote);
-//        B.setVoter(voter); // TODO: change for anonymous
-//        entityManager.persist(B);
-//        entityManager.flush();
-//
-//        for ( Choice C : choices) {
-//            // Persist Choice
-//            entityManager.persist(C);
-//            entityManager.flush();
-//            // Persist BallotChoice
-//            BallotChoice BC = new BallotChoice(B, C);
-//            entityManager.persist(BC);
-//            entityManager.flush();
-//            // Updates Ballot
-//            B.addChoice(BC);
-//            entityManager.persist(B);
-//            entityManager.flush();
-//        }
-//        transaction.commit();
-//        entityManager.close();
-//    }
-
-    public static void persist(Ballot ballot, int voteId, int userId) {
-        Vote vote = Controllers.PublicVotes.mapGet(voteId);
-        ballot.setVote(vote);
-        ballot.setVoter(Controllers.Users.mapGet(userId));
-        List<BallotChoice> templist = ballot.getChoices();
-        ballot.setChoices(null);
-        EntityManager entityManager = Controllers.getEntityManager();
-        EntityTransaction trans = entityManager.getTransaction();
-        trans.begin();
-        entityManager.persist(ballot);
-        entityManager.flush();
-        for (BallotChoice bc : templist) {
-            bc.setBallot(ballot);
-            bc.getChoice().setVote(vote);
-            entityManager.persist(bc);
-        }
-        entityManager.flush();
-        trans.commit();
-        ballot.setChoices(templist);
+    public static BallotDAO of(EntityManager entityManager) {
+        return new BallotDAO(entityManager);
     }
 
-/*
-    public static void persist(List<BallotChoice> choices) {
-        EntityManager entityManager = EMF.createEntityManager();
-        EntityTransaction transaction = entityManager.getTransaction();
-        transaction.begin();
+    private BallotDAO(EntityManager entityManager) {
+        super(entityManager);
+    }
 
-        for ( Choice C : choices) {
-            // Persist BallotChoice
-            entityManager.persist(BC);
-            entityManager.flush();
-            // Updates Ballot
-            B.addChoice(BC);
-            entityManager.persist(B);
-            entityManager.flush();
+    @Override
+    public List<Ballot> findAll() {
+        return entityManager.createNamedQuery("Ballot.findAll", Ballot.class).getResultList();
+    }
+
+    public List<Ballot> findByVoter(User voter) {
+        return entityManager.createNamedQuery("Ballot.findByVoter", Ballot.class).setParameter("voter", voter).getResultList();
+    }
+
+    public List<Ballot> findByVote(Vote vote) {
+        return entityManager.createNamedQuery("Ballot.findByVote", Ballot.class).setParameter("vote", vote).getResultList();
+    }
+
+    @Override
+    public void persist(Ballot ballot) {
+        VotedVoteDAO votedVoteDAO = VotedVoteDAO.of(entityManager);
+
+        if (votedVoteDAO.findByUserVote(ballot.getVoter(), ballot.getVote()) == null) {
+            super.persist(ballot);
+            votedVoteDAO.persist(VotedVote.builder().user(ballot.getVoter()).vote(ballot.getVote()).build());
         }
-        transaction.commit();
-        entityManager.close();
-    }*/
+        //TODO (else) exception déjà voté
+    }
+
 }
