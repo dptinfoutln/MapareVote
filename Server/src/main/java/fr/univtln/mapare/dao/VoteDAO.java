@@ -35,7 +35,6 @@ public class VoteDAO extends GenericIdDAO<Vote> {
 
     @Override
     public void persist(Vote entity) {
-
         super.persist(entity);
     }
 }

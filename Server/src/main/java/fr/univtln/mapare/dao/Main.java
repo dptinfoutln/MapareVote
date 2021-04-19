@@ -14,14 +14,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
-    public static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("maparevotedev");
+    public static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("maparevotedb");
 
     public static void main(String[] args) {
 
         EntityManager entityManager = EMF.createEntityManager();
-
-        EntityTransaction transaction = entityManager.getTransaction();
-        transaction.begin();
 
 
 
@@ -127,29 +124,32 @@ public class Main {
         */
 
 
-//        User personneTest = User.builder().email("test@test.com").lastname( "TEST").firstname("test").password("MotDePasseSecret").build();
-//        System.out.println(personneTest.toString());
-//        entityManager.persist(personneTest);
-//        entityManager.flush();
-//        transaction.commit();
-//        entityManager.close();
+//        User personneTest = User.builder().email("glotin@mail.net").lastname( "GLOTIN").firstname("Hervé").password("J'aimeLesDauphins").build();
+//        User personneTest = User.builder().email("test@mail.com").lastname( "TEST").firstname("test").password("MotDePAsseSecret").build();
+//        System.out.println(personneTest);
+//        UserDAO.of(entityManager).persist(personneTest);
 
-        User userTest = (User) entityManager.createNamedQuery("User.findByEmail").setParameter("email", "test@test.com").getResultList().get(0);
+        User userTest = UserDAO.of(entityManager).findById(2);
 
         // Test persist pour vote
-        Vote voteTest = Vote.builder().label("Aimez-vous les pâtes?").
-                startDate(LocalDate.now()).
-                anonymous(false).
-                algo("algoDeTest").
-                votemaker(userTest).build();
-        voteTest.addMember(userTest);
-        System.out.println(voteTest);
-        VoteDAO.of(entityManager).persist(voteTest);
-        transaction.commit();
-        System.out.println(voteTest);
+//        Vote voteTest = Vote.builder().label("Quelle jour pour la réu de la semaine prochaine?").
+//                startDate(LocalDate.now()).
+//                anonymous(false).
+//                algo("algoDeTestBis").
+//                votemaker(userTest).build();
+//        voteTest.addChoice(Choice.builder().vote(voteTest).names(Arrays.asList("Lundi")).build());
+//        voteTest.addChoice(Choice.builder().vote(voteTest).names(Arrays.asList("Mardi")).build());
+//        voteTest.addChoice(Choice.builder().vote(voteTest).names(Arrays.asList("Mercredi")).build());
+//        voteTest.addChoice(Choice.builder().vote(voteTest).names(Arrays.asList("jeudi")).build());
+//        voteTest.addChoice(Choice.builder().vote(voteTest).names(Arrays.asList("Vendredi")).build());
+//        voteTest.addMember(userTest);
+//        System.out.println(voteTest);
+//        VoteDAO.of(entityManager).persist(voteTest);
+//        System.out.println(voteTest);
 
-//        VoteDAO voteDAO = VoteDAO.of(entityManager);
-//        Vote voteTest = voteDAO.findById(2);
+        Vote voteTest = VoteDAO.of(entityManager).findById(2);
+//        voteTest.addMember(userTest);
+//        VoteDAO.of(entityManager).update(voteTest);
 
 //        voteTest.addChoice(Choice.builder().vote(voteTest).names(Arrays.asList("Oui_Test")).build());
 //        voteTest.addChoice(Choice.builder().vote(voteTest).names(Arrays.asList("Non_Test")).build());
@@ -161,15 +161,13 @@ public class Main {
         //System.out.println(voteTest);
 
         // Exemple of ballot
-//        Choice myChoice = ChoiceDAO.of(entityManager).findByVote(voteTest).get(0);
-//
-//        BallotDAO ballotDAO = BallotDAO.of(entityManager);
-//        Ballot myBallot = Ballot.builder().date(LocalDateTime.now()).voter(userTest).vote(voteTest).build();
-//        myBallot.addChoice(BallotChoice.builder().ballot(myBallot).choice(myChoice).build());
-//        System.out.println(myBallot);
-//        ballotDAO.persist(myBallot);
-//        transaction.commit();
-//        entityManager.close();
+        Choice myChoice = ChoiceDAO.of(entityManager).findByVote(voteTest).get(3);
+
+        BallotDAO ballotDAO = BallotDAO.of(entityManager);
+        Ballot myBallot = Ballot.builder().date(LocalDateTime.now()).voter(userTest).vote(voteTest).build();
+        myBallot.addChoice(BallotChoice.builder().ballot(myBallot).choice(myChoice).build());
+        System.out.println(myBallot);
+        ballotDAO.persist(myBallot);
 
         //System.out.println(UserDAO.of(entityManager).findById(1));
 //        UserDAO.of(entityManager).findAll();
