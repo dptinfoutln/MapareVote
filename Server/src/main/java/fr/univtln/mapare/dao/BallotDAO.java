@@ -43,14 +43,16 @@ public class BallotDAO {
 //    }
 
     public static void persist(Ballot ballot, int voteId, int userId) {
-        Vote vote = Controllers.Votes.mapGet(voteId);
-        ballot.setVote(vote);
-        ballot.setVoter(Controllers.Users.mapGet(userId));
-        List<BallotChoice> templist = ballot.getChoices();
-        ballot.setChoices(null);
+//        Vote vote = Controllers.Votes.mapGet(voteId);
         EntityManager entityManager = Controllers.getEntityManager();
         EntityTransaction trans = entityManager.getTransaction();
         trans.begin();
+        Vote vote = (Vote) Controllers.executeParamRequest("Vote.findById", "id", voteId).get(0);
+        ballot.setVote(vote);
+//        ballot.setVoter(Controllers.Users.mapGet(userId));
+        ballot.setVoter((User) Controllers.executeParamRequest("User.findById", "id", userId).get(0));
+        List<BallotChoice> templist = ballot.getChoices();
+        ballot.setChoices(null);
         entityManager.persist(ballot);
         entityManager.flush();
         for (BallotChoice bc : templist) {
