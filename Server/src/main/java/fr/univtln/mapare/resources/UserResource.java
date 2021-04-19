@@ -54,7 +54,7 @@ public class UserResource {
         user.setAdmin(false);
         user.setBanned(false);
         //user.setEmailToken("inserttokenhere");
-        UserDAO.persist(user);
+        UserDAO.of(Controllers.getEntityManager()).persist(user);
 //        Controllers.Users.mapAdd(user.getId(), user);
         return user;
     }
