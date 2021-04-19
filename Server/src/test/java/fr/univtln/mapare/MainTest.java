@@ -2,9 +2,7 @@ package fr.univtln.mapare;
 
 import static org.junit.Assert.assertTrue;
 
-import fr.univtln.mapare.model.Choice;
-import fr.univtln.mapare.model.User;
-import fr.univtln.mapare.model.Vote;
+import fr.univtln.mapare.model.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
@@ -12,10 +10,11 @@ import jakarta.persistence.Persistence;
 import org.junit.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 public class MainTest {
-    public static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("maparevotedb");
+    /*public static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("maparevotedb");
 
     User personneTest = new User("nico@nico.mail",
             "MARGUERIT",
@@ -130,6 +129,56 @@ public class MainTest {
     }
 
     @Test
+    public void persistBallot() {
+        Vote votetest = getVoteTest();
+        Ballot ballotTest = new Ballot(LocalDateTime.now(), voteTest);
+        Choice choiceTest1 = new Choice(Arrays.asList("oui_test"),
+                voteTest);
+        Choice choiceTest2 = new Choice(Arrays.asList("non_test"),
+                voteTest);
+        Choice choiceTest3 = new Choice(Arrays.asList("blanc_test"),
+                voteTest);
+
+        EntityManager entityManager = EMF.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+        entityManager.persist(ballotTest);
+        entityManager.flush();
+        entityManager.persist(choiceTest1);
+        entityManager.flush();
+        entityManager.persist(choiceTest2);
+        entityManager.flush();
+        entityManager.persist(choiceTest3);
+        entityManager.flush();
+
+        ballotTest.addChoice(new BallotChoice(ballotTest, choiceTest1));
+        ballotTest.addChoice(new BallotChoice(ballotTest, choiceTest2));
+        ballotTest.addChoice(new BallotChoice(ballotTest, choiceTest3));
+        entityManager.persist(ballotTest);
+        entityManager.flush();
+
+
+        transaction.commit();
+        entityManager.close();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @Test
     public void removeChoice()
     {
         EntityManager entityManager = EMF.createEntityManager();
@@ -169,5 +218,5 @@ public class MainTest {
         entityManager.flush();
         transaction.commit();
         entityManager.close();
-    }
+    }*/
 }

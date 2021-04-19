@@ -1,11 +1,13 @@
 package fr.univtln.mapare.dao;
 
+
 import fr.univtln.mapare.model.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,10 +19,13 @@ public class Main {
     public static void main(String[] args) {
 
         EntityManager entityManager = EMF.createEntityManager();
-        /*EntityTransaction transaction = entityManager.getTransaction();
-        transaction.begin();*/
 
-        /*User personne = new User("test@test.com",
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+
+        /*
+        User personne = new User("test@test.com",
                 "TEST",
                 "test",
                 "AZERTY",
@@ -33,17 +38,22 @@ public class Main {
 
         entityManager.flush();
 
-        transaction.commit();*/
+        transaction.commit();
 
-        /*List<User> userList = entityManager.createNamedQuery("findUserWithId")
+
+
+        List<User> userList = entityManager.createNamedQuery("findUserWithId")
                 .setParameter("id", 1)
                 .getResultList();
 
         for (User u : userList) {
             System.out.println(u.getLastname());
-        }*/
+        }
 
-        /*// Find an user by his id
+
+
+
+        // Find an user by his id
         List<User> personneList = entityManager.createNamedQuery("User.findById")
                 .setParameter("id", 1)
                 .getResultList();
@@ -98,7 +108,9 @@ public class Main {
                 System.out.println("choix : " + c);
             }
         };
-        */
+
+
+
 
         // Find Vote by id
         Vote vote = (Vote) entityManager.createNamedQuery("Vote.findById")
@@ -110,6 +122,37 @@ public class Main {
                 .setParameter("id", 551)
                 .getResultList().get(0);
 
-        BallotDAO.persist(Arrays.asList(new Choice(Arrays.asList("oui_test", "non_test", "blanc_test"), vote)), personne, vote, LocalDateTime.now());
+        //BallotDAO.persist(Arrays.asList(new Choice(Arrays.asList("oui_test", "non_test", "blanc_test"), vote)), personne, vote, LocalDateTime.now());
+        */
+
+
+//        User personneTest = User.builder().email("test@test.com").lastname( "TEST").firstname("test").password("MotDePasseSecret").build();
+//        System.out.println(personneTest.toString());
+//        entityManager.persist(personneTest);
+//        entityManager.flush();
+//        transaction.commit();
+//        entityManager.close();
+
+        User userTest = (User) entityManager.createNamedQuery("User.findByEmail").setParameter("email", "test@test.com").getResultList().get(0);
+
+        // Test persist pour vote
+//        Vote voteTest = Vote.builder().label("2.0 Les tests sont-ils toujours utiles ?").
+//                startDate(LocalDate.now()).
+//                anonymous(false).
+//                algo("algoDeTest").
+//                votemaker(userTest).build();
+//
+//        entityManager.persist(voteTest);
+//        transaction.commit();
+//        entityManager.close();
+
+        //Vote voteTest = new Vote("Les tests sont-ils toujours utiles ?", LocalDate.now(), null, "algoDeTest", false, false, userTest);
+        //System.out.println(voteTest);
+        Vote voteTest = (Vote) entityManager.createNamedQuery("Vote.findById").setParameter("id", 3).getResultList().get(0);
+        entityManager.remove(voteTest);
+        transaction.commit();
+        entityManager.close();
     }
+
 }
+
