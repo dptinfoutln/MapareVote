@@ -1,7 +1,6 @@
 package fr.univtln.mapare.dao;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -11,17 +10,15 @@ public abstract class DAO<E> {
     protected EntityManager entityManager;
 
     public void persist(E entity) {
-        EntityTransaction transaction =  entityManager.getTransaction();
-        transaction.begin();
+        entityManager.getTransaction().begin();
         entityManager.persist(entity);
-        transaction.commit();
+        entityManager.getTransaction().commit();
     }
 
     public void update(E entity) {
-        EntityTransaction transaction =  entityManager.getTransaction();
-        transaction.begin();
+        entityManager.getTransaction().begin();
         entityManager.merge(entity);
-        transaction.commit();
+        entityManager.getTransaction().commit();
     }
 
     public void remove(E entity) {
