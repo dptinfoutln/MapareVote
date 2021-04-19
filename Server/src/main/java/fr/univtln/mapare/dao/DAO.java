@@ -17,7 +17,11 @@ public abstract class DAO<E> {
         entityManager.persist(entity);
     }
 
-    public void remove(long id) {
+    public void update(E entity) {
+        entityManager.merge(entity);
+    }
+
+    public void remove(int id) {
         entityManager.remove(findById(id));
     }
 
@@ -25,7 +29,7 @@ public abstract class DAO<E> {
         entityManager.remove(entity);
     }
 
-    public E findById(long id) {
+    public E findById(int id) {
         return entityManager.find(entityClass, id);
     }
 
