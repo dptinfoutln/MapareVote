@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 public class MainTest {
-    public static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("maparevotedb");
+    /*public static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("maparevotedb");
 
     User personneTest = new User("nico@nico.mail",
             "MARGUERIT",
@@ -128,7 +128,7 @@ public class MainTest {
         entityManager.close();
     }
 
-    /*@Test
+    @Test
     public void persistBallot() {
         Vote votetest = getVoteTest();
         Ballot ballotTest = new Ballot(LocalDateTime.now(), voteTest);
@@ -161,7 +161,7 @@ public class MainTest {
 
         transaction.commit();
         entityManager.close();
-    }*/
+    }
 
 
 
@@ -218,5 +218,5 @@ public class MainTest {
         entityManager.flush();
         transaction.commit();
         entityManager.close();
-    }
+    }*/
 }
