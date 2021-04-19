@@ -63,6 +63,7 @@ public class BallotDAO {
         entityManager.flush();
         trans.commit();
         ballot.setChoices(templist);
+        
     }
 
 /*
