@@ -19,10 +19,7 @@ public class MainTest {
     User personneTest = new User("nico@nico.mail",
             "MARGUERIT",
             "Nicolas",
-            "AZERTY",
-            true,
-            false,
-            false);
+            "AZERTY");
 
     Vote voteTest = new Vote("Est-ce que les tests sont toujours utiles ?",
             LocalDate.now(),
