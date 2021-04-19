@@ -85,7 +85,7 @@ public class BasicAuthenticationFilter implements ContainerRequestFilter {
                                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(InMemoryLoginModule.Role.class)));
 
                 //We check to login/password
-                if (!InMemoryLoginModule.USER_DATABASE.login(username, password)) {
+                if (!InMemoryLoginModule.SESSION.login(username, password)) {
                     requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
                             .entity("Wrong username or password").build());
                     return;

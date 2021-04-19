@@ -90,25 +90,20 @@ export class AuthService{
   }
 
   getToken(): string {
-    if (this.cookieService.check('token')) {
-      return this.cookieService.get('token');
-    }
-    else {
-      return null;
-    }
+    return this.cookieService.get('token');
   }
 
   setToken(token: string): void {
-    this.cookieService.delete('token');
-    this.cookieService.set('token', token);
+    this.removeToken();
+    this.cookieService.set('token', token, this.getTokenExpirationDate(token), '/');
   }
 
   removeToken(): void {
-    this.cookieService.delete('token');
+    this.cookieService.delete('token', '/');
   }
 
-  getTokenExpirationDate(): Date {
-    const decode = (jwt_decode(this.getToken())) as JwtPayload;
+  getTokenExpirationDate(token): Date {
+    const decode = (jwt_decode(token)) as JwtPayload;
 
     if (decode.exp === undefined) { return null; }
     const date = new Date(0);
@@ -118,19 +113,19 @@ export class AuthService{
   }
 
   isTokenExpired(): boolean {
-
-    if (!this.getToken()) { return true; }
-
-    const date = this.getTokenExpirationDate();
+    const token = this.getToken()
+    if (!token) { return true; }
+    const date = this.getTokenExpirationDate(token);
     if (date === undefined) { return false; }
     return !(date.valueOf() > new Date().valueOf());
   }
 
-  getInfo(): string {
+  getTokenInfo(): string {
     return (jwt_decode(this.getToken()));
   }
 
   isStillAuth(): boolean {
+
     let isAuth;
     if (this.isTokenExpired()) {
       this.signOutUser();
