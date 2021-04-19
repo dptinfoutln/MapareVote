@@ -36,9 +36,9 @@ public class InMemoryLoginModule {
     //We add three demo users.
     static {
         try {
-            SESSION.addUser("John", "Doe", "john.doe@nowhere.com", "admin", EnumSet.of(Role.ADMIN));
-            SESSION.addUser("William", "Smith", "william.smith@here.net", "user", EnumSet.of(Role.USER));
-            SESSION.addUser("Mary", "Robert", "mary.roberts@here.net", "user", EnumSet.of(Role.USER));
+            USER_DATABASE.addUser("John", "Doe", "test@test.fr", "admin", EnumSet.of(Role.ADMIN));
+            USER_DATABASE.addUser("William", "Smith", "william.smith@here.net", "user", EnumSet.of(Role.USER));
+            USER_DATABASE.addUser("Mary", "Robert", "mary.roberts@here.net", "user", EnumSet.of(Role.USER));
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             log.severe("In memory user database error "+e.getLocalizedMessage());
         }
