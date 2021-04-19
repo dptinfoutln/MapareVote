@@ -43,7 +43,7 @@ public class BallotDAO extends GenericIdDAO<Ballot> {
             super.persist(ballot);
             votedVoteDAO.persist(VotedVote.builder().user(ballot.getVoter()).vote(ballot.getVote()).build());
         }
-        //TODO (else) exception déjà voté
+        //TODO (else) exception déjà voté (voir si ça intéresse François)
     }
 
 }
