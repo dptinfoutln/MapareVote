@@ -1,5 +1,5 @@
 import { User } from './user.model';
-import { Choice } from './choise.model';
+import { Choice } from './choice.model';
 
 export class Vote {
   choices: Choice[] = [];

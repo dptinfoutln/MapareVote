@@ -1,6 +1,6 @@
-import {Vote} from "./vote.model";
-import {User} from "./user.model";
-import {Choice} from "./choise.model";
+import {Vote} from './vote.model';
+import {User} from './user.model';
+import {Choice} from './choice.model';
 
 export class Ballot {
   public id: number = null;
