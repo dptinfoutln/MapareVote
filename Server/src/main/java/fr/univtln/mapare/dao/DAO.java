@@ -10,7 +10,9 @@ public abstract class DAO<E> {
     protected EntityManager entityManager;
 
     public void persist(E entity) {
+        entityManager.getTransaction().begin();
         entityManager.persist(entity);
+        entityManager.getTransaction().commit();
     }
 
     public void update(E entity) {
