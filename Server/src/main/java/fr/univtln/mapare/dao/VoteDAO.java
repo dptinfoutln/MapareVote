@@ -37,4 +37,6 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     public void persist(Vote entity) {
         super.persist(entity);
     }
+
+    //TODO persistPrivate
 }
