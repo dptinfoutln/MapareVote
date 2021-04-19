@@ -136,20 +136,24 @@ public class Main {
         User userTest = (User) entityManager.createNamedQuery("User.findByEmail").setParameter("email", "test@test.com").getResultList().get(0);
 
         // Test persist pour vote
-//        Vote voteTest = Vote.builder().label("2.0 Les tests sont-ils toujours utiles ?").
-//                startDate(LocalDate.now()).
-//                anonymous(false).
-//                algo("algoDeTest").
-//                votemaker(userTest).build();
+        Vote voteTest = Vote.builder().label("3.0 Les tests sont-ils toujours utiles ?").
+                startDate(LocalDate.now()).
+                anonymous(false).
+                algo("algoDeTest").
+                votemaker(userTest).build();
+        System.out.println(voteTest);
+        VoteDAO.of(entityManager).persist(voteTest);
+        transaction.commit();
+        System.out.println(voteTest);
 
-        Vote voteTest = (Vote) entityManager.createNamedQuery("Vote.findById").setParameter("id", 5).getResultList().get(0);
+//        Vote voteTest = (Vote) entityManager.createNamedQuery("Vote.findById").setParameter("id", 5).getSingleResult();
 
         //voteTest.addChoice(Choice.builder().vote(voteTest).names(Arrays.asList("Oui_Test", "OuiBis_Test")).build());
-        voteTest.setChoices(new ArrayList<>());
-        voteTest.setLabel("2.0 Les tests sont-ils toujours utiles ?");
-        entityManager.merge(voteTest);
-        transaction.commit();
-        entityManager.close();
+//        voteTest.setChoices(new ArrayList<>());
+//        voteTest.setLabel("2.0 Les tests sont-ils toujours utiles ?");
+//        entityManager.merge(voteTest);
+//        transaction.commit();
+//        entityManager.close();
 
         //Vote voteTest = new Vote("Les tests sont-ils toujours utiles ?", LocalDate.now(), null, "algoDeTest", false, false, userTest);
         //System.out.println(voteTest);
