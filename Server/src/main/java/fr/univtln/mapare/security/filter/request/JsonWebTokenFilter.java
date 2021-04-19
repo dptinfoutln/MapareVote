@@ -1,6 +1,6 @@
 package fr.univtln.mapare.security.filter.request;
 
-import fr.univtln.mapare.security.InMemoryLoginModule;
+import fr.univtln.mapare.security.LoginModule;
 import fr.univtln.mapare.security.MySecurityContext;
 import fr.univtln.mapare.security.annotations.JWTAuth;
 import io.jsonwebtoken.Claims;
@@ -79,7 +79,7 @@ public class JsonWebTokenFilter implements ContainerRequestFilter {
         try {
             Jws<Claims> jws = Jwts.parserBuilder()
                     .requireIssuer("sample-jaxrs")
-                    .setSigningKey(InMemoryLoginModule.KEY)
+                    .setSigningKey(LoginModule.KEY)
                     .build()
                     .parseClaimsJws(compactJwt);
             username = jws.getBody().getSubject();
@@ -92,19 +92,19 @@ public class JsonWebTokenFilter implements ContainerRequestFilter {
         }
 
 
-        //If present we extract the allowed roles annotation.
-        if (method.isAnnotationPresent(RolesAllowed.class)) {
-            RolesAllowed rolesAnnotation = method.getAnnotation(RolesAllowed.class);
-            EnumSet<InMemoryLoginModule.Role> rolesSet =
-                    Arrays.stream(rolesAnnotation.value())
-                            .map(InMemoryLoginModule.Role::valueOf)
-                            .collect(Collectors.toCollection(() -> EnumSet.noneOf(InMemoryLoginModule.Role.class)));
-
-            //We check if the role is allowed
-            if (!InMemoryLoginModule.isInRoles(rolesSet, username))
-                requestContext.abortWith(Response.status(Response.Status.FORBIDDEN)
-                        .entity("Roles not allowed").build());
-
-        }
+//        //If present we extract the allowed roles annotation.
+//        if (method.isAnnotationPresent(RolesAllowed.class)) {
+//            RolesAllowed rolesAnnotation = method.getAnnotation(RolesAllowed.class);
+//            EnumSet<LoginModule.Role> rolesSet =
+//                    Arrays.stream(rolesAnnotation.value())
+//                            .map(LoginModule.Role::valueOf)
+//                            .collect(Collectors.toCollection(() -> EnumSet.noneOf(LoginModule.Role.class)));
+//
+//            //We check if the role is allowed
+//            if (!LoginModule.isInRoles(rolesSet, username))
+//                requestContext.abortWith(Response.status(Response.Status.FORBIDDEN)
+//                        .entity("Roles not allowed").build());
+//
+//        }
     }
 }

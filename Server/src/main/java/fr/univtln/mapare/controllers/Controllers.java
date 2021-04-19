@@ -48,6 +48,10 @@ public class Controllers {
         return entityManager.createNamedQuery(request).setParameter(param, value).getResultList();
     }
 
+    public static List executeParamRequest(String request, String param, String value) {
+        return entityManager.createNamedQuery(request).setParameter(param, value).getResultList();
+    }
+
 //    public static void loadUsers() {
 //        storeUsers(Controllers.getEntityManager().createNamedQuery("User.findAll").getResultList());
 //    }

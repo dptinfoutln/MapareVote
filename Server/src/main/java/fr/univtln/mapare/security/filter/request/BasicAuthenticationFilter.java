@@ -1,6 +1,6 @@
 package fr.univtln.mapare.security.filter.request;
 
-import fr.univtln.mapare.security.InMemoryLoginModule;
+import fr.univtln.mapare.security.LoginModule;
 import fr.univtln.mapare.security.MySecurityContext;
 import fr.univtln.mapare.security.annotations.BasicAuth;
 import jakarta.annotation.Priority;
@@ -36,17 +36,17 @@ public class BasicAuthenticationFilter implements ContainerRequestFilter {
     private static final String AUTHORIZATION_PROPERTY = "Authorization";
     private static final String AUTHENTICATION_SCHEME = "Basic";
 
-    //We inject the data from the acceded resource.
+    // We inject the data from the acceded resource.
     @Context
     private ResourceInfo resourceInfo;
 
     @SneakyThrows
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        //We use reflection on the acceded method to look for security annotations.
+        // We use reflection on the acceded method to look for security annotations.
         Method method = resourceInfo.getResourceMethod();
-        //if it is PermitAll access is granted
-        //otherwise if it is DenyAll the access is refused
+        // if it is PermitAll access is granted
+        // otherwise if it is DenyAll the access is refused
         if (!method.isAnnotationPresent(PermitAll.class)) {
             if (method.isAnnotationPresent(DenyAll.class)) {
                 requestContext.abortWith(Response.status(Response.Status.FORBIDDEN)
@@ -54,20 +54,20 @@ public class BasicAuthenticationFilter implements ContainerRequestFilter {
                 return;
             }
 
-            //We get the authorization header
+            // We get the authorization header
             final String authorization = requestContext.getHeaderString(AUTHORIZATION_PROPERTY);
 
-            //We check the presence of the credentials
+            // We check the presence of the credentials
             if (authorization == null || authorization.isEmpty()) {
                 requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
                         .entity("Please provide your credentials").build());
                 return;
             }
 
-            //We extract the username and password encoded in base64
+            // We extract the username and password encoded in base64
             final String encodedUserPassword = authorization.substring(AUTHENTICATION_SCHEME.length()).trim();
 
-            //We Decode username and password (username:password)
+            // We Decode username and password (username:password)
             String[] usernameAndPassword = new String(Base64.getDecoder().decode(encodedUserPassword.getBytes())).split(":");
 
             final String username = usernameAndPassword[0];
@@ -75,32 +75,30 @@ public class BasicAuthenticationFilter implements ContainerRequestFilter {
 
             log.info(username + " tries to log in");
 
-            //We verify user access rights according to roles
-            //After Authentication we are doing Authorization
-            if (method.isAnnotationPresent(RolesAllowed.class)) {
-                RolesAllowed rolesAnnotation = method.getAnnotation(RolesAllowed.class);
-                EnumSet<InMemoryLoginModule.Role> rolesSet =
-                        Arrays.stream(rolesAnnotation.value())
-                                .map(InMemoryLoginModule.Role::valueOf)
-                                .collect(Collectors.toCollection(() -> EnumSet.noneOf(InMemoryLoginModule.Role.class)));
+            // We verify user access rights according to roles
+            // After Authentication we are doing Authorization
+//            if (method.isAnnotationPresent(RolesAllowed.class)) {
+//                RolesAllowed rolesAnnotation = method.getAnnotation(RolesAllowed.class);
+//                EnumSet<InMemoryLoginModule.Role> rolesSet =
+//                        Arrays.stream(rolesAnnotation.value())
+//                                .map(InMemoryLoginModule.Role::valueOf)
+//                                .collect(Collectors.toCollection(() -> EnumSet.noneOf(InMemoryLoginModule.Role.class)));
 
-                //We check to login/password
-                if (!InMemoryLoginModule.SESSION.login(username, password)) {
-                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-                            .entity("Wrong username or password").build());
-                    return;
-                }
-                //We check if the role is allowed
-                if (!InMemoryLoginModule.isInRoles(rolesSet, username))
-                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-                            .entity("Roles not allowed").build());
-
-                //We build a new SecurityContext Class to transmit the security data
-                // for this login attempt to JAX-RS
-                requestContext.setSecurityContext(MySecurityContext.newInstance(AUTHENTICATION_SCHEME, username));
-
+            // We check to login/password
+            if (!LoginModule.login(username, password)) {
+                requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                        .entity("Wrong username or password").build());
+                return;
             }
+            // We check if the role is allowed
+//            if (!InMemoryLoginModule.isInRoles(rolesSet, username))
+//                requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+//                        .entity("Roles not allowed").build());
+
+            //We build a new SecurityContext Class to transmit the security data
+            // for this login attempt to JAX-RS
+            requestContext.setSecurityContext(MySecurityContext.newInstance(AUTHENTICATION_SCHEME, username));
+
         }
     }
-
 }

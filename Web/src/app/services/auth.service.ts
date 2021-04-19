@@ -20,17 +20,15 @@ export class AuthService{
               private router: Router
   ) { }
 
-  createNewUser(email: string, password: string): Promise<void>{
-    const url = environment.apiURL + 'auth/signup';
-    const body = JSON.stringify({email, password});
+  createNewUser(firstname: string, lastname: string, email: string, password: string): Promise<void>{
+    const url = environment.apiURL + 'users';
+    const body = JSON.stringify({firstname, lastname, email, password});
     const headers = new HttpHeaders({'Content-Type': 'application/json; charset=utf-8'});
 
     return new Promise(
       (resolve , reject) => {
         this.http.post<string>(url, body, {headers} ).subscribe({
-          next: token => {
-            this.cookieService.set( 'Token', token );
-            this.isAuthSubject.next(true);
+          next: user => {
             resolve();
           },
           error: error => {
