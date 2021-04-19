@@ -40,10 +40,6 @@ public class Vote implements Serializable {
     @Column(nullable = false)
     private String algo; //TODO: find better name
 
-    @JsonIgnore
-    @Transient
-    private Boolean _private;
-
     @Column(nullable = false)
     private Boolean anonymous;
 
@@ -98,5 +94,9 @@ public class Vote implements Serializable {
     public void addChoice(Choice choice) {
         if (!choices.contains(choice))
             choices.add(choice);
+    }
+
+    public Boolean isPrivate() {
+        return members.isEmpty();
     }
 }

@@ -16,15 +16,6 @@ import java.util.*;
 public class VoteResource {
 //    static Controller<Vote> ctrl = new Controller<>();
 
-//    public VoteResource() {
-//        if (lastId == -1) {
-//            Controllers.loadVotes();
-//            Controllers.loadUsers();
-//            int maxi = Controllers.Votes.getList().stream().max(Comparator.comparingInt(Vote::getId)).get().getId();
-//            lastId = maxi + 1;
-//        }
-//    }
-
     @GET
     @Path("public")
     @SuppressWarnings("unchecked")
@@ -34,13 +25,29 @@ public class VoteResource {
     }
 
     @GET
-    @Path("public/{id}")
+    @Path("{id}")
     public Vote getVote(@PathParam("id") int id) {
+        //TODO: Check if the user can see this vote (memberlist, etc.)
         return (Vote) Controllers.executeParamRequest("Vote.findById", "id", id).get(0);
     }
 
     @POST
     @Path("public")
+    public Vote addPublicVote(Vote vote) {
+        vote.setVotemaker((User) Controllers.executeParamRequest("User.findById", "id", vote.getVotemaker().getId()).get(0));
+        vote.setMembers(null);
+        return addVote(vote);
+    }
+
+    @POST
+    @Path("private")
+    public Vote addPrivateVote(Vote vote) {
+        User voteMaker = (User) Controllers.executeParamRequest("User.findById", "id", vote.getVotemaker().getId()).get(0);
+        vote.setVotemaker(voteMaker);
+        vote.setMembers(Arrays.asList(voteMaker));
+        return addVote(vote);
+    }
+
     public Vote addVote(Vote vote) {
         vote.setId(0);
         for (Choice c : vote.getChoices())
@@ -61,15 +68,6 @@ public class VoteResource {
 //        return 0;
 //    }
 
-//    @POST
-//    @Path("{id}/choice")
-//    public Choice addChoice(@PathParam("id") int id, Choice choice) {
-//        Vote vote = Controllers.PrivateVotes.mapGet(id);
-//        choice.setVote(vote);
-//        vote.addChoice(choice);
-//        return choice;
-//    }
-
     @POST
     @Path("{id}/ballots")
     public Ballot addBallot(@PathParam ("id") int id, Ballot ballot) {
@@ -85,20 +83,11 @@ public class VoteResource {
 //        return 0;
 //    }
 
-    public static void main(String[] args) {
-        Controllers.init();
-        Vote qsd = new Vote("Testpersist",
-                LocalDate.now(),
-                LocalDate.now().plusDays(1),
-                "pasimplemente",
-                false,
-                (User) Controllers.executeRequest("User.findAll").get(0));
-        qsd.addChoice(new Choice(Collections.singletonList("choix1"), qsd));
-        qsd.addChoice(new Choice(Collections.singletonList("choix2"), qsd));
-        qsd.addChoice(new Choice(Collections.singletonList("choix3"), qsd));
-        Controllers.getEntityManager().getTransaction().begin();
-        Controllers.getEntityManager().persist(qsd);
-        Controllers.getEntityManager().getTransaction().commit();
-        Controllers.close();
+    @GET
+    @Path("private/invited")
+    public List<Vote> getPrivateVotesForAUser() {
+        //TODO: get the user id here
+        return Controllers.getEntityManager().createNamedQuery("Vote.findPrivateByUser").setParameter("user",
+                Controllers.executeParamRequest("User.findById", "id",3).get(0)).getResultList();
     }
 }
