@@ -6,7 +6,7 @@ import jakarta.persistence.EntityManager;
 
 import java.util.List;
 
-public class ChoiceDAO extends DAO<Choice> {
+public class ChoiceDAO extends GenericIdDAO<Choice> {
 
     public static ChoiceDAO of(EntityManager entityManager) {
         return new ChoiceDAO(entityManager);
@@ -22,7 +22,7 @@ public class ChoiceDAO extends DAO<Choice> {
     }
 
     public List<Choice> findByVote(Vote vote) {
-        return entityManager.createNamedQuery("Choice.findByVote", Choice.class).getResultList();
+        return entityManager.createNamedQuery("Choice.findByVote", Choice.class).setParameter("vote", vote).getResultList();
     }
 
 

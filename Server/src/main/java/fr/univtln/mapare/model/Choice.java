@@ -49,4 +49,13 @@ public class Choice implements Serializable {
         if (!names.contains(name))
             names.add(name);
     }
+
+    @Override
+    public String toString() {
+        return "Choice{" +
+                "id=" + id +
+                ", names=" + names +
+                ", vote=" + vote.getId() +
+                '}';
+    }
 }

@@ -8,9 +8,6 @@ import java.util.List;
 
 @AllArgsConstructor
 public abstract class DAO<E> {
-    @SuppressWarnings("unchecked")
-    protected final Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-
     protected EntityManager entityManager;
 
     public void persist(E entity) {
@@ -21,17 +18,10 @@ public abstract class DAO<E> {
         entityManager.merge(entity);
     }
 
-    public void remove(int id) {
-        entityManager.remove(findById(id));
-    }
-
     public void remove(E entity) {
         entityManager.remove(entity);
     }
 
-    public E findById(int id) {
-        return entityManager.find(entityClass, id);
-    }
 
     abstract List<E> findAll();
 }

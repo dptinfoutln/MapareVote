@@ -6,7 +6,7 @@ import jakarta.persistence.EntityManager;
 
 import java.util.List;
 
-public class VoteDAO extends DAO<Vote> {
+public class VoteDAO extends GenericIdDAO<Vote> {
 
     public static VoteDAO of(EntityManager entityManager) {
         return new VoteDAO(entityManager);
@@ -31,5 +31,11 @@ public class VoteDAO extends DAO<Vote> {
 
     public List<Vote> findPrivateByUser(User user) {
         return entityManager.createNamedQuery("Vote.findPrivateByUser", Vote.class).setParameter("user", user).getResultList();
+    }
+
+    @Override
+    public void persist(Vote entity) {
+
+        super.persist(entity);
     }
 }
