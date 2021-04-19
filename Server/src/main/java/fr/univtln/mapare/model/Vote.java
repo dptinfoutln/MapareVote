@@ -51,7 +51,9 @@ public class Vote implements Serializable {
     private Boolean deleted = false;
 
     @ManyToOne
-    @JoinColumn(nullable = false, name = "\"votemaker\"")
+    @JoinTable(name = "\"STARTED_VOTES\"",
+            joinColumns = @JoinColumn(name = "\"vote\""),
+            inverseJoinColumns = @JoinColumn(name = "\"votemaker\""))
     @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "emailToken"})
     private User votemaker;
 
@@ -96,6 +98,11 @@ public class Vote implements Serializable {
     public void addChoice(Choice choice) {
         if (!choices.contains(choice))
             choices.add(choice);
+    }
+
+    public void addMember(User member) {
+        if (!members.contains(member))
+            members.add(member);
     }
 
     @Override

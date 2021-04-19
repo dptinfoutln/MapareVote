@@ -3,7 +3,6 @@ package fr.univtln.mapare.dao;
 import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 @AllArgsConstructor
@@ -23,5 +22,5 @@ public abstract class DAO<E> {
     }
 
 
-    abstract List<E> findAll();
+    public abstract List<E> findAll();
 }

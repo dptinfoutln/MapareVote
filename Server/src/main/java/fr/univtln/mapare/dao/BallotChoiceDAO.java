@@ -17,12 +17,14 @@ public class BallotChoiceDAO extends DAO<BallotChoice> {
     }
 
     @Override
-    List<BallotChoice> findAll() {
+    public List<BallotChoice> findAll() {
         return entityManager.createNamedQuery("BallotChoice.findAll", BallotChoice.class).getResultList();
     }
 
     public List<BallotChoice> findByBallot(Ballot ballot) {
         return entityManager.createNamedQuery("BallotChoice.findByBallot", BallotChoice.class).setParameter("ballot", ballot).getResultList();
     }
+
+
 
 }

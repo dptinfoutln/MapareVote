@@ -18,8 +18,8 @@ public class VotedVoteDAO extends DAO<VotedVote> {
     }
 
     @Override
-    List<VotedVote> findAll() {
-        return null;
+    public List<VotedVote> findAll() {
+        return entityManager.createNamedQuery("VotedVotes.findAll", VotedVote.class).getResultList();
     }
 
     public VotedVote findByToken(String token) {
