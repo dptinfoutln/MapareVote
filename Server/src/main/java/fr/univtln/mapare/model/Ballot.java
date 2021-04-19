@@ -3,15 +3,18 @@ package fr.univtln.mapare.model;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@EqualsAndHashCode(of = "id")
 
+@Data
+@EqualsAndHashCode(of = {"vote", "voter"})
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
 @Table(name = "\"BALLOT\"")
@@ -39,57 +42,16 @@ public class Ballot implements Serializable {
     @OneToMany(mappedBy = "ballot", cascade = CascadeType.ALL)
     private List<BallotChoice> choices = new ArrayList<>();
 
-    public Ballot() {
-    }
-
-    public Ballot(LocalDateTime date, Vote vote) {
-        this.id = id;
+    @Builder
+    @SneakyThrows
+    public Ballot(LocalDateTime date, Vote vote, User voter) {
         this.date = date;
         this.vote = vote;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDateTime date) {
-        this.date = date;
-    }
-
-    public Vote getVote() {
-        return vote;
-    }
-
-    public void setVote(Vote vote) {
-        this.vote = vote;
-    }
-
-    public User getVoter() {
-        return voter;
-    }
-
-    public void setVoter(User voter) {
         this.voter = voter;
-    }
-
-    public List<BallotChoice> getChoices() {
-        return choices;
     }
 
     public void addChoice(BallotChoice choice) {
         if (!choices.contains(choice))
             choices.add(choice);
-    }
-
-    public void setChoices(List<BallotChoice> choices) {
-        this.choices = choices;
     }
 }
