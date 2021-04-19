@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { Vote} from '../../models/vote.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VotesService } from '../../services/votes.service';
@@ -6,7 +6,6 @@ import { User } from '../../models/user.model';
 import localeFr from '@angular/common/locales/fr';
 import localeFrExtra from '@angular/common/locales/fr';
 import {registerLocaleData} from '@angular/common';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
 
@@ -19,19 +18,16 @@ export class VoteComponent implements OnInit {
 
   vote: Vote;
   btnType = 'checkbox';
-  choices: number[];
-  voteForm: FormGroup;
+  choices: number[] = [];
   isLoaded = false;
 
-  constructor(private fromBuilder: FormBuilder,
-              private route: ActivatedRoute,
+  constructor(private route: ActivatedRoute,
               private votesService: VotesService,
               private router: Router) { }
 
   ngOnInit(): void {
     this.vote = new Vote(-1, '', null, null, '', false, new User('', '', ''));
     const id = this.route.snapshot.params.id;
-    this.initForm();
     this.votesService.getVote(+id).then(
       (vote: Vote) => {
         if (vote == null) {
@@ -40,7 +36,7 @@ export class VoteComponent implements OnInit {
           this.vote = vote;
           this.isLoaded = true;
           switch (vote.algo) {
-            case '1':
+            case 'algoDeTest1':
               this.btnType = 'radio';
               break;
             default :
@@ -54,40 +50,42 @@ export class VoteComponent implements OnInit {
     );
   }
 
-  initForm(): void {
-    this.voteForm = this.fromBuilder.group({});
-  }
-
   onBack(): void {
     this.router.navigate(['/votes', 'public']);
   }
 
   toggleChoice(id: number): void {
-    if (this.choices.includes(id)){
-      this.choices.splice(this.choices.indexOf(id), 1);
+    if (this.btnType === 'checkbox'){
+      if (this.choices.includes(id)){
+        this.choices.splice(this.choices.indexOf(id), 1);
+      } else {
+        this.choices.push(id);
+      }
     } else {
-      this.choices.push(id);
+      this.choices = [id]
     }
-    console.log(this.choices);
   }
 
   onSubmit(): void{
+    let tmpChoices = []
+    this.choices.forEach((choiceId) => {
+      this.vote.choices.forEach((choice) => {
+        if (choiceId === choice.id){
+          tmpChoices.push({
+            choice: {
+              id : choiceId,
+              names: choice.names
+            },
+            weight: 0
+          })
+        }
+      })
+    })
     const toSend = {
       date: new Date(),
-      choices: [
-        {
-          choice:
-            {
-              id: 3,
-              names: [
-                'Non'
-              ]
-            },
-          weight: 0
-        }
-      ]
+      choices: tmpChoices
     };
-    const newBallot = this.votesService.sendBallot(this.vote.id, toSend);
-    console.log(newBallot);
+    // const newBallot = this.votesService.sendBallot(this.vote.id, toSend);
+    console.log(toSend);
   }
 }

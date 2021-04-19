@@ -8,16 +8,16 @@
           le {{ vote.startDate | date : 'dd MMMM YYYY': '' : 'fr-FR' }}</h6>
         <h6 *ngIf="vote.endDate"> Prend fin le {{ vote.endDate | date : 'dd MMMM YYYY': '' : 'fr-FR' }}</h6>
       </div>
-      <form [formGroup]="voteForm" name="voteForm" (ngSubmit)="onSubmit()">
+      <form name="voteForm" (ngSubmit)="onSubmit()">
         <ul class="list-group">
-          <li class="{{ btnType }} list-group-item" *ngFor="let choice of vote.choices">
+          <li class="{{ btnType }} list-group-item" *ngFor="let choice of vote.choices; let index = index">
             <label style="font-size: large">
-              <input type="{{ btnType }}" (click)="toggleChoice(choice.id)" name="choices" value="{{choice.id}}">
+              <input (click)="toggleChoice(choice.id)" name="choices" type="{{ btnType }}" value="{{choice.id}}">
               {{choice.names}}
             </label>
           </li>
         </ul>
-        <button class="btn btn-primary" [disabled]="voteForm.invalid" type="submit">Valider</button>
+        <button class="btn btn-primary" [disabled]="!this.choices.length > 0" type="submit">Valider</button>
       </form>
     </div>
   </div>
