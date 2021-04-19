@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.eclipse.persistence.annotations.DiscriminatorClass;
+import org.eclipse.persistence.annotations.PrivateOwned;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -59,6 +60,7 @@ public class Vote implements Serializable {
     private List<Ballot> ballots = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "vote", cascade = CascadeType.ALL)
+    @PrivateOwned   // Permert d'update la bd à partir de la liste actuelle (pour les remove par ex)
     private List<Choice> choices = new ArrayList<>();
 
     @JsonIgnore
