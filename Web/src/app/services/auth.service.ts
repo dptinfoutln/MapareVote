@@ -99,10 +99,12 @@ export class AuthService{
   }
 
   removeToken(): void {
-    this.cookieService.delete('token', '/');
+    while (this.cookieService.check('token')) {
+      this.cookieService.delete('token', '/');
+    }
   }
 
-  getTokenExpirationDate(token): Date {
+  getTokenExpirationDate(token: string): Date {
     const decode = (jwt_decode(token)) as JwtPayload;
 
     if (decode.exp === undefined) { return null; }
@@ -113,8 +115,9 @@ export class AuthService{
   }
 
   isTokenExpired(): boolean {
-    const token = this.getToken()
+    const token = this.getToken();
     if (!token) { return true; }
+
     const date = this.getTokenExpirationDate(token);
     if (date === undefined) { return false; }
     return !(date.valueOf() > new Date().valueOf());
@@ -125,7 +128,6 @@ export class AuthService{
   }
 
   isStillAuth(): boolean {
-
     let isAuth;
     if (this.isTokenExpired()) {
       this.signOutUser();

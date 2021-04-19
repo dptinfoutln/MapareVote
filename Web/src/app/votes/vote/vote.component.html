@@ -12,7 +12,7 @@
         <ul class="list-group">
           <li class="{{ btnType }} list-group-item" *ngFor="let choice of vote.choices">
             <label style="font-size: large">
-              <input type="{{ btnType }}" name="choices" value="{{choice.id}}">
+              <input type="{{ btnType }}" (click)="toggleChoice(choice.id)" name="choices" value="{{choice.id}}">
               {{choice.names}}
             </label>
           </li>

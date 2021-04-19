@@ -6,7 +6,6 @@ import { User } from '../../models/user.model';
 import localeFr from '@angular/common/locales/fr';
 import localeFrExtra from '@angular/common/locales/fr';
 import {registerLocaleData} from '@angular/common';
-import {Choice} from '../../models/choise.model';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
@@ -20,10 +19,8 @@ export class VoteComponent implements OnInit {
 
   vote: Vote;
   btnType = 'checkbox';
-  choices: Choice[];
+  choices: number[];
   voteForm: FormGroup;
-  choicesSel;
-  choiceSelected: any;
   isLoaded = false;
 
   constructor(private fromBuilder: FormBuilder,
@@ -37,10 +34,10 @@ export class VoteComponent implements OnInit {
     this.initForm();
     this.votesService.getVote(+id).then(
       (vote: Vote) => {
-        this.vote = vote;
         if (vote == null) {
           this.router.navigate(['/']);
         } else {
+          this.vote = vote;
           this.isLoaded = true;
           switch (vote.algo) {
             case '1':
@@ -58,17 +55,20 @@ export class VoteComponent implements OnInit {
   }
 
   initForm(): void {
-    this.voteForm = this.fromBuilder.group({
-      choices: ['']
-    });
+    this.voteForm = this.fromBuilder.group({});
   }
 
   onBack(): void {
     this.router.navigate(['/votes', 'public']);
   }
 
-  getSelectedChoices(): void{
-    this.choicesSel = this.vote.choices.find(choice => choice.id === this.choiceSelected);
+  toggleChoice(id: number): void {
+    if (this.choices.includes(id)){
+      this.choices.splice(this.choices.indexOf(id), 1);
+    } else {
+      this.choices.push(id);
+    }
+    console.log(this.choices);
   }
 
   onSubmit(): void{
