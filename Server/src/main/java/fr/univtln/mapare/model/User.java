@@ -7,9 +7,7 @@ import lombok.*;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.io.Serializable;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,13 +65,13 @@ public class User implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "vote"))
     private List<Vote> startedVotes = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "members")
+    @ManyToMany(mappedBy = "members", cascade = CascadeType.ALL)
     @JoinTable(name = "\"PRIVATE_VOTES\"",
             joinColumns = @JoinColumn(name = "\"user\""),
             inverseJoinColumns = @JoinColumn(name = "\"vote\""))
     private List<Vote> privateVoteList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<VotedVote> votedVotes = new ArrayList<>();
 
     @Builder
@@ -111,4 +109,6 @@ public class User implements Serializable {
         byte[] submittedPasswordHash = factory.generateSecret(spec).getEncoded();
         return Arrays.equals(passwordHash, submittedPasswordHash);
     }
+
+
 }

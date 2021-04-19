@@ -3,14 +3,17 @@ package fr.univtln.mapare.model;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@EqualsAndHashCode(of = "id")
 
+@Data
+@EqualsAndHashCode(of = {"vote", "names"})
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
 @Table(name = "\"CHOICE\"")
@@ -34,36 +37,11 @@ public class Choice implements Serializable {
     @JoinColumn(nullable = false, name = "\"vote\"")
     private Vote vote;
 
-    public Choice() {
-    }
-
+    @Builder
+    @SneakyThrows
     public Choice(List<String> names, Vote vote) {
         this.names = names;
         this.vote = vote;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Vote getVote() {
-        return vote;
-    }
-
-    public void setVote(Vote vote) {
-        this.vote = vote;
-    }
-
-    public List<String> getNames() {
-        return names;
-    }
-
-    public void setNames(List<String> names) {
-        this.names = names;
     }
 
     public void addName(String name) {

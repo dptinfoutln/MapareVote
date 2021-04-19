@@ -3,12 +3,14 @@ package fr.univtln.mapare.model;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.io.Serializable;
 
-@EqualsAndHashCode(of = "token")
-
+@Data
+@EqualsAndHashCode(of = {"vote", "user"})
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="token")
 @Table(name = "\"VOTED_VOTES\"")
@@ -29,36 +31,11 @@ public class VotedVote implements Serializable {
     @JoinColumn(nullable = false, name = "\"user\"")
     private User user;
 
-    public VotedVote() {
-    }
-
-    public VotedVote(String token, Vote vote, User user) {
-        this.token = token;
+    @Builder
+    @SneakyThrows
+    public VotedVote(Vote vote, User user) {
+        //this.token = ;
         this.vote = vote;
-        this.user = user;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public Vote getVote() {
-        return vote;
-    }
-
-    public void setVote(Vote vote) {
-        this.vote = vote;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
         this.user = user;
     }
 }
