@@ -137,15 +137,16 @@ public class Main {
         User userTest = (User) entityManager.createNamedQuery("User.findByEmail").setParameter("email", "test@test.com").getResultList().get(0);
 
         // Test persist pour vote
-//        Vote voteTest = Vote.builder().label("Les confinements sont-ils utiles ?").
-//                startDate(LocalDate.now()).
-//                anonymous(false).
-//                algo("algoDeTest").
-//                votemaker(userTest).build();
-//        System.out.println(voteTest);
-//        VoteDAO.of(entityManager).persist(voteTest);
-//        transaction.commit();
-//        System.out.println(voteTest);
+        Vote voteTest = Vote.builder().label("Aimez-vous les pâtes?").
+                startDate(LocalDate.now()).
+                anonymous(false).
+                algo("algoDeTest").
+                votemaker(userTest).build();
+        voteTest.addMember(userTest);
+        System.out.println(voteTest);
+        VoteDAO.of(entityManager).persist(voteTest);
+        transaction.commit();
+        System.out.println(voteTest);
 
 //        VoteDAO voteDAO = VoteDAO.of(entityManager);
 //        Vote voteTest = voteDAO.findById(2);
@@ -170,8 +171,8 @@ public class Main {
 //        transaction.commit();
 //        entityManager.close();
 
-        System.out.println(UserDAO.of(entityManager).findById(1));
-
+        //System.out.println(UserDAO.of(entityManager).findById(1));
+//        UserDAO.of(entityManager).findAll();
 
     }
 

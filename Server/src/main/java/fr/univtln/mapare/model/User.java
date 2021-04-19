@@ -57,10 +57,7 @@ public class User implements Serializable {
     @Column(nullable = false)
     byte[] salt = new byte[16];
 
-    @OneToMany
-    @JoinTable(name = "\"STARTED_VOTES\"",
-            joinColumns = @JoinColumn(name = "\"votemaker\""),
-            inverseJoinColumns = @JoinColumn(name = "\"vote\""))
+    @OneToMany(mappedBy = "votemaker", cascade = CascadeType.ALL)
     private List<Vote> startedVotes = new ArrayList<>();
 
     @ManyToMany(mappedBy = "members", cascade = CascadeType.ALL)

@@ -16,7 +16,7 @@ public class BallotDAO extends GenericIdDAO<Ballot> {
     }
 
     @Override
-    List<Ballot> findAll() {
+    public List<Ballot> findAll() {
         return entityManager.createNamedQuery("Ballot.findAll", Ballot.class).getResultList();
     }
 

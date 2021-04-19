@@ -17,7 +17,7 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     }
 
     @Override
-    List<Vote> findAll() {
+    public List<Vote> findAll() {
         return entityManager.createNamedQuery("Vote.findAll", Vote.class).getResultList();
     }
 

@@ -16,7 +16,7 @@ public class UserDAO extends GenericIdDAO<User> {
     }
 
     @Override
-    List<User> findAll() {
+    public List<User> findAll() {
         return entityManager.createNamedQuery("User.findAll", User.class).getResultList();
     }
 

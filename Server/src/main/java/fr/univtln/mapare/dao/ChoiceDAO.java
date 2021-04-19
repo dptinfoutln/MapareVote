@@ -17,7 +17,7 @@ public class ChoiceDAO extends GenericIdDAO<Choice> {
     }
 
     @Override
-    List<Choice> findAll() {
+    public List<Choice> findAll() {
         return entityManager.createNamedQuery("Choice.findAll", Choice.class).getResultList();
     }
 
