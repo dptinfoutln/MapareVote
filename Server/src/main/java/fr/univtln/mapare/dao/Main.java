@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
-    public static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("maparevotedev");
+    public static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("maparevotedb");
 
     public static void main(String[] args) {
 
@@ -173,10 +173,13 @@ public class Main {
         //System.out.println(UserDAO.of(entityManager).findById(1));
 //        UserDAO.of(entityManager).findAll();
 
-        Vote vote = VoteDAO.of(entityManager).findById(2);
-        vote.setResultList(Arrays.asList(new VoteResult(ChoiceDAO.of(entityManager).findById(7), 100, vote)));
-        VoteDAO.of(entityManager).update(vote);
-
+        Vote vote = VoteDAO.of(entityManager).findById(3);
+        System.out.println(vote);
+//        vote.setResultList(Arrays.asList(new VoteResult(ChoiceDAO.of(entityManager).findById(7), 100, vote)));
+//        VoteDAO.of(entityManager).update(vote);
+        entityManager.getTransaction().begin();
+        entityManager.remove(vote);
+        entityManager.getTransaction().commit();
     }
 
 }

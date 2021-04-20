@@ -12,6 +12,10 @@ import java.io.Serializable;
 @Builder
 @Entity
 @Table(name = "\"VOTE_RESULT\"")
+@NamedQueries({
+        @NamedQuery(name = "VoteResult.findByVote", query = "SELECT V FROM VoteResult V WHERE V.vote = :vote"),
+        @NamedQuery(name = "VoteResult.findAll", query = "SELECT V FROM VoteResult V")
+})
 public class VoteResult implements Serializable {
     @Id
     @OneToOne
