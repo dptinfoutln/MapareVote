@@ -42,13 +42,6 @@ public class LoginModule {
      */
     public void addUser(String firstname, String lastname, String email, String password) {
         User user = User.builder().firstname(firstname).lastname(lastname).email(email).password(password).build();
-        user.setId(0);
-        user.setVotedVotes(null);
-        user.setPrivateVoteList(null);
-        user.setStartedVotes(null);
-        user.setConfirmed(false);
-        user.setAdmin(false);
-        user.setBanned(false);
         UserDAO.of(Controllers.getEntityManager()).persist(user);
     }
 
