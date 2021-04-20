@@ -76,7 +76,8 @@ public class Vote implements Serializable {
     @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes"})
     private List<User> members = new ArrayList<>();
 
-    @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "vote")
+    @JoinColumn(name = "\"result\"")
     private List<VoteResult> resultList;
 
     @Builder
