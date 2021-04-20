@@ -117,7 +117,7 @@ public class Vote implements Serializable {
                 ", _private=" + _private +
                 ", anonymous=" + anonymous +
                 ", deleted=" + deleted +
-                ", votemaker=" + votemaker.getId() +
+                ", votemaker=" + votemaker +
                 ", choices=" + choices +
                 ", resultList=" + resultList +
                 '}';
