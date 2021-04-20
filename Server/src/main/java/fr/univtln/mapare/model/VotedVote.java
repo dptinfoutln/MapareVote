@@ -20,7 +20,8 @@ import java.util.Base64;
         @NamedQuery(name = "VotedVotes.findByToken", query = "SELECT V FROM VotedVote V WHERE V.token = :token"),
         @NamedQuery(name = "VotedVotes.findByVote", query = "SELECT V FROM VotedVote V WHERE V.vote = :vote"),
         @NamedQuery(name = "VotedVotes.findByUser", query = "SELECT V FROM VotedVote V WHERE V.user = :user"),
-        @NamedQuery(name = "VotedVotes.findByUser&Vote", query = "SELECT V FROM VotedVote V WHERE V.user = :user AND V.vote = :vote")
+        @NamedQuery(name = "VotedVotes.findByUser&Vote", query = "SELECT V FROM VotedVote V WHERE V.user = :user AND V.vote = :vote"),
+        @NamedQuery(name = "VotedVotes.findAll", query = "SELECT V FROM VotedVote V")
 })
 public class VotedVote implements Serializable {
 

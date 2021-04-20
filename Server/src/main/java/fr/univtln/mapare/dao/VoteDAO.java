@@ -17,7 +17,7 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     }
 
     @Override
-    List<Vote> findAll() {
+    public List<Vote> findAll() {
         return entityManager.createNamedQuery("Vote.findAll", Vote.class).getResultList();
     }
 
@@ -35,7 +35,8 @@ public class VoteDAO extends GenericIdDAO<Vote> {
 
     @Override
     public void persist(Vote entity) {
-
         super.persist(entity);
     }
+
+    //TODO persistPrivate
 }

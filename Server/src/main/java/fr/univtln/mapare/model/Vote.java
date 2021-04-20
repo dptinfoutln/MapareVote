@@ -49,9 +49,10 @@ public class Vote implements Serializable {
     private Boolean deleted = false;
 
     @ManyToOne
-    @JoinColumn(nullable = false, name = "\"votemaker\"")
-    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "confirmed", "admin", "banned",
-            "passwordHash", "salt", "emailToken"})
+    @JoinTable(name = "\"STARTED_VOTES\"",
+            joinColumns = @JoinColumn(name = "\"vote\""),
+            inverseJoinColumns = @JoinColumn(name = "\"votemaker\""))
+    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "emailToken"})
     private User votemaker;
 
     @JsonIgnore
@@ -74,8 +75,8 @@ public class Vote implements Serializable {
             "passwordHash", "salt", "emailToken"})
     private List<User> members = new ArrayList<>();
 
-    @Transient
-    private VoteResult result;
+    @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
+    private List<VoteResult> resultList;
 
     @Builder
     @SneakyThrows
@@ -98,6 +99,11 @@ public class Vote implements Serializable {
             choices.add(choice);
     }
 
+    public void addMember(User member) {
+        if (!members.contains(member))
+            members.add(member);
+    }
+
     public Boolean isPrivate() {
         return members.isEmpty();
     }
@@ -114,7 +120,7 @@ public class Vote implements Serializable {
                 ", deleted=" + deleted +
                 ", votemaker=" + votemaker.getId() +
                 ", choices=" + choices +
-                ", result=" + result +
+                ", resultList=" + resultList +
                 '}';
     }
 }
