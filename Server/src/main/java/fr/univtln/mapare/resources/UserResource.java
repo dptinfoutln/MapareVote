@@ -8,8 +8,11 @@ import fr.univtln.mapare.dao.VoteDAO;
 import fr.univtln.mapare.model.Ballot;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.model.Vote;
+import fr.univtln.mapare.security.annotations.JWTAuth;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.SecurityContext;
 
 import java.util.List;
 
@@ -23,16 +26,20 @@ public class UserResource {
         //Lancer DAO
         //Pagination
         //rentrer users dans liste
-        //ctrl.listAdd(new User(1, "test@example.com", "Dupont", "Thomas", "TESTX5", true, true, false));
-//        return Controllers.Users.getList();
         return UserDAO.of(Controllers.getEntityManager()).findAll();
     }
 
     @GET
     @Path("{id}")
     public User getUser(@PathParam("id") int id) {
-//        return Controllers.Users.mapGet(id);
         return UserDAO.of(Controllers.getEntityManager()).findById(id);
+    }
+
+    @GET
+    @JWTAuth
+    @Path("me")
+    public User getSelf(@Context SecurityContext securityContext) {
+        return (User) securityContext.getUserPrincipal();
     }
 
     @POST
