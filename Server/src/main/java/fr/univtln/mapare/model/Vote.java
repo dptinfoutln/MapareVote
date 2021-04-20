@@ -75,7 +75,8 @@ public class Vote implements Serializable {
             "passwordHash", "salt", "emailToken"})
     private List<User> members = new ArrayList<>();
 
-    @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "vote")
+    @JoinColumn(name = "\"result\"")
     private List<VoteResult> resultList;
 
     @Builder
