@@ -45,6 +45,7 @@ public class BallotDAO extends GenericIdDAO<Ballot> {
         }
         //TODO (else) exception déjà voté (voir si ça intéresse François)
         //TODO anonymous ballot (ballot toujours avec voter / verif vote si anonymous
+        //TODO check si le vote n'est pas deleted
     }
 
 }
