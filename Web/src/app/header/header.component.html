@@ -13,11 +13,17 @@
         </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li routerLinkActive="active">
+        <li routerLinkActive="active" *ngIf="!isAuth">
           <a routerLink="auth/signup">Créer un compte</a>
         </li>
-        <li routerLinkActive="active">
+        <li routerLinkActive="active" *ngIf="!isAuth">
           <a routerLink="auth/signin">Connexion</a>
+        </li>
+        <li>
+          <a *ngIf="isAuth" style="color: darkred">{{ userName }}</a>
+        </li>
+        <li>
+          <a routerLink="auth/signin" (click)="onSignOut()" *ngIf="isAuth" style="cursor: pointer">Déconnexion</a>
         </li>
       </ul>
     </div>
