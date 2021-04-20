@@ -86,11 +86,7 @@ public class LoginModule {
      * @return the user
      */
     public static User getUser(String email) {
-        List<?> result = Controllers.executeParamRequest("User.findByEmail", "email", email);
-        if (result.isEmpty())
-            return null;
-        else
-            return (User) result.get(0);
+        return UserDAO.of(Controllers.getEntityManager()).findByEmail(email);
     }
 
     @SuppressWarnings("SameReturnValue")

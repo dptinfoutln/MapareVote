@@ -62,18 +62,15 @@ public class User implements Serializable, Principal {
     @Column(nullable = false)
     byte[] salt = new byte[16];
 
-    @JsonIgnore
     @OneToMany(mappedBy = "votemaker", cascade = CascadeType.ALL)
     private List<Vote> startedVotes = new ArrayList<>();
 
-    @JsonIgnore
     @ManyToMany(mappedBy = "members", cascade = CascadeType.ALL)
     @JoinTable(name = "\"PRIVATE_VOTES\"",
             joinColumns = @JoinColumn(name = "\"user\""),
             inverseJoinColumns = @JoinColumn(name = "\"vote\""))
     private List<Vote> privateVoteList = new ArrayList<>();
 
-    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<VotedVote> votedVotes = new ArrayList<>();
 

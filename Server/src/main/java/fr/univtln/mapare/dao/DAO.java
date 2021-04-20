@@ -22,7 +22,9 @@ public abstract class DAO<E> {
     }
 
     public void remove(E entity) {
+        entityManager.getTransaction().begin();
         entityManager.remove(entity);
+        entityManager.getTransaction().commit();
     }
 
 

@@ -9,7 +9,11 @@ import fr.univtln.mapare.model.Ballot;
 import fr.univtln.mapare.model.Choice;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.model.Vote;
+import fr.univtln.mapare.security.MySecurityContext;
+import fr.univtln.mapare.security.annotations.JWTAuth;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.SecurityContext;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -33,10 +37,14 @@ public class VoteResource {
     }
 
     @POST
+    @JWTAuth
     @Path("public")
-    public Vote addPublicVote(Vote vote) {
-        vote.setVotemaker(UserDAO.of(Controllers.getEntityManager()).findById(vote.getVotemaker().getId()));
+    public Vote addPublicVote(@Context SecurityContext securityContext, Vote vote) {
+        //vote.setVotemaker(UserDAO.of(Controllers.getEntityManager()).findById(vote.getVotemaker().getId()));
         vote.setMembers(null);
+
+        vote.setVotemaker(((User) securityContext.getUserPrincipal()));
+
         return addVote(vote);
     }
 
@@ -57,19 +65,18 @@ public class VoteResource {
         return vote;
     }
 
-//    @DELETE
-//    @Path("{id}")
-//    public int deleteVote(@PathParam("id") int id) {
-//        Controllers.getEntityManager().getTransaction().begin();
-//        Controllers.getEntityManager().remove(Controllers.executeParamRequest("Vote.findById", "id", id));
-//        Controllers.getEntityManager().getTransaction().commit();
-//        return 0;
-//    }
+    @DELETE
+    @Path("{id}")
+    public int deleteVote(@PathParam("id") int id) {
+        VoteDAO.of(Controllers.getEntityManager()).remove(id);
+        return 0;
+    }
 
     @POST
     @Path("{id}/ballots")
     public Ballot addBallot(@PathParam ("id") int id, Ballot ballot) {
         // TODO: check validity here
+        ballot.setVote(VoteDAO.of(Controllers.getEntityManager()).findById(id));
         BallotDAO.of(Controllers.getEntityManager()).persist(ballot);
         return ballot;
     }

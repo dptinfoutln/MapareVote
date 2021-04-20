@@ -1,7 +1,6 @@
 package fr.univtln.mapare.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,10 +33,12 @@ public class Ballot implements Serializable {
     private LocalDateTime date;
 
     @ManyToOne
+    @JsonIgnoreProperties({"votemaker", "members", "choices", "resultList", "votedVotes", "ballots"})
     @JoinColumn(nullable = false, name = "\"vote\"")
     private Vote vote;
 
     @OneToOne
+    @JsonIgnore
     @JoinColumn(name = "\"voter\"", nullable = true)
     private User voter;
 

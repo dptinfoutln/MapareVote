@@ -40,7 +40,6 @@ public class BasicAuthenticationFilter implements ContainerRequestFilter {
     @Context
     private ResourceInfo resourceInfo;
 
-    @SneakyThrows
     @Override
     public void filter(ContainerRequestContext requestContext) {
         // We use reflection on the acceded method to look for security annotations.
