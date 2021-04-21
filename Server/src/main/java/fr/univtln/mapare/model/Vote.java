@@ -48,6 +48,9 @@ public class Vote implements Serializable {
     @Column(nullable = false)
     private Boolean deleted = false;
 
+    @Column(nullable = false, name = "\"intermediaryResult\"")
+    private Boolean intermediaryResult = false;
+
     @ManyToOne
     @JoinTable(name = "\"STARTED_VOTES\"",
             joinColumns = @JoinColumn(name = "\"vote\""),
