@@ -5,6 +5,8 @@ import fr.univtln.mapare.dao.BallotDAO;
 import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.dao.VoteDAO;
 import fr.univtln.mapare.exceptions.BusinessException;
+import fr.univtln.mapare.exceptions.ForbiddenException;
+import fr.univtln.mapare.exceptions.NotFoundException;
 import fr.univtln.mapare.model.Ballot;
 import fr.univtln.mapare.model.Choice;
 import fr.univtln.mapare.model.User;
@@ -14,6 +16,9 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.SecurityContext;
 
+import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Path("votes")
@@ -29,7 +34,7 @@ public class VoteResource {
     @GET
     @JWTAuth
     @Path("{id}")
-    public Vote getVote(@Context SecurityContext securityContext, @PathParam("id") int id) {
+    public Vote getVote(@Context SecurityContext securityContext, @PathParam("id") int id) throws NotFoundException {
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
         if (vote == null)
             throw new NotFoundException();
@@ -61,6 +66,11 @@ public class VoteResource {
     }
 
     public Vote addVote(Vote vote) throws BusinessException {
+        //TODO: verifier nbr choix
+        if (vote.getStartDate().isBefore(LocalDate.now()))
+            throw new ForbiddenException("Start date before today.");
+        if (vote.getEndDate() != null && vote.getEndDate().isAfter(vote.getStartDate().plus(1, ChronoUnit.DAYS)))
+            throw new ForbiddenException("End date before start date.");
         vote.setId(0);
         for (Choice c : vote.getChoices())
             c.setVote(vote);
@@ -84,8 +94,16 @@ public class VoteResource {
     @JWTAuth
     @Path("{id}/ballots")
     public Ballot addBallot(@Context SecurityContext securityContext, @PathParam ("id") int id, Ballot ballot) throws BusinessException {
-        // TODO: check validity here
-        ballot.setVote(VoteDAO.of(Controllers.getEntityManager()).findById(id));
+        User voter = (User) securityContext.getUserPrincipal();
+        Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
+        if (voter.isBanned())
+            throw new ForbiddenException("User is banned.");
+        if (vote.isDeleted())
+            throw new ForbiddenException("Vote deleted.");
+        if (ballot.getDate().isAfter(ChronoLocalDateTime.from(vote.getEndDate())))
+            throw new ForbiddenException("Too late.");
+        ballot.setVote(vote);
+        ballot.setVoter(voter);
         try {
             BallotDAO.of(Controllers.getEntityManager()).persist(ballot);
         } catch (BusinessException e) {
@@ -118,7 +136,7 @@ public class VoteResource {
                                            @PathParam("id") int id) {
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
         User voter = (User) securityContext.getUserPrincipal();
-        if (vote.getAnonymous().equals(false)) {
+        if (!vote.isAnonymous()) {
             return BallotDAO.of(Controllers.getEntityManager()).findByVoteByVoter(vote, voter);
         }
         else

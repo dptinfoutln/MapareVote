@@ -46,13 +46,13 @@ public class User implements Serializable, Principal {
     private String emailToken = UUID.randomUUID().toString();
 
     @Column(nullable = false)
-    private Boolean confirmed;
+    private boolean confirmed;
 
     @Column(nullable = false)
-    private Boolean admin;
+    private boolean admin;
 
     @Column(nullable = false)
-    private Boolean banned;
+    private boolean banned;
 
     @JsonIgnore
     @Column(nullable = false)
