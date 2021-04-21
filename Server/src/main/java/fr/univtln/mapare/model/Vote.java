@@ -7,8 +7,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Data
 @EqualsAndHashCode(of = {"label", "votemaker"})
@@ -110,6 +109,12 @@ public class Vote implements Serializable {
             members.add(member);
     }
 
+    private static final transient List<String> algolist = Arrays.asList("majority");
+
+    public static List<String> getAlgolist() {
+        return algolist;
+    }
+
     @JsonIgnore
     public boolean isPublic() {
         return members.isEmpty();
@@ -134,5 +139,33 @@ public class Vote implements Serializable {
                 ", choices=" + choices +
                 ", resultList=" + resultList +
                 '}';
+    }
+
+    public boolean hasResults() {
+        return resultList.isEmpty();
+    }
+
+    public void calculateResults() {
+        switch (algo) {
+            case "majority":
+            case "borda":
+                Map<Choice, Integer> countmap = new HashMap<>();
+                for (Choice c : choices)
+                    countmap.put(c, 0);
+                for (Ballot b : ballots) {
+                    for (BallotChoice bc : b.getChoices()) {
+                        countmap.put(bc.getChoice(), countmap.get(bc.getChoice()) + bc.getWeight());
+                    }
+                }
+                resultList = new ArrayList<>();
+                for (Choice c : choices) {
+                    resultList.add(new VoteResult(c, countmap.get(c), this));
+                }
+                break;
+            case "STV":
+            default:
+                setResultList(null);
+                break;
+        }
     }
 }

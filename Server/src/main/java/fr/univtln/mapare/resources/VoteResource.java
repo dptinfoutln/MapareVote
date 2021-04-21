@@ -33,10 +33,26 @@ public class VoteResource {
     @Path("{id}")
     public Vote getVote(@Context SecurityContext securityContext, @PathParam("id") int id) throws NotFoundException {
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
+
         if (vote == null)
             throw new NotFoundException();
-        if (vote.isPublic() || vote.getMembers().contains((User) securityContext.getUserPrincipal()))
+
+        if (vote.isPublic() || vote.getMembers().contains((User) securityContext.getUserPrincipal())) {
+            if (vote.getEndDate() != null && (
+                    (!vote.hasResults() || vote.isIntermediaryResult()) && LocalDate.now().isAfter(vote.getEndDate()))
+            ) {
+                vote.setIntermediaryResult(false);
+                vote.calculateResults();
+                if (vote.getResultList() == null)
+                    throw new NotFoundException("Algorithm not implemented.");
+            }
+            if (vote.isIntermediaryResult()) {
+                vote.calculateResults();
+                if (vote.getResultList() == null)
+                    throw new NotFoundException("Algorithm not implemented.");
+            }
             return vote;
+        }
         else
             return null;
     }
@@ -63,6 +79,8 @@ public class VoteResource {
     }
 
     public Vote addVote(Vote vote) throws BusinessException {
+        if (!Vote.getAlgolist().contains(vote.getAlgo()))
+            throw new ForbiddenException("Invalid algorithm");
         if (vote.getMaxChoices() < 1)
             throw new ForbiddenException("Please enter a proper value for your maxChoices count.");
         if (vote.getChoices().size() < vote.getMaxChoices())
@@ -73,6 +91,8 @@ public class VoteResource {
             throw new ForbiddenException("Start date before today.");
         if (vote.getEndDate() != null && vote.getEndDate().isBefore(vote.getStartDate().plus(1, ChronoUnit.DAYS)))
             throw new ForbiddenException("End date before start date.");
+        if (vote.getEndDate() == null && !vote.isIntermediaryResult())
+            throw new ForbiddenException("Vote with no end date and no intermediary results: invalid.");
         vote.setId(0);
         for (Choice c : vote.getChoices())
             c.setVote(vote);
@@ -109,6 +129,27 @@ public class VoteResource {
         for (BallotChoice bc : ballot.getChoices())
             if (bc.getChoice().getVote() != vote)
                 throw new ForbiddenException("Bad choice(s).");
+        switch (vote.getAlgo()) {
+            case "majority":
+                for (BallotChoice bc : ballot.getChoices()) {
+                    bc.setWeight(1);
+                }
+                break;
+            case "borda":
+                int[] temparray = new int[ballot.getChoices().size()];
+                for (BallotChoice bc : ballot.getChoices()) {
+                    // We verify that all values are coherent for borda count.
+                    if (bc.getWeight() > ballot.getChoices().size())
+                        throw new ForbiddenException("Invalid choice weight for borda count algorithm.");
+                    if (temparray[bc.getWeight() - 1] != 0)
+                        throw new ForbiddenException("Duplicate choice weight for borda count algorithm.");
+                    temparray[bc.getWeight()] = 1;
+                }
+                break;
+            case "STV":
+            default:
+                break;
+        }
         ballot.setVote(vote);
         ballot.setVote(vote);
         ballot.setVoter(voter);
