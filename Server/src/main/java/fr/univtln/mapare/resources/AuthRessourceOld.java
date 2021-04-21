@@ -1,20 +1,12 @@
 package fr.univtln.mapare.resources;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.univtln.mapare.controllers.AuthController;
-import fr.univtln.mapare.exceptions.ForbiddenException;
-import fr.univtln.mapare.exceptions.NotFoundException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.json.JSONObject;
-
-import java.util.Map;
 
 @Path("old/auth")
 public class AuthRessourceOld {
