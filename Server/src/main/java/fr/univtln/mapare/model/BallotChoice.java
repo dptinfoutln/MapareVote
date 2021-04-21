@@ -11,10 +11,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "\"BALLOT_CHOICE\"")
-@NamedQueries({
-        @NamedQuery(name = "BallotChoice.findByBallot", query = "SELECT B FROM BallotChoice B WHERE B.ballot = :ballot"),
-        @NamedQuery(name = "BallotChoice.findAll", query = "SELECT B FROM BallotChoice B")
-})
 public class BallotChoice implements Serializable {
 
     @Id
