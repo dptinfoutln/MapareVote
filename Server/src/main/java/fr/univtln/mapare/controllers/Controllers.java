@@ -26,7 +26,7 @@ public class Controllers {
         return entityManager;
     }
 
-    public static Boolean isOpen() {
+    public static boolean isOpen() {
         return entityManager != null;
     }
 

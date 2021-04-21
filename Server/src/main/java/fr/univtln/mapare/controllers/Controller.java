@@ -23,7 +23,7 @@ public class Controller<E> {
         map.put(id, e);
     }
 
-    public Boolean mapContainsKey(int id) {
+    public boolean mapContainsKey(int id) {
         return map.containsKey(id);
     }
 

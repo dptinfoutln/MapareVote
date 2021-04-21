@@ -42,14 +42,14 @@ public class Vote implements Serializable {
     private String algo; //TODO: find better name
 
     @Column(nullable = false)
-    private Boolean anonymous;
+    private boolean anonymous;
 
     @JsonIgnore
     @Column(nullable = false)
-    private Boolean deleted = false;
+    private boolean deleted = false;
 
     @Column(nullable = false, name = "\"intermediaryResult\"")
-    private Boolean intermediaryResult = false;
+    private boolean intermediaryResult = false;
 
     @ManyToOne
     @JoinTable(name = "\"STARTED_VOTES\"",
@@ -84,7 +84,7 @@ public class Vote implements Serializable {
 
     @Builder
     @SneakyThrows
-    public Vote(String label, LocalDate startDate, LocalDate endDate, String algo, Boolean anonymous, User votemaker) {
+    public Vote(String label, LocalDate startDate, LocalDate endDate, String algo, boolean anonymous, User votemaker) {
         this.label = label;
         this.startDate = startDate;
         this.endDate = endDate;
