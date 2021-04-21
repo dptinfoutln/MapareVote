@@ -104,8 +104,12 @@ public class Vote implements Serializable {
             members.add(member);
     }
 
-    public Boolean isPrivate() {
+    public boolean isPublic() {
         return members.isEmpty();
+    }
+
+    public boolean isPrivate() {
+        return !isPublic();
     }
 
     @Override

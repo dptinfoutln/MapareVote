@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.security.Principal;
 
+
 /**
  * This class define a specific security context after an authentication with either the basic or the JWT filters.
  *

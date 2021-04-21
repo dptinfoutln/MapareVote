@@ -43,7 +43,7 @@ public class User implements Serializable, Principal {
 
     @JsonIgnore
     @Column(name = "\"emailToken\"")
-    private String emailToken;
+    private String emailToken = UUID.randomUUID().toString();
 
     @Column(nullable = false)
     private Boolean confirmed;
@@ -81,7 +81,6 @@ public class User implements Serializable, Principal {
         this.email = email;
         this.lastname = lastname;
         this.firstname = firstname;
-        this.emailToken = UUID.randomUUID().toString();
         this.confirmed = false;
         this.admin = false;
         this.banned = false;
