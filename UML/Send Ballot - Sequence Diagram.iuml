@@ -1,0 +1,28 @@
+@startuml
+title "Send Ballot - Sequence Diagram"
+
+actor User
+boundary "Web GUI" as GUI
+control "REST Server" as RS
+entity DAO
+database "BDD"
+
+User -> GUI : Select choices
+GUI -> RS : tmpBallot
+RS -> RS : Create Real Ballot
+RS -> DAO : Persiste Ballot
+DAO -> DAO : Check if already voted
+
+alt successful case
+
+    DAO -> BDD : Persist Ballot
+    DAO -> RS: Ballot Accepted
+    RS -> GUI: Ballot Accepted
+
+else User already voted
+
+    DAO -> RS: Ballot Refused
+    RS -> GUI: Ballot Refused
+
+end
+@enduml
