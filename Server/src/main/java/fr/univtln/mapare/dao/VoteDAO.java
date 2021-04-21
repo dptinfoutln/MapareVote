@@ -33,9 +33,4 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     public List<Vote> findPrivateByUser(User user) {
         return entityManager.createNamedQuery("Vote.findPrivateByUser", Vote.class).setParameter("user", user).getResultList();
     }
-
-    @Override
-    public void persist(Vote entity) throws BusinessException {
-        super.persist(entity);
-    }
 }

@@ -34,21 +34,14 @@ public class BallotDAO extends GenericIdDAO<Ballot> {
 
     @Override
     public void persist(Ballot ballot) throws BusinessException {
-        if (!ballot.getVoter().getBanned()) { // Check if authorized
-            if (!ballot.getVote().getDeleted()) { // Check if not available
-                VotedVoteDAO votedVoteDAO = VotedVoteDAO.of(entityManager);
-                if (votedVoteDAO.findByUserVote(ballot.getVoter(), ballot.getVote()) == null) { // Check if have already voted
-                    if (ballot.getVote().getAnonymous()) // Check if anonymous
-                        ballot.setVoter(null);
-                    super.persist(ballot);
-                    votedVoteDAO.persist(VotedVote.builder().user(ballot.getVoter()).vote(ballot.getVote()).build());
-                } else
-                    throw new ConflictException("User has already voted");
-            } else
-                throw new ForbiddenException("Vote not available anymore");
+        VotedVoteDAO votedVoteDAO = VotedVoteDAO.of(entityManager);
+        if (votedVoteDAO.findByUserVote(ballot.getVoter(), ballot.getVote()) == null) { // Check if have already voted
+            if (ballot.getVote().getAnonymous()) // Check if anonymous
+                ballot.setVoter(null);
+            super.persist(ballot);
+            votedVoteDAO.persist(VotedVote.builder().user(ballot.getVoter()).vote(ballot.getVote()).build());
         } else
-            throw new ForbiddenException("User not authorized (banned)");
-
+            throw new ConflictException("User has already voted");
     }
 
 }
