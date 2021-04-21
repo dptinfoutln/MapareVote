@@ -4,6 +4,7 @@ import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.dao.BallotDAO;
 import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.dao.VoteDAO;
+import fr.univtln.mapare.exceptions.BusinessException;
 import fr.univtln.mapare.model.Ballot;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.security.annotations.JWTAuth;
@@ -41,7 +42,7 @@ public class UserResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public User addUser(User user) {
+    public User addUser(User user) throws BusinessException {
         user.setId(0);
         user.setVotedVotes(null);
         user.setPrivateVoteList(null);
@@ -49,20 +50,12 @@ public class UserResource {
         user.setConfirmed(false);
         user.setAdmin(false);
         user.setBanned(false);
-        UserDAO.of(Controllers.getEntityManager()).persist(user);
-        return user;
-    }
-
-    @GET
-    @Path("{uid}/votedvotes/{vid}/ballot") // TODO: move to votes/id/myballot
-    public Ballot getSpecificBallotforUser(@PathParam("uid") int uid, @PathParam("vid") int vid) {
-        if (!VoteDAO.of(Controllers.getEntityManager()).findById(vid).getAnonymous()) {
-            return BallotDAO.of(Controllers.getEntityManager()).findByVoteByVoter(
-                    VoteDAO.of(Controllers.getEntityManager()).findById(vid),
-                    UserDAO.of(Controllers.getEntityManager()).findById(uid)
-            );
+        try {
+            UserDAO.of(Controllers.getEntityManager()).persist(user);
+        } catch (BusinessException e) {
+            e.printStackTrace();
+            throw e;
         }
-        else
-            return null;
+        return user;
     }
 }

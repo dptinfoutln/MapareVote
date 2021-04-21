@@ -4,11 +4,11 @@ import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.dao.BallotDAO;
 import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.dao.VoteDAO;
+import fr.univtln.mapare.exceptions.BusinessException;
 import fr.univtln.mapare.model.Ballot;
 import fr.univtln.mapare.model.Choice;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.model.Vote;
-import fr.univtln.mapare.security.MySecurityContext;
 import fr.univtln.mapare.security.annotations.JWTAuth;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
@@ -42,7 +42,7 @@ public class VoteResource {
     @POST
     @JWTAuth
     @Path("public")
-    public Vote addPublicVote(@Context SecurityContext securityContext, Vote vote) {
+    public Vote addPublicVote(@Context SecurityContext securityContext, Vote vote) throws BusinessException {
         vote.setMembers(null);
 
         vote.setVotemaker(((User) securityContext.getUserPrincipal()));
@@ -53,18 +53,23 @@ public class VoteResource {
     @POST
     @JWTAuth
     @Path("private")
-    public Vote addPrivateVote(@Context SecurityContext securityContext, Vote vote) {
+    public Vote addPrivateVote(@Context SecurityContext securityContext, Vote vote) throws BusinessException {
         User voteMaker = (User) securityContext.getUserPrincipal();
         vote.setVotemaker(voteMaker);
         vote.setMembers(Arrays.asList(voteMaker));
         return addVote(vote);
     }
 
-    public Vote addVote(Vote vote) {
+    public Vote addVote(Vote vote) throws BusinessException {
         vote.setId(0);
         for (Choice c : vote.getChoices())
             c.setVote(vote);
-        VoteDAO.of(Controllers.getEntityManager()).persist(vote);
+        try {
+            VoteDAO.of(Controllers.getEntityManager()).persist(vote);
+        } catch (BusinessException e) {
+            e.printStackTrace();
+            throw e;
+        }
         return vote;
     }
 
@@ -76,11 +81,17 @@ public class VoteResource {
     }
 
     @POST
+    @JWTAuth
     @Path("{id}/ballots")
-    public Ballot addBallot(@Context SecurityContext securityContext, @PathParam ("id") int id, Ballot ballot) {
+    public Ballot addBallot(@Context SecurityContext securityContext, @PathParam ("id") int id, Ballot ballot) throws BusinessException {
         // TODO: check validity here
         ballot.setVote(VoteDAO.of(Controllers.getEntityManager()).findById(id));
-        BallotDAO.of(Controllers.getEntityManager()).persist(ballot);
+        try {
+            BallotDAO.of(Controllers.getEntityManager()).persist(ballot);
+        } catch (BusinessException e) {
+            e.printStackTrace();
+            throw e;
+        }
         return ballot;
     }
 
@@ -92,11 +103,25 @@ public class VoteResource {
 //    }
 
     @GET
+    @JWTAuth
     @Path("private/invited")
-    public List<Vote> getPrivateVotesForAUser() {
-        //TODO: get the user id here
-        int userid = 3;
+    public List<Vote> getPrivateVotesForUser(@Context SecurityContext securityContext) {
+        int userid = ((User) securityContext.getUserPrincipal()).getId();
         return VoteDAO.of(Controllers.getEntityManager()).findPrivateByUser(
                 UserDAO.of(Controllers.getEntityManager()).findById(userid));
+    }
+
+    @GET
+    @JWTAuth
+    @Path("{id}/myballot")
+    public Ballot getSpecificBallotforUser(@Context SecurityContext securityContext,
+                                           @PathParam("id") int id) {
+        Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
+        User voter = (User) securityContext.getUserPrincipal();
+        if (vote.getAnonymous().equals(false)) {
+            return BallotDAO.of(Controllers.getEntityManager()).findByVoteByVoter(vote, voter);
+        }
+        else
+            return null;
     }
 }
