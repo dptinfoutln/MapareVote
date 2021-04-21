@@ -1,5 +1,6 @@
 package fr.univtln.mapare.dao;
 
+import fr.univtln.mapare.exceptions.BusinessException;
 import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 
@@ -9,7 +10,7 @@ import java.util.List;
 public abstract class DAO<E> {
     protected EntityManager entityManager;
 
-    public void persist(E entity) {
+    public void persist(E entity) throws BusinessException {
         entityManager.getTransaction().begin();
         entityManager.persist(entity);
         entityManager.getTransaction().commit();
