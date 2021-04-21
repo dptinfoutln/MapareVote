@@ -1,5 +1,6 @@
 package fr.univtln.mapare.security;
 
+import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.security.filter.request.BasicAuthenticationFilter;
 import fr.univtln.mapare.security.filter.request.JsonWebTokenFilter;
 import jakarta.ws.rs.core.SecurityContext;
@@ -8,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.security.Principal;
+
 
 /**
  * This class define a specific security context after an authentication with either the basic or the JWT filters.
@@ -24,13 +26,12 @@ public class MySecurityContext implements SecurityContext {
     //the authenticated user
     @Override
     public Principal getUserPrincipal() {
-        return InMemoryLoginModule.USER_DATABASE.getUser(username);
+        return LoginModule.getUser(username);
     }
 
-    //A method to check if a user belongs to a role
     @Override
-    public boolean isUserInRole(String role) {
-        return InMemoryLoginModule.USER_DATABASE.getUserRoles(username).contains(InMemoryLoginModule.Role.valueOf(role));
+    public boolean isUserInRole(String s) {
+        return false;
     }
 
     //Say the access has been secured

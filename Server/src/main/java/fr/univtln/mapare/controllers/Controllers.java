@@ -26,7 +26,7 @@ public class Controllers {
         return entityManager;
     }
 
-    public static Boolean isOpen() {
+    public static boolean isOpen() {
         return entityManager != null;
     }
 
@@ -45,6 +45,10 @@ public class Controllers {
     }
 
     public static List executeParamRequest(String request, String param, int value) {
+        return entityManager.createNamedQuery(request).setParameter(param, value).getResultList();
+    }
+
+    public static List executeParamRequest(String request, String param, String value) {
         return entityManager.createNamedQuery(request).setParameter(param, value).getResultList();
     }
 

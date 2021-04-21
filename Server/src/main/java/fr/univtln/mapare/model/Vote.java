@@ -42,17 +42,15 @@ public class Vote implements Serializable {
     @Column(nullable = false)
     private String algo; //TODO: find better name
 
-    @Transient
-    private Boolean _private;
-
     @Column(nullable = false)
-    private Boolean anonymous;
+    private boolean anonymous;
 
+    @JsonIgnore
     @Column(nullable = false)
-    private Boolean deleted = false;
+    private boolean deleted = false;
 
     @Column(nullable = false, name = "\"intermediaryResult\"")
-    private Boolean intermediaryResult = false;
+    private boolean intermediaryResult = false;
 
     @ManyToOne
     @JoinTable(name = "\"STARTED_VOTES\"",
@@ -77,7 +75,8 @@ public class Vote implements Serializable {
     @JoinTable(name= "\"PRIVATE_VOTES\"",
             joinColumns = @JoinColumn(name = "\"vote\""),
             inverseJoinColumns = @JoinColumn(name = "\"user\""))
-    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes"})
+    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "confirmed", "admin", "banned",
+            "passwordHash", "salt", "emailToken"})
     private List<User> members = new ArrayList<>();
 
     @OneToMany(mappedBy = "vote")
@@ -86,7 +85,7 @@ public class Vote implements Serializable {
 
     @Builder
     @SneakyThrows
-    public Vote(String label, LocalDate startDate, LocalDate endDate, String algo, Boolean anonymous, User votemaker) {
+    public Vote(String label, LocalDate startDate, LocalDate endDate, String algo, boolean anonymous, User votemaker) {
         this.label = label;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -110,6 +109,14 @@ public class Vote implements Serializable {
             members.add(member);
     }
 
+    public boolean isPublic() {
+        return members.isEmpty();
+    }
+
+    public boolean isPrivate() {
+        return !isPublic();
+    }
+
     @Override
     public String toString() {
         return "Vote{" +
@@ -118,7 +125,6 @@ public class Vote implements Serializable {
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", algo='" + algo + '\'' +
-                ", _private=" + _private +
                 ", anonymous=" + anonymous +
                 ", deleted=" + deleted +
                 ", votemaker=" + votemaker +

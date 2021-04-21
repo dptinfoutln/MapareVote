@@ -32,6 +32,13 @@ public class BallotDAO extends GenericIdDAO<Ballot> {
         return entityManager.createNamedQuery("Ballot.findByVote", Ballot.class).setParameter("vote", vote).getResultList();
     }
 
+    public Ballot findByVoteByVoter(Vote vote, User voter) {
+        return entityManager.createNamedQuery("Ballot.findByVoteByVoter", Ballot.class)
+                .setParameter("vote", vote)
+                .setParameter("voter", voter)
+                .getSingleResult();
+    }
+
     @Override
     public void persist(Ballot ballot) throws BusinessException {
         VotedVoteDAO votedVoteDAO = VotedVoteDAO.of(entityManager);

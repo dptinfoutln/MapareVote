@@ -1,7 +1,7 @@
 package fr.univtln.mapare.resources;
 
-import fr.univtln.mapare.security.InMemoryLoginModule;
-import fr.univtln.mapare.security.User;
+import fr.univtln.mapare.model.User;
+import fr.univtln.mapare.security.LoginModule;
 import fr.univtln.mapare.security.annotations.BasicAuth;
 import fr.univtln.mapare.security.annotations.JWTAuth;
 import fr.univtln.mapare.security.filter.request.BasicAuthenticationFilter;
@@ -126,7 +126,7 @@ public class AuthResource {
      * @return the base64 encoded JWT Token.
      */
     @GET
-    @Path("login")
+    @Path("signin")
     @RolesAllowed({"USER", "ADMIN"})
     @BasicAuth
     @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
@@ -134,14 +134,13 @@ public class AuthResource {
         if (securityContext.isSecure() && securityContext.getUserPrincipal() instanceof User) {
             User user = (User) securityContext.getUserPrincipal();
             return Jwts.builder()
-                    .setIssuer("sample-jaxrs")
+                    .setIssuer("MapareVote")
                     .setIssuedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
                     .setSubject(user.getEmail())
-                    .claim("firstname", user.getFirstName())
-                    .claim("lastname", user.getLastName())
-                    .claim("roles", user.getRoles())
-                    .setExpiration(Date.from(LocalDateTime.now().plus(15, ChronoUnit.MINUTES).atZone(ZoneId.systemDefault()).toInstant()))
-                    .signWith(InMemoryLoginModule.KEY).compact();
+                    .claim("firstname", user.getFirstname())
+                    .claim("lastname", user.getLastname())
+                    .setExpiration(Date.from(LocalDateTime.now().plus(1, ChronoUnit.YEARS).atZone(ZoneId.systemDefault()).toInstant()))
+                    .signWith(LoginModule.KEY).compact();
         }
         throw new WebApplicationException(new AuthenticationException());
     }

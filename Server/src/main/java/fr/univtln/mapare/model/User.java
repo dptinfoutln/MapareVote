@@ -6,7 +6,9 @@ import lombok.*;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.security.auth.Subject;
 import java.io.Serializable;
+import java.security.Principal;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ import java.util.UUID;
         @NamedQuery(name = "User.findByEmail", query = "SELECT U FROM User U WHERE U.email = :email"),
         @NamedQuery(name = "User.findAll", query = "SELECT U FROM User U")
 })
-public class User implements Serializable {
+public class User implements Serializable, Principal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -39,49 +41,61 @@ public class User implements Serializable {
     @Column(nullable = false)
     private String firstname;
 
+    @JsonIgnore
     @Column(name = "\"emailToken\"")
-    private String emailToken;
+    private String emailToken = UUID.randomUUID().toString();
 
     @Column(nullable = false)
-    private Boolean confirmed;
+    private boolean confirmed;
 
     @Column(nullable = false)
-    private Boolean admin;
+    private boolean admin;
 
     @Column(nullable = false)
-    private Boolean banned;
+    private boolean banned;
 
+    @JsonIgnore
     @Column(nullable = false)
     byte[] passwordHash;
 
+    @JsonIgnore
     @Column(nullable = false)
     byte[] salt = new byte[16];
 
     @OneToMany(mappedBy = "votemaker", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"label", "startDate", "endDate", "algo", "anonymous", "votemaker", "choices", "members",
+            "resultList", "private", "public", "intermediaryResult"})
     private List<Vote> startedVotes = new ArrayList<>();
 
     @ManyToMany(mappedBy = "members", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"label", "startDate", "endDate", "algo", "anonymous", "votemaker", "choices", "members",
+            "resultList", "private", "public", "intermediaryResult"})
     @JoinTable(name = "\"PRIVATE_VOTES\"",
             joinColumns = @JoinColumn(name = "\"user\""),
             inverseJoinColumns = @JoinColumn(name = "\"vote\""))
     private List<Vote> privateVoteList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("user")
     private List<VotedVote> votedVotes = new ArrayList<>();
 
     @Builder
     @SneakyThrows
     public User(String email, String lastname, String firstname, String password) {
+        this.id = 0;
         this.email = email;
         this.lastname = lastname;
         this.firstname = firstname;
-        this.emailToken = UUID.randomUUID().toString();
         this.confirmed = false;
         this.admin = false;
         this.banned = false;
 
-        new SecureRandom().nextBytes(salt);
+        setPassword(password);
+    }
 
+    @SneakyThrows
+    public void setPassword(String password) {
+        new SecureRandom().nextBytes(salt);
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         passwordHash = factory.generateSecret(spec).getEncoded();
@@ -105,5 +119,10 @@ public class User implements Serializable {
         return Arrays.equals(passwordHash, submittedPasswordHash);
     }
 
+    @Override
+    @JsonIgnore
+    public String getName() {
+        return lastname + ", " + firstname+" <"+email+">";
+    }
 
 }
