@@ -41,12 +41,10 @@ public class Vote implements Serializable {
     @Column(nullable = false)
     private String algo; //TODO: find better name
 
-    @Transient
-    private Boolean _private;
-
     @Column(nullable = false)
     private Boolean anonymous;
 
+    @JsonIgnore
     @Column(nullable = false)
     private Boolean deleted = false;
 
@@ -73,7 +71,8 @@ public class Vote implements Serializable {
     @JoinTable(name= "\"PRIVATE_VOTES\"",
             joinColumns = @JoinColumn(name = "\"vote\""),
             inverseJoinColumns = @JoinColumn(name = "\"user\""))
-    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes"})
+    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "confirmed", "admin", "banned",
+            "passwordHash", "salt", "emailToken"})
     private List<User> members = new ArrayList<>();
 
     @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
@@ -105,6 +104,14 @@ public class Vote implements Serializable {
             members.add(member);
     }
 
+    public boolean isPublic() {
+        return members.isEmpty();
+    }
+
+    public boolean isPrivate() {
+        return !isPublic();
+    }
+
     @Override
     public String toString() {
         return "Vote{" +
@@ -113,7 +120,6 @@ public class Vote implements Serializable {
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", algo='" + algo + '\'' +
-                ", _private=" + _private +
                 ", anonymous=" + anonymous +
                 ", deleted=" + deleted +
                 ", votemaker=" + votemaker.getId() +

@@ -1,13 +1,11 @@
 package fr.univtln.mapare.resources;
 
-import fr.univtln.mapare.controllers.Controller;
 import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.dao.BallotDAO;
 import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.dao.VoteDAO;
 import fr.univtln.mapare.model.Ballot;
 import fr.univtln.mapare.model.User;
-import fr.univtln.mapare.model.Vote;
 import fr.univtln.mapare.security.annotations.JWTAuth;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
@@ -18,7 +16,6 @@ import java.util.List;
 
 @Path("users")
 public class UserResource {
-//    static Controller<User> ctrl = new Controller<>();
 
     @GET
     public List<User> getUsers(@DefaultValue("1") @QueryParam("page_num") int pagenum,
@@ -52,13 +49,12 @@ public class UserResource {
         user.setConfirmed(false);
         user.setAdmin(false);
         user.setBanned(false);
-        //user.setEmailToken("inserttokenhere");
         UserDAO.of(Controllers.getEntityManager()).persist(user);
         return user;
     }
 
     @GET
-    @Path("{uid}/votedvotes/{vid}/ballot")
+    @Path("{uid}/votedvotes/{vid}/ballot") // TODO: move to votes/id/myballot
     public Ballot getSpecificBallotforUser(@PathParam("uid") int uid, @PathParam("vid") int vid) {
         if (!VoteDAO.of(Controllers.getEntityManager()).findById(vid).getAnonymous()) {
             return BallotDAO.of(Controllers.getEntityManager()).findByVoteByVoter(

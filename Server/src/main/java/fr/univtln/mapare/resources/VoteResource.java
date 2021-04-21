@@ -1,6 +1,5 @@
 package fr.univtln.mapare.resources;
 
-import fr.univtln.mapare.controllers.Controller;
 import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.dao.BallotDAO;
 import fr.univtln.mapare.dao.UserDAO;
@@ -15,12 +14,10 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.SecurityContext;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @Path("votes")
 public class VoteResource {
-//    static Controller<Vote> ctrl = new Controller<>();
 
     @GET
     @Path("public")
@@ -30,17 +27,22 @@ public class VoteResource {
     }
 
     @GET
+    @JWTAuth
     @Path("{id}")
-    public Vote getVote(@PathParam("id") int id) {
-        //TODO: Check if the user can see this vote (memberlist, etc.)
-        return VoteDAO.of(Controllers.getEntityManager()).findById(id);
+    public Vote getVote(@Context SecurityContext securityContext, @PathParam("id") int id) {
+        Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
+        if (vote == null)
+            throw new NotFoundException();
+        if (vote.isPublic() || vote.getMembers().contains((User) securityContext.getUserPrincipal()))
+            return vote;
+        else
+            return null;
     }
 
     @POST
     @JWTAuth
     @Path("public")
     public Vote addPublicVote(@Context SecurityContext securityContext, Vote vote) {
-        //vote.setVotemaker(UserDAO.of(Controllers.getEntityManager()).findById(vote.getVotemaker().getId()));
         vote.setMembers(null);
 
         vote.setVotemaker(((User) securityContext.getUserPrincipal()));
@@ -49,9 +51,10 @@ public class VoteResource {
     }
 
     @POST
+    @JWTAuth
     @Path("private")
-    public Vote addPrivateVote(Vote vote) {
-        User voteMaker = UserDAO.of(Controllers.getEntityManager()).findById(vote.getVotemaker().getId());
+    public Vote addPrivateVote(@Context SecurityContext securityContext, Vote vote) {
+        User voteMaker = (User) securityContext.getUserPrincipal();
         vote.setVotemaker(voteMaker);
         vote.setMembers(Arrays.asList(voteMaker));
         return addVote(vote);
@@ -66,7 +69,7 @@ public class VoteResource {
     }
 
     @DELETE
-    @Path("{id}")
+    @Path("{id}") // TODO: for testing purposes only, remove in prod
     public int deleteVote(@PathParam("id") int id) {
         VoteDAO.of(Controllers.getEntityManager()).remove(id);
         return 0;
@@ -74,7 +77,7 @@ public class VoteResource {
 
     @POST
     @Path("{id}/ballots")
-    public Ballot addBallot(@PathParam ("id") int id, Ballot ballot) {
+    public Ballot addBallot(@Context SecurityContext securityContext, @PathParam ("id") int id, Ballot ballot) {
         // TODO: check validity here
         ballot.setVote(VoteDAO.of(Controllers.getEntityManager()).findById(id));
         BallotDAO.of(Controllers.getEntityManager()).persist(ballot);
