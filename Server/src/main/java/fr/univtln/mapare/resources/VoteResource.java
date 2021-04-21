@@ -63,10 +63,15 @@ public class VoteResource {
     }
 
     public Vote addVote(Vote vote) throws BusinessException {
-        //TODO: verifier nbr choix
+        if (vote.getMaxChoices() < 1)
+            throw new ForbiddenException("Please enter a proper value for your maxChoices count.");
+        if (vote.getChoices().size() < vote.getMaxChoices())
+            throw new ForbiddenException("Please enter enough choices to reach your maxChoices count or lower your maxChoices count.");
+        if (vote.getChoices().size() == 1)
+            throw new ForbiddenException("Please offer more than one choice in this vote.");
         if (vote.getStartDate().isBefore(LocalDate.now()))
             throw new ForbiddenException("Start date before today.");
-        if (vote.getEndDate() != null && vote.getEndDate().isAfter(vote.getStartDate().plus(1, ChronoUnit.DAYS)))
+        if (vote.getEndDate() != null && vote.getEndDate().isBefore(vote.getStartDate().plus(1, ChronoUnit.DAYS)))
             throw new ForbiddenException("End date before start date.");
         vote.setId(0);
         for (Choice c : vote.getChoices())
