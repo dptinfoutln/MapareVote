@@ -7,10 +7,7 @@ import fr.univtln.mapare.dao.VoteDAO;
 import fr.univtln.mapare.exceptions.BusinessException;
 import fr.univtln.mapare.exceptions.ForbiddenException;
 import fr.univtln.mapare.exceptions.NotFoundException;
-import fr.univtln.mapare.model.Ballot;
-import fr.univtln.mapare.model.Choice;
-import fr.univtln.mapare.model.User;
-import fr.univtln.mapare.model.Vote;
+import fr.univtln.mapare.model.*;
 import fr.univtln.mapare.security.annotations.JWTAuth;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
@@ -102,6 +99,10 @@ public class VoteResource {
             throw new ForbiddenException("Vote deleted.");
         if (ballot.getDate().isAfter(ChronoLocalDateTime.from(vote.getEndDate())))
             throw new ForbiddenException("Too late.");
+        for (BallotChoice bc : ballot.getChoices())
+            if (bc.getChoice().getVote() != vote)
+                throw new ForbiddenException("Bad choice(s).");
+        ballot.setVote(vote);
         ballot.setVote(vote);
         ballot.setVoter(voter);
         try {
