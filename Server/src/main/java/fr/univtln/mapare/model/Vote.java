@@ -48,6 +48,9 @@ public class Vote implements Serializable {
     @Column(nullable = false)
     private Boolean deleted = false;
 
+    @Column(nullable = false, name = "\"intermediaryResult\"")
+    private Boolean intermediaryResult = false;
+
     @ManyToOne
     @JoinTable(name = "\"STARTED_VOTES\"",
             joinColumns = @JoinColumn(name = "\"vote\""),
@@ -75,7 +78,8 @@ public class Vote implements Serializable {
             "passwordHash", "salt", "emailToken"})
     private List<User> members = new ArrayList<>();
 
-    @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "vote")
+    @JoinColumn(name = "\"result\"")
     private List<VoteResult> resultList;
 
     @Builder
@@ -122,7 +126,7 @@ public class Vote implements Serializable {
                 ", algo='" + algo + '\'' +
                 ", anonymous=" + anonymous +
                 ", deleted=" + deleted +
-                ", votemaker=" + votemaker.getId() +
+                ", votemaker=" + votemaker +
                 ", choices=" + choices +
                 ", resultList=" + resultList +
                 '}';

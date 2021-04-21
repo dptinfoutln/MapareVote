@@ -12,24 +12,21 @@ import java.io.Serializable;
 @Builder
 @Entity
 @Table(name = "\"VOTE_RESULT\"")
+@NamedQueries({
+        @NamedQuery(name = "VoteResult.findByVote", query = "SELECT V FROM VoteResult V WHERE V.vote = :vote"),
+        @NamedQuery(name = "VoteResult.findAll", query = "SELECT V FROM VoteResult V")
+})
 public class VoteResult implements Serializable {
     @Id
     @OneToOne
-    @JoinColumn(name = "\"choice\"", nullable = false)
+    @JoinColumn(name = "\"choice\"")
     private Choice choice;
 
+    @Column(name = "\"value\"")
+    private int value;
+
     @ManyToOne
-    @JoinColumn(name = "\"vote\"", nullable = false)
+    @JoinColumn(name = "\"vote\"")
     private Vote vote;
 
-    @Column(name = "\"result\"")
-    private int result;
-
-    @Override
-    public String toString() {
-        return "VoteResult{" +
-                "choice=" + choice +
-                ", result=" + result +
-                '}';
-    }
 }

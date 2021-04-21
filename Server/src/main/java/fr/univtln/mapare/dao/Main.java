@@ -6,6 +6,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
+import org.postgresql.jdbc2.ArrayAssistant;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -129,7 +130,7 @@ public class Main {
 //        System.out.println(personneTest);
 //        UserDAO.of(entityManager).persist(personneTest);
 
-        User userTest = UserDAO.of(entityManager).findById(2);
+//        User userTest = UserDAO.of(entityManager).findById(2);
 
         // Test persist pour vote
 //        Vote voteTest = Vote.builder().label("Quelle jour pour la réu de la semaine prochaine?").
@@ -147,7 +148,7 @@ public class Main {
 //        VoteDAO.of(entityManager).persist(voteTest);
 //        System.out.println(voteTest);
 
-        Vote voteTest = VoteDAO.of(entityManager).findById(2);
+//        Vote voteTest = VoteDAO.of(entityManager).findById(2);
 //        voteTest.addMember(userTest);
 //        VoteDAO.of(entityManager).update(voteTest);
 
@@ -161,17 +162,24 @@ public class Main {
         //System.out.println(voteTest);
 
         // Exemple of ballot
-        Choice myChoice = ChoiceDAO.of(entityManager).findByVote(voteTest).get(3);
-
-        BallotDAO ballotDAO = BallotDAO.of(entityManager);
-        Ballot myBallot = Ballot.builder().date(LocalDateTime.now()).voter(userTest).vote(voteTest).build();
-        myBallot.addChoice(BallotChoice.builder().ballot(myBallot).choice(myChoice).build());
-        System.out.println(myBallot);
-        ballotDAO.persist(myBallot);
+//        Choice myChoice = ChoiceDAO.of(entityManager).findByVote(voteTest).get(3);
+//
+//        BallotDAO ballotDAO = BallotDAO.of(entityManager);
+//        Ballot myBallot = Ballot.builder().date(LocalDateTime.now()).voter(userTest).vote(voteTest).build();
+//        myBallot.addChoice(BallotChoice.builder().ballot(myBallot).choice(myChoice).build());
+//        System.out.println(myBallot);
+//        ballotDAO.persist(myBallot);
 
         //System.out.println(UserDAO.of(entityManager).findById(1));
 //        UserDAO.of(entityManager).findAll();
 
+        Vote vote = VoteDAO.of(entityManager).findById(3);
+        System.out.println(vote);
+//        vote.setResultList(Arrays.asList(new VoteResult(ChoiceDAO.of(entityManager).findById(7), 100, vote)));
+//        VoteDAO.of(entityManager).update(vote);
+        entityManager.getTransaction().begin();
+        entityManager.remove(vote);
+        entityManager.getTransaction().commit();
     }
 
 }
