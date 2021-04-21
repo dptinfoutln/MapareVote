@@ -102,6 +102,8 @@ public class VoteResource {
             throw new ForbiddenException("Vote deleted.");
         if (ballot.getDate().isAfter(ChronoLocalDateTime.from(vote.getEndDate())))
             throw new ForbiddenException("Too late.");
+        if (ballot.getChoices().size() > vote.getMaxChoices())
+            throw new ForbiddenException("Too many choices.");
         ballot.setVote(vote);
         ballot.setVoter(voter);
         try {
