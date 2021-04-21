@@ -2,6 +2,7 @@ package fr.univtln.mapare.security;
 
 import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.dao.UserDAO;
+import fr.univtln.mapare.exceptions.BusinessException;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.resources.UserResource;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -40,7 +41,7 @@ public class LoginModule {
      * @param email     the email
      * @param password  the password
      */
-    public void addUser(String firstname, String lastname, String email, String password) {
+    public void addUser(String firstname, String lastname, String email, String password) throws BusinessException {
         User user = User.builder().firstname(firstname).lastname(lastname).email(email).password(password).build();
         UserDAO.of(Controllers.getEntityManager()).persist(user);
     }
