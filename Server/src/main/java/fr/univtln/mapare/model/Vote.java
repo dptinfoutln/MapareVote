@@ -3,7 +3,6 @@ package fr.univtln.mapare.model;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
-import org.eclipse.persistence.annotations.DiscriminatorClass;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import java.io.Serializable;
@@ -66,6 +65,9 @@ public class Vote implements Serializable {
     @PrivateOwned   // Permert d'update la bd à partir de la liste actuelle (pour les remove par ex)
     private List<Choice> choices = new ArrayList<>();
 
+    @Column(nullable = false, name = "\"maxChoices\"")
+    private int maxChoices;
+
     @JsonIgnore
     @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
     private List<VotedVote> votedVotes = new ArrayList<>();
@@ -108,10 +110,12 @@ public class Vote implements Serializable {
             members.add(member);
     }
 
+    @JsonIgnore
     public boolean isPublic() {
         return members.isEmpty();
     }
 
+    @JsonIgnore
     public boolean isPrivate() {
         return !isPublic();
     }
