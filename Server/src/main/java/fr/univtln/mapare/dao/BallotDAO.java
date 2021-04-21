@@ -24,12 +24,36 @@ public class BallotDAO extends GenericIdDAO<Ballot> {
         return entityManager.createNamedQuery("Ballot.findAll", Ballot.class).getResultList();
     }
 
+    public List<Ballot> findAll(int pageIndex, int pageSize) {
+        return entityManager.createNamedQuery("Ballot.findAll", Ballot.class)
+                .setMaxResults(pageSize)
+                .setFirstResult((pageIndex-1) * pageSize)
+                .getResultList();
+
+    }
+
     public List<Ballot> findByVoter(User voter) {
         return entityManager.createNamedQuery("Ballot.findByVoter", Ballot.class).setParameter("voter", voter).getResultList();
     }
 
+    public List<Ballot> findByVoter(User voter, int pageIndex, int pageSize) {
+        return entityManager.createNamedQuery("Ballot.findByVoter", Ballot.class)
+                .setParameter("voter", voter)
+                .setMaxResults(pageSize)
+                .setFirstResult((pageIndex-1) * pageSize)
+                .getResultList();
+    }
+
     public List<Ballot> findByVote(Vote vote) {
         return entityManager.createNamedQuery("Ballot.findByVote", Ballot.class).setParameter("vote", vote).getResultList();
+    }
+
+    public List<Ballot> findByVote(Vote vote, int pageIndex, int pageSize) {
+        return entityManager.createNamedQuery("Ballot.findByVote", Ballot.class)
+                .setParameter("vote", vote)
+                .setMaxResults(pageSize)
+                .setFirstResult((pageIndex-1) * pageSize)
+                .getResultList();
     }
 
     public Ballot findByVoteByVoter(Vote vote, User voter) {
