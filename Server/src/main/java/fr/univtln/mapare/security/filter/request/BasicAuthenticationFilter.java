@@ -40,7 +40,6 @@ public class BasicAuthenticationFilter implements ContainerRequestFilter {
     @Context
     private ResourceInfo resourceInfo;
 
-    @SneakyThrows
     @Override
     public void filter(ContainerRequestContext requestContext) {
         // We use reflection on the acceded method to look for security annotations.
@@ -69,6 +68,12 @@ public class BasicAuthenticationFilter implements ContainerRequestFilter {
 
             // We Decode username and password (username:password)
             String[] usernameAndPassword = new String(Base64.getDecoder().decode(encodedUserPassword.getBytes())).split(":");
+
+            if (usernameAndPassword.length < 2) {
+                requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                        .entity("Please provide your credentials").build());
+                return;
+            }
 
             final String username = usernameAndPassword[0];
             final String password = usernameAndPassword[1];

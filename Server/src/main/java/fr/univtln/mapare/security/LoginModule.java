@@ -2,6 +2,7 @@ package fr.univtln.mapare.security;
 
 import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.dao.UserDAO;
+import fr.univtln.mapare.exceptions.BusinessException;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.resources.UserResource;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -40,15 +41,8 @@ public class LoginModule {
      * @param email     the email
      * @param password  the password
      */
-    public void addUser(String firstname, String lastname, String email, String password) {
+    public void addUser(String firstname, String lastname, String email, String password) throws BusinessException {
         User user = User.builder().firstname(firstname).lastname(lastname).email(email).password(password).build();
-        user.setId(0);
-        user.setVotedVotes(null);
-        user.setPrivateVoteList(null);
-        user.setStartedVotes(null);
-        user.setConfirmed(false);
-        user.setAdmin(false);
-        user.setBanned(false);
         UserDAO.of(Controllers.getEntityManager()).persist(user);
     }
 
@@ -93,11 +87,7 @@ public class LoginModule {
      * @return the user
      */
     public static User getUser(String email) {
-        List<?> result = Controllers.executeParamRequest("User.findByEmail", "email", email);
-        if (result.isEmpty())
-            return null;
-        else
-            return (User) result.get(0);
+        return UserDAO.of(Controllers.getEntityManager()).findByEmail(email);
     }
 
     @SuppressWarnings("SameReturnValue")

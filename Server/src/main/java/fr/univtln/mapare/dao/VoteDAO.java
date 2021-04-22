@@ -1,5 +1,6 @@
 package fr.univtln.mapare.dao;
 
+import fr.univtln.mapare.exceptions.BusinessException;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.model.Vote;
 import jakarta.persistence.EntityManager;
@@ -34,8 +35,7 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     }
 
     @Override
-    public void persist(Vote entity) {
-
+    public void persist(Vote entity) throws BusinessException {
         super.persist(entity);
     }
 }

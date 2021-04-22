@@ -2,63 +2,163 @@ package fr.univtln.mapare.resources;
 
 import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.dao.BallotDAO;
-import fr.univtln.mapare.model.Ballot;
-import fr.univtln.mapare.model.Vote;
+import fr.univtln.mapare.dao.UserDAO;
+import fr.univtln.mapare.dao.VoteDAO;
+import fr.univtln.mapare.exceptions.BusinessException;
+import fr.univtln.mapare.exceptions.ForbiddenException;
+import fr.univtln.mapare.exceptions.NotFoundException;
+import fr.univtln.mapare.model.*;
+import fr.univtln.mapare.security.annotations.JWTAuth;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.SecurityContext;
 
 import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Path("votes")
 public class VoteResource {
-//    static Controller<Vote> ctrl = new Controller<>();
-
-//    public VoteResource() {
-//        if (lastId == -1) {
-//            Controllers.loadVotes();
-//            Controllers.loadUsers();
-//            int maxi = Controllers.Votes.getList().stream().max(Comparator.comparingInt(Vote::getId)).get().getId();
-//            lastId = maxi + 1;
-//        }
-//    }
 
     @GET
     @Path("public")
-    @SuppressWarnings("unchecked")
     public List<Vote> getVotes(@QueryParam("page_num") int pagenum,
                          @QueryParam("page_size") int pagesize) {
-        return (List<Vote>) Controllers.executeRequest("Vote.findPublic");
+        return VoteDAO.of(Controllers.getEntityManager()).findAllPublic();
     }
 
     @GET
-    @Path("public/{id}")
-    public Vote getVote(@PathParam("id") int id) {
-        return (Vote) Controllers.executeParamRequest("Vote.findById", "id", id).get(0);
+    @JWTAuth
+    @Path("{id}")
+    public Vote getVote(@Context SecurityContext securityContext, @PathParam("id") int id) throws NotFoundException {
+        Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
+
+        if (vote == null)
+            throw new NotFoundException();
+
+        if (vote.isPublic() || vote.getMembers().contains((User) securityContext.getUserPrincipal())) {
+            if (vote.getEndDate() != null && (
+                    (!vote.hasResults() || vote.isIntermediaryResult()) && LocalDate.now().isAfter(vote.getEndDate()))
+            ) {
+                vote.setIntermediaryResult(false);
+                vote.calculateResults();
+                if (vote.getResultList() == null)
+                    throw new NotFoundException("Algorithm not implemented.");
+            }
+            if (vote.isIntermediaryResult()) {
+                vote.calculateResults();
+                if (vote.getResultList() == null)
+                    throw new NotFoundException("Algorithm not implemented.");
+            }
+            return vote;
+        }
+        else
+            return null;
     }
 
-//    @POST
-//    @Path("public") // Maybe remove later idk
-//    public Vote addVote(Vote vote) {
-//        //TODO: make it work
-//        vote.setId(lastId);
-//        Controllers.Votes.mapAdd(vote.getId(), vote);
-//        return vote;
-//    }
+    @POST
+    @JWTAuth
+    @Path("public")
+    public Vote addPublicVote(@Context SecurityContext securityContext, Vote vote) throws BusinessException {
+        vote.setMembers(null);
 
-//    @POST
-//    @Path("{id}/choice")
-//    public Choice addChoice(@PathParam("id") int id, Choice choice) {
-//        Vote vote = Controllers.PrivateVotes.mapGet(id);
-//        choice.setVote(vote);
-//        vote.addChoice(choice);
-//        return choice;
-//    }
+        vote.setVotemaker(((User) securityContext.getUserPrincipal()));
+
+        return addVote(vote);
+    }
 
     @POST
+    @JWTAuth
+    @Path("private")
+    public Vote addPrivateVote(@Context SecurityContext securityContext, Vote vote) throws BusinessException {
+        User voteMaker = (User) securityContext.getUserPrincipal();
+        vote.setVotemaker(voteMaker);
+        vote.setMembers(Arrays.asList(voteMaker));
+        return addVote(vote);
+    }
+
+    public Vote addVote(Vote vote) throws BusinessException {
+        if (!Vote.getAlgolist().contains(vote.getAlgo()))
+            throw new ForbiddenException("Invalid algorithm");
+        if (vote.getMaxChoices() < 1)
+            throw new ForbiddenException("Please enter a proper value for your maxChoices count.");
+        if (vote.getChoices().size() < vote.getMaxChoices())
+            throw new ForbiddenException("Please enter enough choices to reach your maxChoices count or lower your maxChoices count.");
+        if (vote.getChoices().size() == 1)
+            throw new ForbiddenException("Please offer more than one choice in this vote.");
+        if (vote.getStartDate().isBefore(LocalDate.now()))
+            throw new ForbiddenException("Start date before today.");
+        if (vote.getEndDate() != null && vote.getEndDate().isBefore(vote.getStartDate().plus(1, ChronoUnit.DAYS)))
+            throw new ForbiddenException("End date before start date.");
+        if (vote.getEndDate() == null && !vote.isIntermediaryResult())
+            throw new ForbiddenException("Vote with no end date and no intermediary results: invalid.");
+        vote.setId(0);
+        for (Choice c : vote.getChoices())
+            c.setVote(vote);
+        try {
+            VoteDAO.of(Controllers.getEntityManager()).persist(vote);
+        } catch (BusinessException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return vote;
+    }
+
+    @DELETE
+    @Path("{id}") // TODO: for testing purposes only, remove in prod
+    public int deleteVote(@PathParam("id") int id) {
+        VoteDAO.of(Controllers.getEntityManager()).remove(id);
+        return 0;
+    }
+
+    @POST
+    @JWTAuth
     @Path("{id}/ballots")
-    public Ballot addBallot(@PathParam ("id") int id, Ballot ballot) {
-        // TODO: check validity here
-        //BallotDAO.persist(ballot, id, 1);
+    public Ballot addBallot(@Context SecurityContext securityContext, @PathParam ("id") int id, Ballot ballot) throws BusinessException {
+        User voter = (User) securityContext.getUserPrincipal();
+        Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
+        if (voter.isBanned())
+            throw new ForbiddenException("User is banned.");
+        if (vote.isDeleted())
+            throw new ForbiddenException("Vote deleted.");
+        if (ballot.getDate().isAfter(ChronoLocalDateTime.from(vote.getEndDate())))
+            throw new ForbiddenException("Too late.");
+        if (ballot.getChoices().size() > vote.getMaxChoices())
+            throw new ForbiddenException("Too many choices.");
+        for (BallotChoice bc : ballot.getChoices())
+            if (bc.getChoice().getVote() != vote)
+                throw new ForbiddenException("Bad choice(s).");
+        switch (vote.getAlgo()) {
+            case "majority":
+                for (BallotChoice bc : ballot.getChoices()) {
+                    bc.setWeight(1);
+                }
+                break;
+            case "borda":
+                int[] temparray = new int[ballot.getChoices().size()];
+                for (BallotChoice bc : ballot.getChoices()) {
+                    // We verify that all values are coherent for borda count.
+                    if (bc.getWeight() > ballot.getChoices().size())
+                        throw new ForbiddenException("Invalid choice weight for borda count algorithm.");
+                    if (temparray[bc.getWeight() - 1] != 0)
+                        throw new ForbiddenException("Duplicate choice weight for borda count algorithm.");
+                    temparray[bc.getWeight()] = 1;
+                }
+                break;
+            case "STV":
+            default:
+                break;
+        }
+        ballot.setVote(vote);
+        ballot.setVote(vote);
+        ballot.setVoter(voter);
+        try {
+            BallotDAO.of(Controllers.getEntityManager()).persist(ballot);
+        } catch (BusinessException e) {
+            e.printStackTrace();
+            throw e;
+        }
         return ballot;
     }
 
@@ -68,4 +168,27 @@ public class VoteResource {
 //        Controllers.Votes.mapGet(id).setEndDate(date);
 //        return 0;
 //    }
+
+    @GET
+    @JWTAuth
+    @Path("private/invited")
+    public List<Vote> getPrivateVotesForUser(@Context SecurityContext securityContext) {
+        int userid = ((User) securityContext.getUserPrincipal()).getId();
+        return VoteDAO.of(Controllers.getEntityManager()).findPrivateByUser(
+                UserDAO.of(Controllers.getEntityManager()).findById(userid));
+    }
+
+    @GET
+    @JWTAuth
+    @Path("{id}/myballot")
+    public Ballot getSpecificBallotforUser(@Context SecurityContext securityContext,
+                                           @PathParam("id") int id) {
+        Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
+        User voter = (User) securityContext.getUserPrincipal();
+        if (!vote.isAnonymous()) {
+            return BallotDAO.of(Controllers.getEntityManager()).findByVoteByVoter(vote, voter);
+        }
+        else
+            return null;
+    }
 }

@@ -3,13 +3,11 @@ package fr.univtln.mapare.model;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
-import org.eclipse.persistence.annotations.DiscriminatorClass;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Data
 @EqualsAndHashCode(of = {"label", "votemaker"})
@@ -41,14 +39,15 @@ public class Vote implements Serializable {
     @Column(nullable = false)
     private String algo; //TODO: find better name
 
-    @Transient
-    private Boolean _private;
-
     @Column(nullable = false)
-    private Boolean anonymous;
+    private boolean anonymous;
 
+    @JsonIgnore
     @Column(nullable = false)
-    private Boolean deleted = false;
+    private boolean deleted = false;
+
+    @Column(nullable = false, name = "\"intermediaryResult\"")
+    private boolean intermediaryResult = false;
 
     @ManyToOne
     @JoinTable(name = "\"STARTED_VOTES\"",
@@ -65,6 +64,9 @@ public class Vote implements Serializable {
     @PrivateOwned   // Permert d'update la bd à partir de la liste actuelle (pour les remove par ex)
     private List<Choice> choices = new ArrayList<>();
 
+    @Column(nullable = false, name = "\"maxChoices\"")
+    private int maxChoices;
+
     @JsonIgnore
     @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
     private List<VotedVote> votedVotes = new ArrayList<>();
@@ -73,15 +75,17 @@ public class Vote implements Serializable {
     @JoinTable(name= "\"PRIVATE_VOTES\"",
             joinColumns = @JoinColumn(name = "\"vote\""),
             inverseJoinColumns = @JoinColumn(name = "\"user\""))
-    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes"})
+    @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "confirmed", "admin", "banned",
+            "passwordHash", "salt", "emailToken"})
     private List<User> members = new ArrayList<>();
 
-    @Transient
-    private VoteResult result;
+    @OneToMany(mappedBy = "vote")
+    @JoinColumn(name = "\"result\"")
+    private List<VoteResult> resultList;
 
     @Builder
     @SneakyThrows
-    public Vote(String label, LocalDate startDate, LocalDate endDate, String algo, Boolean anonymous, User votemaker) {
+    public Vote(String label, LocalDate startDate, LocalDate endDate, String algo, boolean anonymous, User votemaker) {
         this.label = label;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -105,6 +109,22 @@ public class Vote implements Serializable {
             members.add(member);
     }
 
+    private static final transient List<String> algolist = Arrays.asList("majority");
+
+    public static List<String> getAlgolist() {
+        return algolist;
+    }
+
+    @JsonIgnore
+    public boolean isPublic() {
+        return members.isEmpty();
+    }
+
+    @JsonIgnore
+    public boolean isPrivate() {
+        return !isPublic();
+    }
+
     @Override
     public String toString() {
         return "Vote{" +
@@ -113,12 +133,39 @@ public class Vote implements Serializable {
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", algo='" + algo + '\'' +
-                ", _private=" + _private +
                 ", anonymous=" + anonymous +
                 ", deleted=" + deleted +
-                ", votemaker=" + votemaker.getId() +
+                ", votemaker=" + votemaker +
                 ", choices=" + choices +
-                ", result=" + result +
+                ", resultList=" + resultList +
                 '}';
+    }
+
+    public boolean hasResults() {
+        return resultList.isEmpty();
+    }
+
+    public void calculateResults() {
+        switch (algo) {
+            case "majority":
+            case "borda":
+                Map<Choice, Integer> countmap = new HashMap<>();
+                for (Choice c : choices)
+                    countmap.put(c, 0);
+                for (Ballot b : ballots) {
+                    for (BallotChoice bc : b.getChoices()) {
+                        countmap.put(bc.getChoice(), countmap.get(bc.getChoice()) + bc.getWeight());
+                    }
+                }
+                resultList = new ArrayList<>();
+                for (Choice c : choices) {
+                    resultList.add(new VoteResult(c, countmap.get(c), this));
+                }
+                break;
+            case "STV":
+            default:
+                setResultList(null);
+                break;
+        }
     }
 }

@@ -78,7 +78,7 @@ public class JsonWebTokenFilter implements ContainerRequestFilter {
         //We check the validity of the token
         try {
             Jws<Claims> jws = Jwts.parserBuilder()
-                    .requireIssuer("sample-jaxrs")
+                    .requireIssuer("MapareVote")
                     .setSigningKey(LoginModule.KEY)
                     .build()
                     .parseClaimsJws(compactJwt);

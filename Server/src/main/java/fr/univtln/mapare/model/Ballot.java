@@ -1,7 +1,6 @@
 package fr.univtln.mapare.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +20,8 @@ import java.util.List;
 @NamedQueries({
         @NamedQuery(name = "Ballot.findByVoter", query = "SELECT B FROM Ballot B WHERE B.voter = :voter"),
         @NamedQuery(name = "Ballot.findByVote", query = "SELECT B FROM Ballot B WHERE B.vote = :vote"),
-        @NamedQuery(name = "Ballot.findAll", query = "SELECT B FROM Ballot B")
+        @NamedQuery(name = "Ballot.findAll", query = "SELECT B FROM Ballot B"),
+        @NamedQuery(name = "Ballot.findByVoteByVoter", query = "SELECT B FROM Ballot B WHERE B.vote = :vote AND B.voter = :voter")
 })
 public class Ballot implements Serializable {
 
@@ -33,10 +33,12 @@ public class Ballot implements Serializable {
     private LocalDateTime date;
 
     @ManyToOne
+    @JsonIgnoreProperties({"votemaker", "members", "choices", "resultList", "votedVotes", "ballots"})
     @JoinColumn(nullable = false, name = "\"vote\"")
     private Vote vote;
 
     @OneToOne
+    @JsonIgnore
     @JoinColumn(name = "\"voter\"", nullable = true)
     private User voter;
 

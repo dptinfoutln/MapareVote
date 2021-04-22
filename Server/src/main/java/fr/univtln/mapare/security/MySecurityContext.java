@@ -1,5 +1,6 @@
 package fr.univtln.mapare.security;
 
+import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.security.filter.request.BasicAuthenticationFilter;
 import fr.univtln.mapare.security.filter.request.JsonWebTokenFilter;
 import jakarta.ws.rs.core.SecurityContext;
@@ -8,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.security.Principal;
+
 
 /**
  * This class define a specific security context after an authentication with either the basic or the JWT filters.

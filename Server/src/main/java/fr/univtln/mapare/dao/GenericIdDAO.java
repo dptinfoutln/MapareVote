@@ -13,7 +13,9 @@ public abstract class GenericIdDAO<E> extends DAO<E> {
     }
 
     public void remove(int id) {
+        entityManager.getTransaction().begin();
         entityManager.remove(findById(id));
+        entityManager.getTransaction().commit();
     }
 
 
