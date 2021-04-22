@@ -20,6 +20,13 @@ public class UserDAO extends GenericIdDAO<User> {
         return entityManager.createNamedQuery("User.findAll", User.class).getResultList();
     }
 
+    public List<User> findAll(int pageIndex, int pageSize) {
+        return entityManager.createNamedQuery("User.findAll", User.class)
+                .setMaxResults(pageSize)
+                .setFirstResult((pageIndex-1) * pageSize)
+                .getResultList();
+    }
+
     public User findByEmail(String email) {
         List<User> userList  = entityManager.createNamedQuery("User.findByEmail", User.class).setParameter("email", email).getResultList();
         return userList.isEmpty() ? null : userList.get(0);
