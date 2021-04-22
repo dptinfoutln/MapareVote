@@ -30,13 +30,16 @@ class IntegrationTests {
     @Test
     void createUser() throws BusinessException {
         EntityManager TEST_EM = TEST_EMF.createEntityManager();
-        User test = User.builder().email("tests").password("coucou")
+        User sent = User.builder().email("tests").password("coucou")
                 .firstname("user").lastname("test").build();
-        UserDAO.of(TEST_EM).persist(test);
+        UserDAO.of(TEST_EM).persist(sent);
         List<User> users = UserDAO.of(TEST_EM).findAll();
         assertEquals(1, users.size());
-        User test2 = users.get(0);
-        assertNotEquals(0,test2.getId());
+
+        User received = users.get(0);
+        assertNotEquals(0,received.getId());
+        assertEquals(sent.getId(), received.getId());
+
         TEST_EM.close();
     }
 }
