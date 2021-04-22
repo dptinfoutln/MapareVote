@@ -26,6 +26,10 @@ public class VoteResource {
     @Path("public")
     public List<Vote> getVotes(@QueryParam("page_num") int pagenum,
                          @QueryParam("page_size") int pagesize) {
+        if (pagenum == 0)
+            pagenum = 1;
+        if (pagesize == 0)
+            pagesize = 20;
         return VoteDAO.of(Controllers.getEntityManager()).findAllPublic(pagenum, pagesize);
     }
 
