@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, ElementRef, OnInit, QueryList, Renderer2, ViewChild, ViewChildren} from '@angular/core';
 import {Vote} from '../../models/vote.model';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {VotesService} from '../../services/votes.service';
@@ -7,6 +7,7 @@ import {registerLocaleData} from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import localeFrExtra from '@angular/common/locales/fr';
 import {filter} from 'rxjs/operators';
+import {AuthService} from "../../services/auth.service";
 
 registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
 
@@ -21,13 +22,20 @@ export class VoteComponent implements OnInit {
   btnType = 'checkbox';
   choices: number[] = [];
   isLoaded = false;
-  isVoted = true;
+  isVoted = false;
   tokenStyle = 'blur';
   previousUrl = '';
+  selfUser = this.authService.getSelfUser();
+  voteToken: string;
+  myBallot;
+  @ViewChildren('choices') choicesElem: QueryList<ElementRef>;
+
 
   constructor(private route: ActivatedRoute,
               private votesService: VotesService,
-              private router: Router) { }
+              private router: Router,
+              private authService: AuthService,
+              private renderer: Renderer2) { }
 
   ngOnInit(): void {
     this.vote = new Vote(-1, '', null, null, '', false, new User());
@@ -45,7 +53,30 @@ export class VoteComponent implements OnInit {
           this.router.navigate(['/']);
         } else {
           this.vote = vote;
+
           this.isLoaded = true;
+          for (let i = 0; i < this.selfUser.votedVotes.length; i++) {
+            if (this.vote.id === this.selfUser.votedVotes[i].vote){
+              this.isVoted = true;
+              this.voteToken = this.selfUser.votedVotes[i].token;
+              break;
+            }
+          }
+          if (this.isVoted && !this.vote.anonymous) {
+            this.votesService.getMyBallot(+id).then(
+                myBallot => {
+                  this.myBallot = myBallot;
+                  myBallot.choices.forEach( choice => {
+                    this.choicesElem.forEach( elemChoice => {
+                      if (elemChoice.nativeElement.value == choice.choice.id) {
+                        this.renderer.setProperty(elemChoice.nativeElement, 'checked', true);
+                      }
+                    })
+                  })
+                }
+            )
+
+          }
           switch (vote.algo) {
             case 'majority':
               this.btnType = 'radio';

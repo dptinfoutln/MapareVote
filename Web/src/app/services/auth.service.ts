@@ -14,6 +14,8 @@ import {Subject} from 'rxjs';
 })
 export class AuthService {
 
+  selfUserSubject = new Subject<User>();
+
   constructor(private http: HttpClient,
               private cookieService: CookieService ) {
   }
@@ -29,8 +31,13 @@ export class AuthService {
           next: () => {
             resolve();
           },
-          error: error => {
-            reject(error.message);
+          error: err => {
+            console.log(err);
+            if (err.status === 0) {
+              reject('Erreur 500 : Le serveur de ne répond pas');
+            } else {
+              reject('Erreur ' + err.status + ' : ' + err.error);
+            }
           }
         });
       }
@@ -50,12 +57,13 @@ export class AuthService {
             this.setToken(token);
             this.importSelf().then( user => {
               this.setSelfUser(user);
+              this.selfUserSubject.next(user);
               resolve();
             });
           }, err => {
             console.log(err);
             if (err.status === 0) {
-              reject('Erreur 500 : Le serveur de ne répond pas');
+              reject('Erreur 500 : Le serveur ne répond pas');
             } else {
               reject('Erreur ' + err.status + ' : ' + err.error);
             }

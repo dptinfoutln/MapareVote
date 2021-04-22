@@ -55,6 +55,24 @@ export class VotesService {
     );
   }
 
+  getMyBallot(voteId: number): Promise<any>{
+    const url = environment.apiURL + 'votes/' + voteId + '/myballot';
+    let headers = environment.headers;
+    headers = headers.set('Authorization', 'Bearer ' + this.authService.getToken());
+
+    return new Promise(
+        (resolve , reject) => {
+          this.http.get(url, { headers } ).subscribe(
+              ballot => {
+                resolve(ballot);
+              }, err => {
+                reject(err);
+              }
+          );
+        }
+    );
+  }
+
   sendBallot(voteId: number,
              ballot: { date: Date; choices: { weight: number; choice: { names: string[]; id: number } }[] }): Promise<Ballot>{
     const url = environment.apiURL + 'votes/' + voteId + '/ballots';

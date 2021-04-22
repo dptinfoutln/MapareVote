@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild, ViewChildren} from '@angular/core';
+import {Component, ElementRef, OnInit, Renderer2, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../../services/auth.service';
 import {Router} from '@angular/router';
@@ -13,9 +13,10 @@ export class SigninComponent implements OnInit {
   signInForm: FormGroup;
   errorMessage: string;
   isPending = false;
-  @ViewChild('submitBtn') submitBtn: ElementRef;
+
   @ViewChild('emailInput') emailInput: ElementRef;
   @ViewChild('passwordInput') passwordInput: ElementRef;
+  @ViewChild('submitBtn') submitBtn: ElementRef;
 
   constructor(private fromBuilder: FormBuilder,
               private authService: AuthService,
