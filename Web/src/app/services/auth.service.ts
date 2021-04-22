@@ -1,39 +1,36 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { CookieService } from 'ngx-cookie-service';
-import jwt_decode, {JwtPayload} from 'jwt-decode';
-import { environment } from '../../environments/environment';
-import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
+import { CookieService } from 'ngx-cookie-service';
+import { HttpClient } from '@angular/common/http';
+import jwt_decode, {JwtPayload} from 'jwt-decode';
 
+import { environment } from '../../environments/environment';
+import { User } from '../models/user.model';
+import {Subject} from 'rxjs';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService{
-
-  public isAuthSubject = new Subject<boolean>();
+export class AuthService {
 
   constructor(private http: HttpClient,
-              private cookieService: CookieService,
-              private router: Router
-  ) { }
+              private cookieService: CookieService ) {
+  }
 
-  createNewUser(firstname: string, lastname: string, email: string, password: string): Promise<void>{
+  signUp(firstname: string, lastname: string, email: string, password: string): Promise<void>{
     const url = environment.apiURL + 'users';
     const body = JSON.stringify({firstname, lastname, email, password});
-    const headers = new HttpHeaders({'Content-Type': 'application/json; charset=utf-8'});
+    const headers = environment.headers;
 
     return new Promise(
       (resolve , reject) => {
         this.http.post<string>(url, body, {headers} ).subscribe({
-          next: user => {
+          next: () => {
             resolve();
           },
           error: error => {
-            this.isAuthSubject.next(false);
-            reject(error);
+            reject(error.message);
           }
         });
       }
@@ -42,27 +39,25 @@ export class AuthService{
 
   signInUser(email: string, password: string): Promise<void>{
     const url = environment.apiURL + 'auth/signin';
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json; charset=utf-8',
-      Accept: 'text/plain',
-      Authorization: 'Basic ' + btoa(email + ':' + password)
-    });
+    let headers = environment.headers;
+    headers = headers.set('Accept', 'text/plain');
+    headers = headers.set('Authorization', 'Basic ' + btoa(email + ':' + password));
 
     return new Promise(
       (resolve , reject) => {
         this.http.get(url, { headers, responseType: 'text' } ).subscribe(
           token => {
             this.setToken(token);
-            this.isAuthSubject.next(true);
-            resolve();
+            this.importSelf().then( user => {
+              this.setSelfUser(user);
+              resolve();
+            });
           }, err => {
-            this.isAuthSubject.next(false);
-            if (err.status === 401){
-              console.log(err);
-              reject('L\'adresse email ou le mot de passe est incorrecte');
+            console.log(err);
+            if (err.status === 0) {
+              reject('Erreur 500 : Le serveur de ne répond pas');
             } else {
-              console.log(err);
-              reject('Erreur ' + err.status);
+              reject('Erreur ' + err.status + ' : ' + err.error);
             }
           }
         );
@@ -72,7 +67,8 @@ export class AuthService{
 
   signOutUser(): Promise<void> | void{
     this.removeToken();
-    this.isAuthSubject.next(false);
+    this.removeSelfUser();
+    // this.isAuthSubject.next(false);
     // const url = environment.apiURL + 'auth/signout';
     // return new Promise(
     //   (resolve , reject) => {
@@ -85,6 +81,42 @@ export class AuthService{
     //     );
     //   }
     // );
+  }
+
+  importSelf(): Promise<User> {
+    const url = environment.apiURL + 'users/me';
+    const headers = environment.headers.append('Authorization', 'Bearer ' + this.getToken());
+
+    return new Promise(
+      (resolve , reject) => {
+        this.http.get<User>(url, { headers } ).subscribe(
+          user => {
+            resolve(user);
+          }, err => {
+            console.log(err);
+            reject();
+          }
+        );
+      }
+    );
+  }
+
+  getSelfUser(): User {
+    if (this.cookieService.check('self')) {
+      return JSON.parse(this.cookieService.get('self')) as User;
+    }
+    return null;
+  }
+
+  setSelfUser(user: User): void {
+    this.removeSelfUser();
+    this.cookieService.set('self', JSON.stringify(user), this.getTokenExpirationDate(this.getToken()), '/');
+  }
+
+  removeSelfUser(): void {
+    while (this.cookieService.check('self')) {
+      this.cookieService.delete('self', '/');
+    }
   }
 
   getToken(): string {
@@ -134,7 +166,10 @@ export class AuthService{
     } else {
       isAuth = true;
     }
-    this.isAuthSubject.next(isAuth);
     return isAuth;
   }
+}
+
+export interface ISession {
+  self: User;
 }

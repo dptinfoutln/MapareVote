@@ -1,11 +1,12 @@
-import {Component, OnInit} from '@angular/core';
-import { Vote} from '../../models/vote.model';
-import { ActivatedRoute, Router } from '@angular/router';
-import { VotesService } from '../../services/votes.service';
-import { User } from '../../models/user.model';
+import { Component, OnInit } from '@angular/core';
+import {Vote} from '../../models/vote.model';
+import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
+import {VotesService} from '../../services/votes.service';
+import {User} from '../../models/user.model';
+import {registerLocaleData} from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import localeFrExtra from '@angular/common/locales/fr';
-import {registerLocaleData} from '@angular/common';
+import {filter} from 'rxjs/operators';
 
 registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
 
@@ -20,14 +21,24 @@ export class VoteComponent implements OnInit {
   btnType = 'checkbox';
   choices: number[] = [];
   isLoaded = false;
+  isVoted = true;
+  tokenStyle = 'blur';
+  previousUrl = '';
 
   constructor(private route: ActivatedRoute,
               private votesService: VotesService,
               private router: Router) { }
 
   ngOnInit(): void {
-    this.vote = new Vote(-1, '', null, null, '', false, new User('', '', ''));
+    this.vote = new Vote(-1, '', null, null, '', false, new User());
     const id = this.route.snapshot.params.id;
+
+    this.router.events
+        .pipe(filter(event => event instanceof NavigationEnd))
+        .subscribe((event: NavigationEnd) => {
+          this.previousUrl = event.url;
+        });
+
     this.votesService.getVote(+id).then(
       (vote: Vote) => {
         if (vote == null) {
@@ -36,7 +47,7 @@ export class VoteComponent implements OnInit {
           this.vote = vote;
           this.isLoaded = true;
           switch (vote.algo) {
-            case 'algoDeTest1':
+            case 'majority':
               this.btnType = 'radio';
               break;
             default :
@@ -44,14 +55,15 @@ export class VoteComponent implements OnInit {
           }
         }
       }, err => {
-        console.log(err);
+        console.error(err);
         this.router.navigate(['/']);
       }
     );
   }
 
   onBack(): void {
-    this.router.navigate(['/votes', 'public']);
+    console.log(this.previousUrl);
+    this.router.navigate([this.previousUrl]);
   }
 
   toggleChoice(id: number): void {
@@ -62,12 +74,12 @@ export class VoteComponent implements OnInit {
         this.choices.push(id);
       }
     } else {
-      this.choices = [id]
+      this.choices = [id];
     }
   }
 
   onSubmit(): void{
-    let tmpChoices = []
+    const tmpChoices = [];
     this.choices.forEach((choiceId) => {
       this.vote.choices.forEach((choice) => {
         if (choiceId === choice.id){
@@ -77,15 +89,23 @@ export class VoteComponent implements OnInit {
               names: choice.names
             },
             weight: 0
-          })
+          });
         }
-      })
-    })
+      });
+    });
     const toSend = {
       date: new Date(),
       choices: tmpChoices
     };
     const newBallot = this.votesService.sendBallot(this.vote.id, toSend);
     console.log(newBallot);
+  }
+
+  toggleToken(): void {
+    if (this.tokenStyle === null) {
+      this.tokenStyle = 'blur';
+    } else {
+      this.tokenStyle = null;
+    }
   }
 }

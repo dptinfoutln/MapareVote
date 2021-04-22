@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {AuthService} from "../services/auth.service";
+import {AuthService} from '../services/auth.service';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -8,27 +9,20 @@ import {AuthService} from "../services/auth.service";
 })
 export class HeaderComponent implements OnInit {
 
-  isAuth: boolean = this.authService.isStillAuth();
-  private userInfo;
-  // @ts-ignore
-  public userName = "";
+  userName: string;
 
-  constructor(private authService: AuthService) { }
-
-  ngOnInit(): void {
-    this.authService.isAuthSubject.subscribe(
-      (isAuth: boolean) => {
-        this.isAuth = isAuth;
-        if (isAuth){
-          this.userInfo = this.authService.getTokenInfo();
-          this.userName = this.userInfo.firstname + ' ' + this.userInfo.lastname
-        }
-      }
-    )
+  constructor( public authService: AuthService ) {
+    const selfUser = this.authService.getSelfUser();
+    if (selfUser !== null){
+      this.userName = String(selfUser.firstname + ' ' + selfUser.lastname);
+    }
   }
 
-  onSignOut() {
+  ngOnInit(): void {
+
+  }
+
+  onSignOut(): void {
     this.authService.signOutUser();
-    this.ngOnInit();
   }
 }
