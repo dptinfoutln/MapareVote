@@ -66,7 +66,7 @@ public class Vote implements Serializable {
     private List<Choice> choices = new ArrayList<>();
 
     @Column(nullable = false, name = "\"maxChoices\"")
-    private int maxChoices;
+    private int maxChoices = 1;
 
     @JsonIgnore
     @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)

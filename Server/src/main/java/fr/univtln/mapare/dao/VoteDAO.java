@@ -1,6 +1,8 @@
 package fr.univtln.mapare.dao;
 
 
+import fr.univtln.mapare.exceptions.BusinessException;
+import fr.univtln.mapare.exceptions.ConflictException;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.model.Vote;
 import jakarta.persistence.EntityManager;
@@ -63,5 +65,12 @@ public class VoteDAO extends GenericIdDAO<Vote> {
                 .setMaxResults(pageSize)
                 .setFirstResult((pageIndex-1) * pageSize)
                 .getResultList();
+    }
+
+    @Override
+    public void persist(Vote entity) throws BusinessException {
+        if (entity.getVotemaker() == null)
+            throw new ConflictException("No votemaker.");
+        super.persist(entity);
     }
 }
