@@ -101,6 +101,9 @@ public class VoteResource {
         if (vote.getEndDate() == null && !vote.isIntermediaryResult())
             throw new ForbiddenException("Vote with no end date and no intermediary results: invalid.");
         vote.setId(0);
+        if (vote.getAlgo() == "borda"){
+            vote.setMaxChoices(vote.getChoices().size());
+        }
         for (Choice c : vote.getChoices())
             c.setVote(vote);
         try {
