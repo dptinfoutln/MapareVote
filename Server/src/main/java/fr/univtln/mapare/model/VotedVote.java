@@ -17,7 +17,7 @@ import java.util.Base64;
 @NoArgsConstructor
 @Entity
 @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="token")
-@Table(name = "\"VOTED_VOTES\"")
+@Table(name = "\"VOTED_VOTES\"", uniqueConstraints = @UniqueConstraint(columnNames={"vote", "user"}))
 @NamedQueries({
         @NamedQuery(name = "VotedVotes.findByToken", query = "SELECT V FROM VotedVote V WHERE V.token = :token"),
         @NamedQuery(name = "VotedVotes.findByVote", query = "SELECT V FROM VotedVote V WHERE V.vote = :vote"),
