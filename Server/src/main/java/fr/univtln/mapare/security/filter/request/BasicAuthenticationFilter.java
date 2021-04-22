@@ -69,6 +69,12 @@ public class BasicAuthenticationFilter implements ContainerRequestFilter {
             // We Decode username and password (username:password)
             String[] usernameAndPassword = new String(Base64.getDecoder().decode(encodedUserPassword.getBytes())).split(":");
 
+            if (usernameAndPassword.length < 2) {
+                requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                        .entity("Please provide your credentials").build());
+                return;
+            }
+
             final String username = usernameAndPassword[0];
             final String password = usernameAndPassword[1];
 
