@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
@@ -41,13 +43,10 @@ public class VotedVote implements Serializable {
     public VotedVote(Vote vote, User user) {
         this.vote = vote;
         this.user = user;
-
-        SecureRandom secureRandom = new SecureRandom(); //threadsafe
-        Base64.Encoder base64Encoder = Base64.getUrlEncoder(); //threadsafe
-
-        byte[] randomBytes = new byte[24];
-        secureRandom.nextBytes(randomBytes);
-        this.token = base64Encoder.encodeToString(randomBytes);
+        Base64.Encoder base64Encoder = Base64.getUrlEncoder();
+        this.token = base64Encoder.encodeToString(ArrayUtils.addAll(
+                SerializationUtils.serialize(user),
+                SerializationUtils.serialize(vote)));
     }
 
 }
