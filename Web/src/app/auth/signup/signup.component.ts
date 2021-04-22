@@ -84,7 +84,7 @@ export class SignupComponent implements OnInit {
     } else {
       this.renderer.removeClass(this.passwordInput.nativeElement, 'is-invalid');
     }
-    if (!this.signUpForm.get('confirmPassword').valid && !this.checkPasswords(this.signUpForm)) {
+    if (!this.signUpForm.get('confirmPassword').valid || this.checkPasswords(this.signUpForm)) {
       this.renderer.addClass(this.confirmPasswordInput.nativeElement, 'is-invalid');
       if (!focused){
         this.confirmPasswordInput.nativeElement.focus();

@@ -11,8 +11,8 @@
       <div *ngIf="isVoted">
         <span class="badge bg-warning text-dark mb-2">Vous avez déjà voté</span>
       </div>
-      <form name="voteForm" (ngSubmit)="onSubmit()">
-        <ul class="list-group mb-3">
+      <form name="voteForm mb-3" (ngSubmit)="onSubmit()">
+        <ul class="list-group mb-5">
           <li class="{{ btnType }} list-group-item" *ngFor="let choice of vote.choices; let index = index">
             <label style="font-size: large">
               <input (click)="toggleChoice(choice.id)" [disabled]="isVoted" name="choices" #choices id="choice{{choice.id}}" type="{{ btnType }}" value="{{choice.id}}">
@@ -22,6 +22,19 @@
         </ul>
         <button *ngIf="!isVoted" class="btn btn-primary" [disabled]="this.choices.length < 1" type="submit">Valider</button>
       </form>
+      <div class="mt-2" *ngIf="vote.resultList.length > 0 && isVoted">
+        <h3 class="bd-title mb-3">Résultats</h3>
+        <ul class="list-group">
+          <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let resultChoice of results; let index = index">
+            {{this.getChoiceById(resultChoice.choice).names}}
+            <span class="badge bg-primary rounded-pill">{{resultChoice.value}}</span>
+          </li>
+        </ul>
+      </div>
+      <div class="alert alert-warning alert-dismissible fade show" role="alert" *ngIf="(vote.resultList.length == 0) && isVoted">
+        Les résultats ne sont pas encore disponibles
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
       <div *ngIf="isVoted" class="align-bottom" style="margin-top: 10%">
         <p class="text-muted">Token : <span style="cursor: pointer" class="{{tokenStyle}}" (click)="toggleToken()">{{ this.voteToken }}</span></p>
       </div>

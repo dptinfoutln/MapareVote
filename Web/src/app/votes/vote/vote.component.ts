@@ -7,7 +7,8 @@ import {registerLocaleData} from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import localeFrExtra from '@angular/common/locales/fr';
 import {filter} from 'rxjs/operators';
-import {AuthService} from "../../services/auth.service";
+import {AuthService} from '../../services/auth.service';
+import {Choice} from '../../models/choice.model';
 
 registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
 
@@ -28,6 +29,7 @@ export class VoteComponent implements OnInit {
   selfUser = this.authService.getSelfUser();
   voteToken: string;
   myBallot;
+  results;
   @ViewChildren('choices') choicesElem: QueryList<ElementRef>;
 
 
@@ -38,7 +40,6 @@ export class VoteComponent implements OnInit {
               private renderer: Renderer2) { }
 
   ngOnInit(): void {
-    this.vote = new Vote(-1, '', null, null, '', false, new User());
     const id = this.route.snapshot.params.id;
 
     this.router.events
@@ -53,36 +54,16 @@ export class VoteComponent implements OnInit {
           this.router.navigate(['/']);
         } else {
           this.vote = vote;
-
+          console.log(this.vote);
           this.isLoaded = true;
-          for (let i = 0; i < this.selfUser.votedVotes.length; i++) {
-            if (this.vote.id === this.selfUser.votedVotes[i].vote){
-              this.isVoted = true;
-              this.voteToken = this.selfUser.votedVotes[i].token;
-              break;
-            }
-          }
+          this.checkIfUserVoted();
+          console.log('vote anonyme ? ', this.vote.anonymous);
           if (this.isVoted && !this.vote.anonymous) {
-            this.votesService.getMyBallot(+id).then(
-                myBallot => {
-                  this.myBallot = myBallot;
-                  myBallot.choices.forEach( choice => {
-                    this.choicesElem.forEach( elemChoice => {
-                      if (elemChoice.nativeElement.value == choice.choice.id) {
-                        this.renderer.setProperty(elemChoice.nativeElement, 'checked', true);
-                      }
-                    })
-                  })
-                }
-            )
-
+            this.setCheckedChoices(+id);
           }
-          switch (vote.algo) {
-            case 'majority':
-              this.btnType = 'radio';
-              break;
-            default :
-              this.btnType = 'checkbox';
+          this.setChoiceBtnType(vote.maxChoices);
+          if (this.vote.resultList.length > 0){
+            this.setResults();
           }
         }
       }, err => {
@@ -92,9 +73,60 @@ export class VoteComponent implements OnInit {
     );
   }
 
+  private setResults(): void {
+    this.results = this.vote.resultList;
+    this.results.sort((a, b) => {
+      return b.value - a.value;
+    });
+  }
+
+  getChoiceById(id: number): Choice {
+    for (const choice of this.vote.choices) {
+      if (choice.id === id) {
+        return choice;
+      }
+    }
+    return null;
+  }
+
   onBack(): void {
-    console.log(this.previousUrl);
     this.router.navigate([this.previousUrl]);
+  }
+
+  checkIfUserVoted(): void{
+    console.log(this.selfUser);
+    for (const votedVote of this.selfUser.votedVotes) {
+      console.log(votedVote);
+      if (this.vote.id === votedVote.vote || this.vote.id === votedVote.vote.id) {
+        this.isVoted = true;
+        this.voteToken = votedVote.token;
+        break;
+      }
+    }
+  }
+
+  setChoiceBtnType(maxChoices): void {
+    if (maxChoices === 1){
+      this.btnType = 'radio';
+    } else {
+      this.btnType = 'checkbox';
+    }
+  }
+
+  setCheckedChoices(voteId): void {
+    this.votesService.getMyBallot(voteId).then(
+        myBallot => {
+          this.myBallot = myBallot;
+          myBallot.choices.forEach( choice => {
+            this.choicesElem.forEach( elemChoice => {
+              // tslint:disable-next-line:triple-equals
+              if (elemChoice.nativeElement.value == choice.choice.id) {
+                this.renderer.setProperty(elemChoice.nativeElement, 'checked', true);
+              }
+            });
+          });
+        }
+    );
   }
 
   toggleChoice(id: number): void {
@@ -108,28 +140,51 @@ export class VoteComponent implements OnInit {
       this.choices = [id];
     }
   }
+  
+  setBallotChoices(): void {
+    const tmpChoices = [];
+    for (const choiceElem of this.choicesElem){
+      if (choiceElem.nativeElement.checked){
+
+      }
+    }
+  }
 
   onSubmit(): void{
     const tmpChoices = [];
+    // switch (this.vote.algo){
+    //   case 'majority':
+    //     this.setBallotChoices();
+    //     break;
+    //   default:
+    //     break;
+    // }
+
+
     this.choices.forEach((choiceId) => {
       this.vote.choices.forEach((choice) => {
         if (choiceId === choice.id){
           tmpChoices.push({
             choice: {
               id : choiceId,
-              names: choice.names
+              names: choice.names,
             },
-            weight: 0
+            weight: 1,
+            ballot: 0
           });
         }
       });
     });
     const toSend = {
+      id: 0,
       date: new Date(),
       choices: tmpChoices
     };
+    this.authService.importSelf();
     const newBallot = this.votesService.sendBallot(this.vote.id, toSend);
     console.log(newBallot);
+
+
   }
 
   toggleToken(): void {
@@ -139,4 +194,6 @@ export class VoteComponent implements OnInit {
       this.tokenStyle = null;
     }
   }
+
+
 }

@@ -7,7 +7,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li routerLinkActive="active" class="nav-item">
-          <a routerLink="votes/public" class="nav-link">Votes publiques</a>
+          <a routerLink="votes/public" class="nav-link">Votes publics</a>
         </li>
         <li routerLinkActive="active" class="nav-item">
           <a routerLink="votes/private" class="nav-link">Votes privés</a>
@@ -23,23 +23,16 @@
         <li routerLinkActive="active" class="nav-item" *ngIf="!this.authService.isStillAuth()">
           <a routerLink="auth/signin" class="nav-link">Connexion</a>
         </li>
-        <li class="nav-item dropstart" *ngIf="this.authService.isStillAuth()">
+        <li class="nav-item dropdown" *ngIf="this.authService.isStillAuth()">
           <a class="nav-link dropdown-toggle" id="navbarUsername" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             {{ userName }}
           </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarUsername">
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUsername">
             <li><a routerLink="auth/signin" class="dropdown-item" (click)="onSignOut()" href="#">Déconnexion</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item">Paramètres</a></li>
           </ul>
         </li>
-
-<!--        <li class="nav-item">-->
-<!--          <a routerLink="auth/signin" class="nav-link" (click)="onSignOut()" *ngIf="this.authService.isStillAuth()" style="cursor: pointer">Déconnexion</a>-->
-<!--        </li>-->
-<!--        <li class="nav-item">-->
-<!--          <a class="nav-link" *ngIf="this.authService.isStillAuth()" style="color: darkred">{{ userName }}</a>-->
-<!--        </li>-->
       </ul>
     </div>
   </div>
