@@ -9,28 +9,33 @@ import jakarta.persistence.Persistence;
 import lombok.extern.java.Log;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @Log
-public class IntegrationTests {
+class IntegrationTests {
     private static EntityManagerFactory TEST_EMF;
 
     /**
      * Init tests.
      */
     @BeforeAll
-    public static void initTests() {
+    static void initTests() {
         TEST_EMF = Persistence.createEntityManagerFactory("test-pu");
     }
 
     @Test
-    public void createUser() throws BusinessException {
+    void createUser() throws BusinessException {
         EntityManager TEST_EM = TEST_EMF.createEntityManager();
         User test = User.builder().email("tests").password("coucou")
                 .firstname("user").lastname("test").build();
         UserDAO.of(TEST_EM).persist(test);
-        User test2 = UserDAO.of(TEST_EM).findAll().get(0);
+        List<User> users = UserDAO.of(TEST_EM).findAll();
+        assertEquals(1, users.size());
+        User test2 = users.get(0);
         assertNotEquals(0,test2.getId());
         TEST_EM.close();
     }
