@@ -1,6 +1,5 @@
 package fr.univtln.mapare;
 
-import fr.univtln.mapare.controllers.Controller;
 import fr.univtln.mapare.controllers.Controllers;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;

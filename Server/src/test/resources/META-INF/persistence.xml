@@ -33,7 +33,13 @@
         <!-- Enables auto discovery of persistent classes, -->
         <!-- otherwise they must be listed using <class>  -->
         <!-- WARNING : Only in the same jar. -->
-        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <class>fr.univtln.mapare.model.User</class>
+        <class>fr.univtln.mapare.model.Vote</class>
+        <class>fr.univtln.mapare.model.Ballot</class>
+        <class>fr.univtln.mapare.model.VotedVote</class>
+        <class>fr.univtln.mapare.model.Choice</class>
+        <class>fr.univtln.mapare.model.VoteResult</class>
+        <class>fr.univtln.mapare.model.BallotChoice</class>
 
         <properties>
             <!-- Les paramètres de connexions -->
