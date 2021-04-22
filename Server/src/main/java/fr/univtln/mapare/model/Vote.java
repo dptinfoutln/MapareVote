@@ -17,7 +17,8 @@ import java.util.*;
 @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
 @Table(name = "\"VOTE\"")
 @NamedQueries({
-        @NamedQuery(name = "Vote.findByVotemaker", query = "SELECT V FROM Vote V WHERE V.votemaker = :votemaker"),
+        @NamedQuery(name = "Vote.findByVotemaker", query = "SELECT V FROM Vote V WHERE V.votemaker = :votemaker AND V.deleted = false"),
+        @NamedQuery(name = "Vote.findByVotemaker", query = "SELECT V FROM Vote V WHERE V.votemaker = :votemaker AND V.deleted = false"),
         @NamedQuery(name = "Vote.findPublic", query = "SELECT V FROM Vote V WHERE V.members IS EMPTY AND V.deleted = false"),
         @NamedQuery(name = "Vote.findPrivateByUser", query = "SELECT V FROM Vote V WHERE :user MEMBER OF V.members AND V.deleted = false"),
         @NamedQuery(name = "Vote.findAll", query = "SELECT V FROM Vote V")
@@ -79,7 +80,7 @@ public class Vote implements Serializable {
             "passwordHash", "salt", "emailToken"})
     private List<User> members = new ArrayList<>();
 
-    @OneToMany(mappedBy = "vote")
+    @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
     @JoinColumn(name = "\"result\"")
     private List<VoteResult> resultList;
 

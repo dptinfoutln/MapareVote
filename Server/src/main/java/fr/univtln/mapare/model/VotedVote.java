@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
@@ -15,7 +17,7 @@ import java.util.Base64;
 @NoArgsConstructor
 @Entity
 @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="token")
-@Table(name = "\"VOTED_VOTES\"")
+@Table(name = "\"VOTED_VOTES\"", uniqueConstraints = @UniqueConstraint(columnNames={"vote", "user"}))
 @NamedQueries({
         @NamedQuery(name = "VotedVotes.findByToken", query = "SELECT V FROM VotedVote V WHERE V.token = :token"),
         @NamedQuery(name = "VotedVotes.findByVote", query = "SELECT V FROM VotedVote V WHERE V.vote = :vote"),
@@ -41,13 +43,10 @@ public class VotedVote implements Serializable {
     public VotedVote(Vote vote, User user) {
         this.vote = vote;
         this.user = user;
-
-        SecureRandom secureRandom = new SecureRandom(); //threadsafe
-        Base64.Encoder base64Encoder = Base64.getUrlEncoder(); //threadsafe
-
-        byte[] randomBytes = new byte[24];
-        secureRandom.nextBytes(randomBytes);
-        this.token = base64Encoder.encodeToString(randomBytes);
+        Base64.Encoder base64Encoder = Base64.getUrlEncoder();
+        this.token = base64Encoder.encodeToString(ArrayUtils.addAll(
+                SerializationUtils.serialize(user),
+                SerializationUtils.serialize(vote)));
     }
 
 }
