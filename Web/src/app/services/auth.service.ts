@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import jwt_decode, {JwtPayload} from 'jwt-decode';
 
 import { environment } from '../../environments/environment';
@@ -17,7 +16,7 @@ export class AuthService {
   selfUserSubject = new Subject<User>();
 
   constructor(private http: HttpClient,
-              private cookieService: CookieService ) {
+              private cookieService: CookieService) {
   }
 
   signUp(firstname: string, lastname: string, email: string, password: string): Promise<void>{
@@ -27,12 +26,11 @@ export class AuthService {
 
     return new Promise(
       (resolve , reject) => {
-        this.http.post<string>(url, body, {headers} ).subscribe({
+        this.http.post<void>(url, body, {headers} ).subscribe({
           next: () => {
             resolve();
           },
           error: err => {
-            console.log(err);
             if (err.status === 0) {
               reject('Erreur 500 : Le serveur de ne répond pas');
             } else {
@@ -56,8 +54,6 @@ export class AuthService {
           token => {
             this.setToken(token);
             this.importSelf().then( user => {
-              this.setSelfUser(user);
-              this.selfUserSubject.next(user);
               resolve();
             });
           }, err => {
@@ -99,6 +95,8 @@ export class AuthService {
       (resolve , reject) => {
         this.http.get<User>(url, { headers } ).subscribe(
           user => {
+            this.setSelfUser(user);
+            this.selfUserSubject.next(user);
             resolve(user);
           }, err => {
             console.log(err);

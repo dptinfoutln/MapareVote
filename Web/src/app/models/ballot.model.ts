@@ -1,14 +1,12 @@
 import {Vote} from './vote.model';
 import {User} from './user.model';
-import {Choice} from './choice.model';
+import {BallotChoice} from './BallotChoice.model';
 
 export class Ballot {
   public id: number = null;
-  public user: User = null;
+  public date: Date;
+  public vote: Vote;
+  public choices: BallotChoice[];
 
-  constructor(
-    public date: Date,
-    public vote: Vote,
-    public choices: Choice[]
-  ) {}
+  constructor() {}
 }
