@@ -8,11 +8,11 @@ import java.util.List;
 
 public class VoteResultDAO extends GenericIdDAO<VoteResult> {
 
-    private static VoteResultDAO of(EntityManager entityManager) {
+    public static VoteResultDAO of(EntityManager entityManager) {
         return new VoteResultDAO(entityManager);
     }
 
-    public VoteResultDAO(EntityManager entityManager) {
+    private VoteResultDAO(EntityManager entityManager) {
         super(entityManager);
     }
 
