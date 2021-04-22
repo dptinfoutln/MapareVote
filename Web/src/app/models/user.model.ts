@@ -6,9 +6,9 @@ export class User {
   public confirmed: boolean;
   public admin: boolean;
   public banned: boolean;
-  public startedVote;
+  public startedVotes;
   public privateVoteList;
-  public votedVote;
+  public votedVotes;
 
   constructor() { }
 }

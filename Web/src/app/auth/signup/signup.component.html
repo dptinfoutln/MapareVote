@@ -8,7 +8,7 @@
           <label for="firstname">Prénom</label>
         </div>
         <div class="mb-3 form-floating">
-          <input type="text" id="lastname" #emailInput class="form-control" placeholder="Nom" (focusout)="onLastnameFocusOut()" formControlName="lastname">
+          <input type="text" id="lastname" #lastnameInput class="form-control" placeholder="Nom" (focusout)="onLastnameFocusOut()" formControlName="lastname">
           <label for="email">Nom</label>
         </div>
         <div class="mb-3 form-floating">
@@ -16,14 +16,17 @@
           <label for="email">Adresse mail</label>
         </div>
         <div class="mb-3 form-floating">
-          <input type="password" id="password" #emailInput class="form-control" placeholder="Mot de passe" (focusout)="onMailFocusOut()" formControlName="password">
+          <input type="password" id="password" #passwordInput class="form-control" placeholder="Mot de passe" (focusout)="onPasswordFocusOut()" formControlName="password">
           <label for="password">Mot de passe</label>
         </div>
         <div class="mb-3 form-floating">
-          <input type="password" id="confirmPassword" #confirmPasswordInput class="form-control" placeholder="Confirmerez le mot de passe" (focusout)="onMailFocusOut()" formControlName="confirmPassword">
+          <input type="password" id="confirmPassword" #confirmPasswordInput class="form-control" placeholder="Confirmerez le mot de passe" (focusout)="confirmPasswordFocusOut()" formControlName="confirmPassword">
           <label for="password">Confirmez le mot de passe</label>
         </div>
-        <button class="btn btn-primary" type="submit" [disabled]="signUpForm.invalid">Créer mon compte</button>
+        <button class="btn btn-primary" #submitBtn type="submit">
+          <span *ngIf="isPending" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Créer un compte
+        </button>
       </form>
       <p class="{{ errorMessageType }}">{{ errorMessage }}</p>
     </div>
