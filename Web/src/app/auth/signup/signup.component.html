@@ -1,21 +1,32 @@
-<div class="row">
-  <div class="col-sm-8 col-sm-offset-2">
-    <h2>Créer un compte</h2>
-    <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="email">Adresse mail</label>
-        <input type="text" id="email" class="form-control" formControlName="email">
-      </div>
-      <div class="form-group">
-        <label for="password">Mot de passe</label>
-        <input type="password" id="password" class="form-control" formControlName="password">
-      </div>
-      <div class="form-group">
-        <label for="confirmPassword">Confirmez le mot de passe</label>
-        <input type="password" id="confirmPassword" class="form-control" formControlName="confirmPassword">
-      </div>
-      <button class="btn btn-primary" type="submit" [disabled]="signUpForm.invalid">Créer mon compte</button>
-    </form>
-    <p class="text-danger">{{ errorMessage }}</p>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8 offset-md-2">
+      <h1 class="bd-title mb-5">Créer un compte</h1>
+      <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3 form-floating">
+          <input type="text" id="firstname" #firstnameInput class="form-control" placeholder="Prénom" (focusout)="onFirstnameFocusOut()" formControlName="firstname">
+          <label for="firstname">Prénom</label>
+        </div>
+        <div class="mb-3 form-floating">
+          <input type="text" id="lastname" #emailInput class="form-control" placeholder="Nom" (focusout)="onLastnameFocusOut()" formControlName="lastname">
+          <label for="email">Nom</label>
+        </div>
+        <div class="mb-3 form-floating">
+          <input type="text" id="email" #emailInput class="form-control" placeholder="Adresse mail" (focusout)="onMailFocusOut()" formControlName="email">
+          <label for="email">Adresse mail</label>
+        </div>
+        <div class="mb-3 form-floating">
+          <input type="password" id="password" #emailInput class="form-control" placeholder="Mot de passe" (focusout)="onMailFocusOut()" formControlName="password">
+          <label for="password">Mot de passe</label>
+        </div>
+        <div class="mb-3 form-floating">
+          <input type="password" id="confirmPassword" #confirmPasswordInput class="form-control" placeholder="Confirmerez le mot de passe" (focusout)="onMailFocusOut()" formControlName="confirmPassword">
+          <label for="password">Confirmez le mot de passe</label>
+        </div>
+        <button class="btn btn-primary" type="submit" [disabled]="signUpForm.invalid">Créer mon compte</button>
+      </form>
+      <p class="{{ errorMessageType }}">{{ errorMessage }}</p>
+    </div>
   </div>
+
 </div>

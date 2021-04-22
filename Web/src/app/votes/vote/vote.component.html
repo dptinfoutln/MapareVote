@@ -1,24 +1,30 @@
-<div *ngIf="isLoaded">
-  <button class="btn btn-default" (click)="onBack()">Retour</button>
+<div *ngIf="isLoaded" class="container">
+  <button class="btn btn-outline-secondary" (click)="onBack()">Retour</button>
   <div class="row">
-    <div class="col-sm-8 col-sm-offset-2">
-      <h1>{{ vote.label }}</h1>
-      <div class="text-right">
+    <div class="col-sm-8 offset-md-2">
+      <h1 class="bd-title mb-5">{{ vote.label }}</h1>
+      <div class="text-end">
         <h6>Vote créé par {{ vote.votemaker.firstname }} {{ vote.votemaker.lastname }},
           le {{ vote.startDate | date : 'dd MMMM YYYY': '' : 'fr-FR' }}</h6>
         <h6 *ngIf="vote.endDate"> Prend fin le {{ vote.endDate | date : 'dd MMMM YYYY': '' : 'fr-FR' }}</h6>
+      </div>
+      <div *ngIf="isVoted">
+        <span class="badge bg-warning text-dark mb-2">Vous avez déjà voté</span>
       </div>
       <form name="voteForm" (ngSubmit)="onSubmit()">
         <ul class="list-group">
           <li class="{{ btnType }} list-group-item" *ngFor="let choice of vote.choices; let index = index">
             <label style="font-size: large">
-              <input (click)="toggleChoice(choice.id)" name="choices" type="{{ btnType }}" value="{{choice.id}}">
+              <input (click)="toggleChoice(choice.id)" name="choices" id="choice{{choice.id}}" type="{{ btnType }}" value="{{choice.id}}">
               {{choice.names}}
             </label>
           </li>
         </ul>
-        <button class="btn btn-primary" [disabled]="!this.choices.length > 0" type="submit">Valider</button>
+        <button *ngIf="!isVoted" class="btn btn-primary" [disabled]="this.choices.length < 1" type="submit">Valider</button>
       </form>
+      <div class="align-bottom" style="margin-top: 10%">
+        <p class="text-muted">Token : <span style="cursor: pointer" class="{{tokenStyle}}" (click)="toggleToken()">LeTokenDeVote</span></p>
+      </div>
     </div>
   </div>
 </div>
