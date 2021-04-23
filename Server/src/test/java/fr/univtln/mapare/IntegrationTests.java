@@ -73,7 +73,7 @@ class IntegrationTests {
 
         assertThrows(RollbackException.class, () -> dao.persist(emailUniquenessTestUser));
 
-
+        dao.remove(sent.getId());
 
         TEST_EM.close();
     }
@@ -127,6 +127,9 @@ class IntegrationTests {
         assertEquals(sent.getMaxChoices(), received.getMaxChoices());
         assertEquals(sent.getStartDate(), received.getStartDate());
         assertEquals(sent.getVotemaker(), received.getVotemaker());
+
+        userDAO.remove(creator.getId());
+        voteDAO.remove(sent.getId());
 
         TEST_EM.close();
     }
