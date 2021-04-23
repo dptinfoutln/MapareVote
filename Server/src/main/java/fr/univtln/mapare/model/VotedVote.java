@@ -43,10 +43,12 @@ public class VotedVote implements Serializable {
     public VotedVote(Vote vote, User user) {
         this.vote = vote;
         this.user = user;
-            Base64.Encoder base64Encoder = Base64.getUrlEncoder();
-            this.token = base64Encoder.encodeToString(ArrayUtils.addAll(
-                    SerializationUtils.serialize(user),
-                    SerializationUtils.serialize(vote)));
+        SecureRandom secureRandom = new SecureRandom(); //threadsafe
+        Base64.Encoder base64Encoder = Base64.getUrlEncoder(); //threadsafe
+
+        byte[] randomBytes = new byte[24];
+        secureRandom.nextBytes(randomBytes);
+        this.token = base64Encoder.encodeToString(randomBytes);
     }
 
 }
