@@ -26,12 +26,14 @@ export class VoteComponent implements OnInit {
   isVoted = false;
   tokenStyle = 'blur';
   previousUrl = '';
-  selfUser = this.authService.getSelfUser();
+  selfUser;
   voteToken: string;
   myBallot;
   results;
-  @ViewChildren('choices') choicesElem: QueryList<ElementRef>;
+  isPending = false;
 
+  @ViewChildren('choices') choicesElem: QueryList<ElementRef>;
+  @ViewChild('submitBtn') submitBtn: ElementRef;
 
   constructor(private route: ActivatedRoute,
               private votesService: VotesService,
@@ -40,6 +42,7 @@ export class VoteComponent implements OnInit {
               private renderer: Renderer2) { }
 
   ngOnInit(): void {
+    this.selfUser = this.authService.getSelfUser();
     const id = this.route.snapshot.params.id;
 
     this.router.events
@@ -54,7 +57,6 @@ export class VoteComponent implements OnInit {
           this.router.navigate(['/']);
         } else {
           this.vote = vote;
-          console.log(this.vote);
           this.isLoaded = true;
           this.checkIfUserVoted();
           console.log('vote anonyme ? ', this.vote.anonymous);
@@ -94,9 +96,7 @@ export class VoteComponent implements OnInit {
   }
 
   checkIfUserVoted(): void{
-    console.log(this.selfUser);
     for (const votedVote of this.selfUser.votedVotes) {
-      console.log(votedVote);
       if (this.vote.id === votedVote.vote || this.vote.id === votedVote.vote.id) {
         this.isVoted = true;
         this.voteToken = votedVote.token;
@@ -151,6 +151,8 @@ export class VoteComponent implements OnInit {
   }
 
   onSubmit(): void{
+    this.isPending = true;
+    this.submitBtn.nativeElement.disabled = true;
     const tmpChoices = [];
     // switch (this.vote.algo){
     //   case 'majority':
@@ -180,11 +182,18 @@ export class VoteComponent implements OnInit {
       date: new Date(),
       choices: tmpChoices
     };
-    this.authService.importSelf();
-    const newBallot = this.votesService.sendBallot(this.vote.id, toSend);
-    console.log(newBallot);
-
-
+    this.votesService.sendBallot(this.vote.id, toSend).then(
+        ballot => {
+          this.authService.importSelf().then(
+              () => {
+                this.ngOnInit();
+              }
+          );
+        }, err => {
+          this.submitBtn.nativeElement.disabled = false;
+          this.isPending = false;
+        }
+    );
   }
 
   toggleToken(): void {

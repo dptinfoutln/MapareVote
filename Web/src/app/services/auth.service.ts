@@ -95,6 +95,7 @@ export class AuthService {
       (resolve , reject) => {
         this.http.get<User>(url, { headers } ).subscribe(
           user => {
+            console.log('retours getSelf: ', user)
             this.setSelfUser(user);
             this.selfUserSubject.next(user);
             resolve(user);
