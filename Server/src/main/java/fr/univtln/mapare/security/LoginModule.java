@@ -51,9 +51,9 @@ public class LoginModule {
      *
      * @return the users
      */
-    @SuppressWarnings("unchecked")
+
     public List<User> getUsers() {
-        return (List<User>) Controllers.executeRequest("User.findAll");
+        return UserDAO.of(Controllers.getEntityManager()).findAll();
     }
 
     /**

@@ -132,10 +132,10 @@ public class VoteResource {
             throw new ForbiddenException("User is banned.");
         if (vote.isDeleted())
             throw new ForbiddenException("Vote deleted.");
-        if (ballot.getDate().isAfter(ChronoLocalDateTime.from(vote.getEndDate())))
+        if (vote.getEndDate() != null && ballot.getDate().isAfter(ChronoLocalDateTime.from(vote.getEndDate())))
             throw new ForbiddenException("Too late.");
         for (BallotChoice bc : ballot.getChoices())
-            if (bc.getChoice().getVote() != vote || !vote.getChoices().contains(bc.getChoice()))
+            if (!vote.getChoices().contains(bc.getChoice()))
                 throw new ForbiddenException("Bad choice(s).");
         switch (vote.getAlgo()) {
             case "majority":
@@ -158,7 +158,6 @@ public class VoteResource {
             default:
                 break;
         }
-        ballot.setVote(vote);
         ballot.setVote(vote);
         ballot.setVoter(voter);
         try {

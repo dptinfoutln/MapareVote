@@ -1,6 +1,5 @@
 package fr.univtln.mapare;
 
-import fr.univtln.mapare.controllers.Controller;
 import fr.univtln.mapare.controllers.Controllers;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -13,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Main {
-    public static final String BASE_URI = "http://0.0.0.0:5431/";
+    public static final String BASE_URI = "http://localhost:5431/";
 
     public static HttpServer startServer() {
         Logger logger = Logger.getAnonymousLogger();

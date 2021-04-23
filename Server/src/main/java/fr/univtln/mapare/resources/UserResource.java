@@ -5,9 +5,11 @@ import fr.univtln.mapare.dao.BallotDAO;
 import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.dao.VoteDAO;
 import fr.univtln.mapare.exceptions.BusinessException;
+import fr.univtln.mapare.exceptions.ConflictException;
 import fr.univtln.mapare.model.Ballot;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.security.annotations.JWTAuth;
+import jakarta.persistence.RollbackException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -50,11 +52,19 @@ public class UserResource {
         user.setConfirmed(false);
         user.setAdmin(false);
         user.setBanned(false);
+
+        if (user.getEmail() == null || user.getFirstname() == null || user.getLastname() == null
+        || user.getPasswordHash() == null || user.getSalt() == null)
+            throw new ForbiddenException("Error: some fields haven't been filled.");
+
         try {
             UserDAO.of(Controllers.getEntityManager()).persist(user);
         } catch (BusinessException e) {
             e.printStackTrace();
             throw e;
+        } catch (RollbackException re) {
+            re.printStackTrace();
+            throw new ConflictException("Email already in use.");
         }
         return user;
     }
