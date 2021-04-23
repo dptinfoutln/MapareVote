@@ -63,9 +63,9 @@ public class BallotDAO extends GenericIdDAO<Ballot> {
 
     @Override
     public void persist(Ballot ballot) throws BusinessException {
-        VotedVoteDAO votedVoteDAO = VotedVoteDAO.of(entityManager);
-        if (votedVoteDAO.findByUserVote(ballot.getVoter(), ballot.getVote()) == null) { // Check if have already voted
-            votedVoteDAO.persist(VotedVote.builder().user(ballot.getVoter()).vote(ballot.getVote()).build());
+        if (VotedVoteDAO.of(entityManager).findByUserVote(ballot.getVoter(), ballot.getVote()) == null) { // Check if have already voted
+            ballot.getVoter().addVotedVote(VotedVote.builder().user(ballot.getVoter()).vote(ballot.getVote()).build());
+            UserDAO.of(entityManager).update(ballot.getVoter());
             if (ballot.getVote().isAnonymous()) // Check if anonymous
                 ballot.setVoter(null);
             super.persist(ballot);

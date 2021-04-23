@@ -111,6 +111,11 @@ public class User implements Serializable, Principal {
             privateVoteList.add(vote);
     }
 
+    public void addVotedVote(VotedVote votedVote) {
+        if (!votedVotes.contains(votedVote))
+            votedVotes.add(votedVote);
+    }
+
     @SneakyThrows
     public boolean checkPassword(String password) {
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
