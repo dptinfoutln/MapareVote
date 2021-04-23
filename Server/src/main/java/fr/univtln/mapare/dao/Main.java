@@ -408,7 +408,25 @@ public class Main {
 //        ballotDAO.persist(myBallot5);
 //        ballotDAO.persist(myBallot6);
 
-        System.out.println(UserDAO.of(entityManager).findById(4).getVotedVotes().get(1).getVote().getLabel());
+
+//        System.out.println(UserDAO.of(entityManager).findById(4).getVotedVotes().get(1).getVote().getLabel());
+
+//        User user = UserDAO.of(entityManager).findById(1);
+//        Vote voteTest2 = Vote.builder().label("Nico ne sait pas utiliser git ?").
+//                startDate(LocalDate.now()).
+//                anonymous(false).
+//                algo("borda").
+//                votemaker(user).build();
+//        voteTest2.setIntermediaryResult(true);
+//        voteTest2.setMaxChoices(5);
+//        voteTest2.addChoice(Choice.builder().vote(voteTest2).names(Arrays.asList("Pouce")).build());
+//        voteTest2.addChoice(Choice.builder().vote(voteTest2).names(Arrays.asList("Index")).build());
+//        voteTest2.addChoice(Choice.builder().vote(voteTest2).names(Arrays.asList("Majeur")).build());
+//        voteTest2.addChoice(Choice.builder().vote(voteTest2).names(Arrays.asList("Annulaire")).build());
+//        voteTest2.addChoice(Choice.builder().vote(voteTest2).names(Arrays.asList("Auriculaire")).build());
+//        voteTest2.addMember(user);
+//        VoteDAO.of(entityManager).persist(voteTest2);
+
     }
 
 }
