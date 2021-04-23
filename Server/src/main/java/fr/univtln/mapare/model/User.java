@@ -52,7 +52,8 @@ public class User implements Serializable, Principal {
     private boolean admin;
 
     @Column(nullable = false)
-    private boolean banned;
+    private boolean
+            banned;
 
     @JsonIgnore
     @Column(nullable = false)
@@ -109,6 +110,11 @@ public class User implements Serializable, Principal {
     public void addPrivateVote(Vote vote) {
         if (!privateVoteList.contains(vote))
             privateVoteList.add(vote);
+    }
+
+    public void addVotedVote(VotedVote votedVote) {
+        if (!votedVotes.contains(votedVote))
+            votedVotes.add(votedVote);
     }
 
     @SneakyThrows

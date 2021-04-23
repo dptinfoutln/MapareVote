@@ -126,6 +126,8 @@ public class VoteResource {
     @JWTAuth
     @Path("{id}/ballots")
     public Ballot addBallot(@Context SecurityContext securityContext, @PathParam ("id") int id, Ballot ballot) throws BusinessException {
+        //TODO: check borda weight 0.
+        //TODO: check maxchoices
         User voter = (User) securityContext.getUserPrincipal();
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
         if (voter.isBanned())
@@ -136,9 +138,10 @@ public class VoteResource {
             throw new ForbiddenException("Too late.");
         if (ballot.getChoices().size() > vote.getMaxChoices())
             throw new ForbiddenException("Too many choices.");
-        for (BallotChoice bc : ballot.getChoices())
-            if (!vote.getChoices().contains(bc.getChoice()))
-                throw new ForbiddenException("Bad choice(s).");
+//        for (BallotChoice bc : ballot.getChoices())
+//            if (!vote.getChoices().contains(bc.getChoice()))
+//                throw new ForbiddenException("Bad choice(s).");
+        ballot.setVote(vote);
         switch (vote.getAlgo()) {
             case "majority":
                 for (BallotChoice bc : ballot.getChoices()) {
@@ -146,10 +149,10 @@ public class VoteResource {
                 }
                 break;
             case "borda":
-                int[] temparray = new int[ballot.getVote().getChoices().size()];
+                int[] temparray = new int[vote.getChoices().size()];
                 for (BallotChoice bc : ballot.getChoices()) {
                     // We verify that all values are coherent for borda count.
-                    if (bc.getWeight() > ballot.getVote().getChoices().size())
+                    if (bc.getWeight() > vote.getChoices().size())
                         throw new ForbiddenException("Invalid choice weight for borda count algorithm.");
                     if (temparray[bc.getWeight() - 1] != 0)
                         throw new ForbiddenException("Duplicate choice weight for borda count algorithm.");
@@ -160,8 +163,10 @@ public class VoteResource {
             default:
                 break;
         }
-        ballot.setVote(vote);
         ballot.setVoter(voter);
+        for (BallotChoice bc : ballot.getChoices()) {
+            bc.setBallot(ballot);
+        }
         try {
             BallotDAO.of(Controllers.getEntityManager()).persist(ballot);
         } catch (BusinessException e) {

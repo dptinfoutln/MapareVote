@@ -30,4 +30,8 @@ public abstract class DAO<E> {
 
 
     public abstract List<E> findAll();
+
+//    public void refresh(EntityManager entityManager) {
+//        entityManager.refresh();
+//    }
 }
