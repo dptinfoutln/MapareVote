@@ -73,6 +73,8 @@ class IntegrationTests {
 
         assertThrows(RollbackException.class, () -> dao.persist(emailUniquenessTestUser));
 
+
+
         TEST_EM.close();
     }
 
