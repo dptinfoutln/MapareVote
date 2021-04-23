@@ -2,10 +2,8 @@ package fr.univtln.mapare.dao;
 
 import fr.univtln.mapare.exceptions.BusinessException;
 import fr.univtln.mapare.exceptions.ConflictException;
-import fr.univtln.mapare.exceptions.ForbiddenException;
 import fr.univtln.mapare.model.*;
 import jakarta.persistence.EntityManager;
-import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 
@@ -65,21 +63,14 @@ public class BallotDAO extends GenericIdDAO<Ballot> {
 
     @Override
     public void persist(Ballot ballot) throws BusinessException {
-        if (!ballot.getVoter().isBanned()) { // Check if authorized
-            if (!ballot.getVote().isDeleted()) { // Check if not available
-                VotedVoteDAO votedVoteDAO = VotedVoteDAO.of(entityManager);
-                if (votedVoteDAO.findByUserVote(ballot.getVoter(), ballot.getVote()) == null) { // Check if have already voted
-                    if (ballot.getVote().isAnonymous()) // Check if anonymous
-                        ballot.setVoter(null);
-                    super.persist(ballot);
-                    votedVoteDAO.persist(VotedVote.builder().user(ballot.getVoter()).vote(ballot.getVote()).build());
-                } else
-                    throw new ConflictException("User has already voted");
-            } else
-                throw new ForbiddenException("Vote not available anymore");
+        if (VotedVoteDAO.of(entityManager).findByUserVote(ballot.getVoter(), ballot.getVote()) == null) { // Check if have already voted
+            ballot.getVoter().addVotedVote(VotedVote.builder().user(ballot.getVoter()).vote(ballot.getVote()).build());
+            UserDAO.of(entityManager).update(ballot.getVoter());
+            if (ballot.getVote().isAnonymous()) // Check if anonymous
+                ballot.setVoter(null);
+            super.persist(ballot);
         } else
-            throw new ForbiddenException("User not authorized (banned)");
-
+            throw new ConflictException("User has already voted");
     }
 
 }
