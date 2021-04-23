@@ -126,6 +126,8 @@ public class VoteResource {
     @JWTAuth
     @Path("{id}/ballots")
     public Ballot addBallot(@Context SecurityContext securityContext, @PathParam ("id") int id, Ballot ballot) throws BusinessException {
+        //TODO: check borda weight 0.
+        //TODO: check maxchoices
         User voter = (User) securityContext.getUserPrincipal();
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
         if (voter.isBanned())
@@ -162,6 +164,9 @@ public class VoteResource {
                 break;
         }
         ballot.setVoter(voter);
+        for (BallotChoice bc : ballot.getChoices()) {
+            bc.setBallot(ballot);
+        }
         try {
             BallotDAO.of(Controllers.getEntityManager()).persist(ballot);
         } catch (BusinessException e) {
