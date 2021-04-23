@@ -52,7 +52,8 @@ public class User implements Serializable, Principal {
     private boolean admin;
 
     @Column(nullable = false)
-    private boolean banned;
+    private boolean
+            banned;
 
     @JsonIgnore
     @Column(nullable = false)
