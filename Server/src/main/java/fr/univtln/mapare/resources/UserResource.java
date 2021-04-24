@@ -5,6 +5,7 @@ import fr.univtln.mapare.dao.BallotDAO;
 import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.dao.VoteDAO;
 import fr.univtln.mapare.exceptions.BusinessException;
+import fr.univtln.mapare.exceptions.NotFoundException;
 import fr.univtln.mapare.exceptions.ConflictException;
 import fr.univtln.mapare.model.Ballot;
 import fr.univtln.mapare.model.User;
@@ -23,11 +24,15 @@ public class UserResource {
 
     @GET
     public List<User> getUsers(@DefaultValue("1") @QueryParam("page_num") int pagenum,
-                         @DefaultValue("20") @QueryParam("page_size") int pagesize) {
+                         @DefaultValue("20") @QueryParam("page_size") int pagesize) throws NotFoundException {
         //Lancer DAO
         //Pagination
         //rentrer users dans liste
-        return UserDAO.of(Controllers.getEntityManager()).findAll();
+        List<User> check = UserDAO.of(Controllers.getEntityManager()).findAll();
+        if (check == null)
+            throw new NotFoundException();
+        else
+            return check;
     }
 
     @GET
