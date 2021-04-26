@@ -7,6 +7,8 @@ import fr.univtln.mapare.dao.VoteDAO;
 import fr.univtln.mapare.exceptions.BusinessException;
 import fr.univtln.mapare.exceptions.NotFoundException;
 import fr.univtln.mapare.exceptions.ConflictException;
+import fr.univtln.mapare.exceptions.ForbiddenException;
+import fr.univtln.mapare.exceptions.NotFoundException;
 import fr.univtln.mapare.model.Ballot;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.security.annotations.JWTAuth;
@@ -69,9 +71,20 @@ public class UserResource {
             e.printStackTrace();
             throw e;
         } catch (RollbackException re) {
-            re.printStackTrace();
             throw new ConflictException("Email already in use.");
         }
         return user;
+    }
+
+    @DELETE
+    @Path("{id}")
+    public int deleteUser(@PathParam("id") int id) throws NotFoundException {
+        //TODO: test it with users who have ballots
+        UserDAO dao = UserDAO.of(Controllers.getEntityManager());
+        if (dao.findById(id) != null) {
+            dao.remove(id);
+        } else
+            throw new NotFoundException("Trying to delete user that doesn't exist.");
+        return 0;
     }
 }
