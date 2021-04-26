@@ -8,6 +8,7 @@ import java.util.List;
 
 public class Controllers {
     private static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("maparevotedb");
+    private static final EntityManagerFactory TestEMF = Persistence.createEntityManagerFactory("maparevotedev");
     private static EntityManager entityManager = null;
 
     private Controllers() {}
@@ -23,6 +24,11 @@ public class Controllers {
     public static void init() {
         if (entityManager == null)
             entityManager = EMF.createEntityManager();
+    }
+
+    public static void testinit() {
+        if (entityManager == null)
+            entityManager = TestEMF.createEntityManager();
     }
 
     public static void close() {
