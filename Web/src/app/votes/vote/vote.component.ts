@@ -2,7 +2,6 @@ import {Component, ElementRef, OnInit, QueryList, Renderer2, ViewChild, ViewChil
 import {Vote} from '../../models/vote.model';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {VotesService} from '../../services/votes.service';
-import {User} from '../../models/user.model';
 import {registerLocaleData} from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import localeFrExtra from '@angular/common/locales/fr';
@@ -39,7 +38,8 @@ export class VoteComponent implements OnInit {
               private votesService: VotesService,
               private router: Router,
               private authService: AuthService,
-              private renderer: Renderer2) { }
+              private renderer: Renderer2) {
+  }
 
   ngOnInit(): void {
     this.selfUser = this.authService.getSelfUser();
