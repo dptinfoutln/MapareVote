@@ -43,22 +43,22 @@ public class VoteResource {
         if (vote == null)
             throw new NotFoundException();
 
+        Thread thread;
         if (vote.isPublic() || vote.getMembers().contains((User) securityContext.getUserPrincipal())) {
             if (vote.getEndDate() != null && (
                     (!vote.hasResults() || vote.isIntermediaryResult()) && LocalDate.now().isAfter(vote.getEndDate()))
             ) {
                 vote.setIntermediaryResult(false);
-                Thread thread = new Thread(VoteUtils.voteResultsOf(vote));
+                thread = new Thread(VoteUtils.voteResultsOf(vote));
                 thread.start();
-                if (vote.getResultList() == null)
-                    throw new NotFoundException("Algorithm not implemented.");
                 VoteDAO.of(Controllers.getEntityManager()).update(vote);
             }
-            if (vote.isIntermediaryResult()) {
-                Thread thread = new Thread(VoteUtils.voteResultsOf(vote));
+            if (vote.isIntermediaryResult() &&
+                    (vote.getBallots().size() < 1000 ||
+                            !vote.getLastCalculated().equals(LocalDate.now()))) {
+                vote.setLastCalculated(LocalDate.now());
+                thread = new Thread(VoteUtils.voteResultsOf(vote));
                 thread.start();
-                if (vote.getResultList() == null)
-                    throw new NotFoundException("Algorithm not implemented.");
                 VoteDAO.of(Controllers.getEntityManager()).update(vote);
             }
             return vote;

@@ -85,6 +85,9 @@ public class Vote implements Serializable {
     @JoinColumn(name = "\"result\"")
     private List<VoteResult> resultList;
 
+    @JsonIgnore
+    private transient LocalDate lastCalculated = null;
+
     @Builder
     @SneakyThrows
     public Vote(String label, LocalDate startDate, LocalDate endDate, String algo, boolean anonymous, User votemaker) {
@@ -146,5 +149,4 @@ public class Vote implements Serializable {
     public boolean hasResults() {
         return resultList.isEmpty();
     }
-
 }
