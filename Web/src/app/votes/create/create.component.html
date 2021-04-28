@@ -15,34 +15,46 @@
                     </select>
                     <label for="algoType">Type de vote</label>
                 </div>
-                <div class="container mb-3">
-                    <div class="row align-items-center">
-                        <div class="col-sm-7 d-flex justify-content-start form-check form-switch">
-                            <input class="form-check-input" type="checkbox" #endDateToggle id="endDateToggle"
-                                   (click)="onEndDateToggle()">
-                            <label class="form-check-label ms-1 ms-md-3" for="endDateToggle">Vote à durée limitée</label>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="container mb-3">
+                            <div class="row align-items-center">
+                                <div class=" col-12 col-lg-10 offset-lg-2 d-flex justify-content-start form-check form-switch">
+                                    <input class="form-check-input me-3" type="checkbox" #endDateToggle id="endDateToggle"
+                                           (click)="onEndDateToggle()">
+                                    <label class="form-check-label" for="endDateToggle">Vote à durée limitée</label>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-sm-4 form-floating">
+                        <div class="col-12 col-lg-10 offset-lg-2 mb-3 form-floating">
                             <input type="date" id="endDatePicker" #endDatePicker class="form-control datepicker"
                                    placeholder="Date de fin" formControlName="endDate" (focusout)="onDatePickerFocusOut()">
                             <label class="ms-1" for="endDatePicker">Date de fin</label>
                         </div>
                     </div>
-                </div>
-                <div class="container mb-3">
-                    <div class="row align-items-center">
-                        <div class="col-12 col-sm-6 col-xl-4 d-flex justify-content-start justify-content-sm-center form-check form-switch">
-                            <input class="form-check-input" type="checkbox" #intermediaryResultsToggle id="intermediaryResultsToggle"
-                                   (click)="onIntermediaryResultsToggle()">
-                            <label class="form-check-label ms-1 ms-md-3" for="intermediaryResultsToggle">Résultats intermédiaires</label>
+                    <div class="col-md-6">
+                        <div class="container mb-3">
+                            <div class="row align-items-center">
+                                <div class="col-12 col-lg-10 offset-lg-2 d-flex justify-content-start justify-content-md-start form-check form-switch">
+                                    <input class="form-check-input me-3" type="checkbox" #intermediaryResultsToggle id="intermediaryResultsToggle"
+                                           (click)="onIntermediaryResultsToggle()">
+                                    <label class="form-check-label" for="intermediaryResultsToggle">Résultats intermédiaires</label>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-6 col-xl-3 d-flex justify-content-start justify-content-sm-center form-check form-switch">
-                            <input class="form-check-input" type="checkbox" #anonymousToggle id="anonymousToggle" (click)="onAnonymousToggle()">
-                            <label class="form-check-label ms-1 ms-md-3" for="anonymousToggle">Vote anonyme</label>
-                        </div>
-                        <div class="col-6 col-xl-2 d-flex justify-content-start justify-content-sm-center form-check form-switch">
-                            <input class="form-check-input" type="checkbox" #privateToggle id="privateToggle" (click)="onPrivateToggle()">
-                            <label class="form-check-label ms-1 ms-md-3" for="privateToggle">Vote privé</label>
+                        <div class="container mb-3">
+                            <div class="row align-items-center">
+                                <div class="col-6 col-md-12 col-lg-10 offset-lg-2 mb-3 d-flex justify-content-start justify-content-md-start form-check form-switch">
+                                    <input class="form-check-input me-3" type="checkbox" #anonymousToggle id="anonymousToggle"
+                                           (click)="onAnonymousToggle()">
+                                    <label class="form-check-label" for="anonymousToggle">Vote anonyme</label>
+                                </div>
+                                <div class="col-6 col-md-12 col-lg-10 offset-lg-2 d-flex mb-3 justify-content-start justify-content-md-start form-check form-switch">
+                                    <input class="form-check-input me-3" type="checkbox" #privateToggle id="privateToggle"
+                                           (click)="onPrivateToggle()">
+                                    <label class="form-check-label" for="privateToggle">Vote privé</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -58,8 +70,14 @@
                             <button type="button" class="btn-close" (click)="removeChoice(i)" aria-label="Close"></button>
                         </div>
                     </div>
-                    <div class="d-grid gap-2 d-md-flex mt-2 justify-content-sm-end">
+                    <div class="d-grid gap-2 d-md-flex mb-3 mt-2 justify-content-sm-end">
                         <button class="btn btn-outline-success" (click)="addChoice()" type="button">Ajouter un choix</button>
+                    </div>
+                    <div *ngIf="isMaxChoice" class="row align-items-center">
+                        <div class="col-2 mb-2">
+                            <input type="number" id="test" value="1" min="1" max="2" #maxChoice class="form-control" (input)="onMaxChoiceInput()">
+                        </div>
+                        <label class="col" for="test">Nombre maximum de choix acceptés par personne</label>
                     </div>
                 </div>
                 <div *ngIf="isPrivate" class="p-1 p-sm-2 p-md-3 mb-3 border rounded">

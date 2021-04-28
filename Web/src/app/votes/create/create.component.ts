@@ -8,9 +8,10 @@ import {
   ViewChild,
   ViewChildren
 } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {AuthService} from "../../services/auth.service";
-import {Router} from "@angular/router";
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AuthService} from '../../services/auth.service';
+import {Router} from '@angular/router';
+import {VotesService} from '../../services/votes.service';
 
 @Component({
   selector: 'app-create',
@@ -25,6 +26,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
   @ViewChild('intermediaryResultsToggle') intermediaryResultsToggle: ElementRef;
   @ViewChild('algoType') algoTypeSelector: ElementRef;
   @ViewChild('endDatePicker') endDatePicker: ElementRef;
+  @ViewChild('maxChoice') maxChoice: ElementRef;
   @ViewChildren('choices') choiceInputs: QueryList<ElementRef>;
   @ViewChildren('members') memberInputs: QueryList<ElementRef>;
   @ViewChild('submitBtn') submitBtn: ElementRef;
@@ -34,6 +36,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
   isPrivate = false;
   isAnonymous = false;
   isIntermediaryResults = true;
+  isMaxChoice = true;
   errorMessage: string;
   algoOptions = [
       {
@@ -50,15 +53,16 @@ export class CreateComponent implements OnInit, AfterViewInit {
       }
     ];
 
-  choices = [{id: 1}, {id: 2}]
-  members = [{id: 1}]
+  choices = [{id: 1}, {id: 2}];
+  members = [{id: 1}];
 
-  private choicesLastId: number = 2;
-  private membersLastId: number = 2;
+  private choicesLastId = 2;
+  private membersLastId = 2;
   private emailRegExp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 
   constructor(private fromBuilder: FormBuilder,
               private authService: AuthService,
+              private votesService: VotesService,
               private router: Router,
               private renderer: Renderer2) { }
 
@@ -71,14 +75,15 @@ export class CreateComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.algoTypeSelector.nativeElement.value = this.algoOptions[0].value
+    this.algoTypeSelector.nativeElement.value = this.algoOptions[0].value;
+    this.algoTypeSelector.nativeElement.value = this.algoOptions[0].value;
     this.endDatePicker.nativeElement.disabled = true;
     this.intermediaryResultsToggle.nativeElement.checked = true;
     this.intermediaryResultsToggle.nativeElement.disabled = true;
   }
 
-  setInvalidEmptyFields(): boolean {
-    let EmptyFields: ElementRef[] = [];
+  setInvalidInvalidFields(): boolean {
+    const EmptyFields: ElementRef[] = [];
     if (this.onLabelInputFocusOut()){
       EmptyFields.push(this.labelInput);
     }
@@ -88,6 +93,14 @@ export class CreateComponent implements OnInit, AfterViewInit {
     this.choiceInputs.forEach((choiceInput, index) => {
       if (this.onChoiceInputFocusOut(index)){
         EmptyFields.push(choiceInput);
+      }
+    });
+    if (this.onMaxChoiceInput()) {
+      EmptyFields.push(this.maxChoice);
+    }
+    this.memberInputs.forEach((memberInput, index) => {
+      if (this.onMemberInputFocusOut(index)){
+        EmptyFields.push(memberInput);
       }
     });
     if (EmptyFields.length !== 0) {
@@ -100,31 +113,46 @@ export class CreateComponent implements OnInit, AfterViewInit {
 
   onSubmit(): void {
 
-    if (!this.setInvalidEmptyFields()){
+    if (!this.setInvalidInvalidFields()){
+      this.isPending = true;
+      this.submitBtn.nativeElement.disabled = true;
       const choices = [];
       this.choiceInputs.forEach((choiceInput) => {
-        choices.push({name: choiceInput.nativeElement.value});
+        choices.push({names: [choiceInput.nativeElement.value]});
       });
+      const endDate = new Date(this.endDatePicker.nativeElement.value);
+      endDate.setHours(0, 0, 0, 0);
       const vote = new VoteToSend(
           this.labelInput.nativeElement.value,
           new Date(),
-          this.endDatePicker.nativeElement.value,
+          endDate,
           this.algoTypeSelector.nativeElement.value,
           this.isAnonymous,
           this.isIntermediaryResults,
           choices,
-          1
-          );
-      console.log(vote);
+          this.maxChoice.nativeElement.value);
+      this.votesService.sendPublicVote(vote).then(
+          newVote => {
+            this.router.navigate(['/', 'votes', newVote.id]);
+          }
+      );
     }
   }
 
   addChoice(): void {
     this.choices.push({id: this.choicesLastId++});
+    this.setMaxChoiceMaxInput();
   }
 
   removeChoice(i: number): void {
-    this.choices.splice(i,1);
+    this.choices.splice(i, 1);
+    this.setMaxChoiceMaxInput();
+  }
+
+  private setMaxChoiceMaxInput(): void {
+    if (this.algoTypeSelector.nativeElement.value === Algo.MAJORITY){
+      this.renderer.setProperty(this.maxChoice.nativeElement, 'max', this.choices.length);
+    }
   }
 
   addMember(): void {
@@ -132,7 +160,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
   }
 
   removeMember(i: number): void {
-    this.members.splice(i,1);
+    this.members.splice(i, 1);
   }
 
   onLabelInputFocusOut(): boolean {
@@ -146,8 +174,8 @@ export class CreateComponent implements OnInit, AfterViewInit {
   }
 
   onDatePickerFocusOut(): boolean {
-    const today = (new Date()).setHours(0,0,0,0);
-    const pickedDate = new Date(this.endDatePicker.nativeElement.value).setHours(0,0,0,0);
+    const today = (new Date()).setHours(0, 0, 0, 0);
+    const pickedDate = new Date(this.endDatePicker.nativeElement.value).setHours(0, 0, 0, 0);
     if (this.isLimitedTime && (today >= pickedDate || !this.endDatePicker.nativeElement.value)) {
       this.renderer.addClass(this.endDatePicker.nativeElement, 'is-invalid');
       return true;
@@ -201,7 +229,10 @@ export class CreateComponent implements OnInit, AfterViewInit {
     this.isIntermediaryResults = !this.isIntermediaryResults;
   }
 
-  onAlgoTypeSelectorInput() {
+  onAlgoTypeSelectorInput(): void {
+    if (this.algoTypeSelector.nativeElement.value !== Algo.MAJORITY){
+      this.isMaxChoice = false;
+    }
     if (this.algoTypeSelector.nativeElement.value === Algo.STV) {
       this.isIntermediaryResults = false;
       this.intermediaryResultsToggle.nativeElement.checked = false;
@@ -211,8 +242,22 @@ export class CreateComponent implements OnInit, AfterViewInit {
       this.endDateToggle.nativeElement.disabled = true;
       this.endDatePicker.nativeElement.disabled = false;
     } else {
+      if (this.algoTypeSelector.nativeElement.value === Algo.MAJORITY){
+        this.isMaxChoice = true;
+      }
       this.endDateToggle.nativeElement.disabled = false;
       this.intermediaryResultsToggle.nativeElement.disabled = false;
+    }
+  }
+
+  onMaxChoiceInput(): boolean {
+    if (this.maxChoice.nativeElement.min <= this.maxChoice.nativeElement.value &&
+        this.maxChoice.nativeElement.value <= this.maxChoice.nativeElement.max) {
+      this.renderer.removeClass(this.maxChoice.nativeElement, 'is-invalid');
+      return false;
+    } else {
+      this.renderer.addClass(this.maxChoice.nativeElement, 'is-invalid');
+      return true;
     }
   }
 }
@@ -223,12 +268,12 @@ export class VoteToSend {
               private algo: Algo,
               private anonymous: boolean,
               private intermediaryResult: boolean,
-              private choices: { names : string[] }[],
+              private choices: { names: string[] }[],
               private maxChoices: number) { }
 }
 
 enum Algo {
-  MAJORITY = "majority",
-  BORDA = "borda",
-  STV = "stv",
+  MAJORITY = 'majority',
+  BORDA = 'borda',
+  STV = 'stv',
 }

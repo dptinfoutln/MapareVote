@@ -1,7 +1,6 @@
 import {Component, ElementRef, OnInit, Renderer2, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../../services/auth.service';
-import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-signup',
@@ -24,7 +23,6 @@ export class SignupComponent implements OnInit {
 
   constructor(private fromBuilder: FormBuilder,
               private authService: AuthService,
-              private router: Router,
               private renderer: Renderer2) { }
 
   ngOnInit(): void {

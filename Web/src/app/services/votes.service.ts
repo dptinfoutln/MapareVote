@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
 import {Ballot} from '../models/ballot.model';
 import {JsonObject} from '@angular/compiler-cli/ngcc/src/packages/entry_point';
+import {VoteToSend} from '../votes/create/create.component';
 
 @Injectable({
   providedIn: 'root'
@@ -22,11 +23,26 @@ export class VotesService {
     this.votesSubject.next(this.votes);
   }
 
-  createVote(): void{
-    // TODO: Create Vote
+  sendPublicVote(vote: VoteToSend): Promise<Vote>{
+    const url = environment.apiURL + 'votes/public';
+    let headers = environment.headers;
+    headers = headers.set('Authorization', 'Bearer ' + this.authService.getToken());
+
+    return new Promise(
+        (resolve , reject) => {
+          this.http.post<Vote>(url, vote, {headers} ).subscribe({
+            next: newVote => {
+              resolve(newVote);
+            },
+            error: error => {
+              reject(error);
+            }
+          });
+        }
+    );
   }
 
-  getVotes(page: number): Vote[] {
+  getPublicVotes(page: number): Vote[] {
     const url = environment.apiURL + 'votes';
     const headers = new HttpHeaders({
       'Content-Type': 'application/json; charset=utf-8',
