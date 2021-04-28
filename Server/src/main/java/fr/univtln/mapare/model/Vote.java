@@ -147,27 +147,4 @@ public class Vote implements Serializable {
         return resultList.isEmpty();
     }
 
-    public void calculateResults() {
-        switch (algo) {
-            case "majority":
-            case "borda":
-                Map<Choice, Integer> countmap = new HashMap<>();
-                for (Choice c : choices)
-                    countmap.put(c, 0);
-                for (Ballot b : ballots) {
-                    for (BallotChoice bc : b.getChoices()) {
-                        countmap.put(bc.getChoice(), countmap.get(bc.getChoice()) + bc.getWeight());
-                    }
-                }
-                resultList = new ArrayList<>();
-                for (Choice c : choices) {
-                    resultList.add(new VoteResult(c, countmap.get(c), this));
-                }
-                break;
-            case "STV":
-            default:
-                setResultList(null);
-                break;
-        }
-    }
 }

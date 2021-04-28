@@ -48,17 +48,15 @@ public class VoteResource {
                     (!vote.hasResults() || vote.isIntermediaryResult()) && LocalDate.now().isAfter(vote.getEndDate()))
             ) {
                 vote.setIntermediaryResult(false);
-//                vote.calculateResults();
-//                Thread thread = new Thread(VoteUtils.voteResultsOf(vote));
-//                thread.start();
+                Thread thread = new Thread(VoteUtils.voteResultsOf(vote));
+                thread.start();
                 if (vote.getResultList() == null)
                     throw new NotFoundException("Algorithm not implemented.");
                 VoteDAO.of(Controllers.getEntityManager()).update(vote);
             }
             if (vote.isIntermediaryResult()) {
-//                vote.calculateResults();
-//                Thread thread = new Thread(VoteUtils.voteResultsOf(vote));
-//                thread.start();
+                Thread thread = new Thread(VoteUtils.voteResultsOf(vote));
+                thread.start();
                 if (vote.getResultList() == null)
                     throw new NotFoundException("Algorithm not implemented.");
                 VoteDAO.of(Controllers.getEntityManager()).update(vote);
@@ -148,8 +146,7 @@ public class VoteResource {
     @JWTAuth
     @Path("{id}/ballots")
     public Ballot addBallot(@Context SecurityContext securityContext, @PathParam ("id") int id, Ballot ballot) throws BusinessException {
-        //TODO: check borda weight 0.
-        //TODO: check maxchoices
+        //TODO: check choices
         User voter = (User) securityContext.getUserPrincipal();
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
         if (voter.isBanned())
@@ -171,6 +168,8 @@ public class VoteResource {
                 }
                 break;
             case "borda":
+                if (vote.getChoices().size() != ballot.getChoices().size())
+                    throw new ForbiddenException("Not enough choices for borda count algorithm.");
                 int[] temparray = new int[vote.getChoices().size()];
                 for (BallotChoice bc : ballot.getChoices()) {
                     // We verify that all values are coherent for borda count.
