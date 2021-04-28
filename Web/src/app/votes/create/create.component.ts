@@ -22,6 +22,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
   @ViewChild('endDateToggle') endDateToggle: ElementRef;
   @ViewChild('anonymousToggle') anonymousToggle: ElementRef;
   @ViewChild('privateToggle') privateToggle: ElementRef;
+  @ViewChild('intermediaryResultsToggle') intermediaryResultsToggle: ElementRef;
   @ViewChild('algoType') algoTypeSelector: ElementRef;
   @ViewChild('endDatePicker') endDatePicker: ElementRef;
   @ViewChildren('choices') choiceInputs: QueryList<ElementRef>;
@@ -29,9 +30,10 @@ export class CreateComponent implements OnInit, AfterViewInit {
   @ViewChild('submitBtn') submitBtn: ElementRef;
   createVoteForm: FormGroup;
   isPending: boolean;
-  isLimitedTime: boolean = false;
-  isPrivate: boolean = false;
-  isAnonymous: boolean = false;
+  isLimitedTime = false;
+  isPrivate = false;
+  isAnonymous = false;
+  isIntermediaryResults = true;
   errorMessage: string;
   algoOptions = [
       {
@@ -70,21 +72,24 @@ export class CreateComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.algoTypeSelector.nativeElement.value = this.algoOptions[0].value
+    this.endDatePicker.nativeElement.disabled = true;
+    this.intermediaryResultsToggle.nativeElement.checked = true;
+    this.intermediaryResultsToggle.nativeElement.disabled = true;
   }
 
   setInvalidEmptyFields(): boolean {
     let EmptyFields: ElementRef[] = [];
-    this.choiceInputs.forEach((choiceInput, index) => {
-      if (this.onChoiceInputFocusOut(index)){
-        EmptyFields.push(choiceInput);
-      }
-    });
     if (this.onLabelInputFocusOut()){
       EmptyFields.push(this.labelInput);
     }
     if (this.isLimitedTime && this.onDatePickerFocusOut()) {
       EmptyFields.push(this.endDatePicker);
     }
+    this.choiceInputs.forEach((choiceInput, index) => {
+      if (this.onChoiceInputFocusOut(index)){
+        EmptyFields.push(choiceInput);
+      }
+    });
     if (EmptyFields.length !== 0) {
       EmptyFields[0].nativeElement.focus();
       return true;
@@ -96,7 +101,21 @@ export class CreateComponent implements OnInit, AfterViewInit {
   onSubmit(): void {
 
     if (!this.setInvalidEmptyFields()){
-      // TODO send Vote creation
+      const choices = [];
+      this.choiceInputs.forEach((choiceInput) => {
+        choices.push({name: choiceInput.nativeElement.value});
+      });
+      const vote = new VoteToSend(
+          this.labelInput.nativeElement.value,
+          new Date(),
+          this.endDatePicker.nativeElement.value,
+          this.algoTypeSelector.nativeElement.value,
+          this.isAnonymous,
+          this.isIntermediaryResults,
+          choices,
+          1
+          );
+      console.log(vote);
     }
   }
 
@@ -127,9 +146,9 @@ export class CreateComponent implements OnInit, AfterViewInit {
   }
 
   onDatePickerFocusOut(): boolean {
-    const today = (new Date).setHours(0,0,0,0);
+    const today = (new Date()).setHours(0,0,0,0);
     const pickedDate = new Date(this.endDatePicker.nativeElement.value).setHours(0,0,0,0);
-    if (this.isLimitedTime && today >= pickedDate) {
+    if (this.isLimitedTime && (today >= pickedDate || !this.endDatePicker.nativeElement.value)) {
       this.renderer.addClass(this.endDatePicker.nativeElement, 'is-invalid');
       return true;
     } else {
@@ -160,14 +179,41 @@ export class CreateComponent implements OnInit, AfterViewInit {
 
   onEndDateToggle(): void {
     this.isLimitedTime = !this.isLimitedTime;
+    this.endDatePicker.nativeElement.disabled = !this.endDatePicker.nativeElement.disabled;
+    if (!this.isLimitedTime) {
+      this.intermediaryResultsToggle.nativeElement.checked = true;
+      this.intermediaryResultsToggle.nativeElement.disabled = true;
+      this.renderer.removeClass(this.endDatePicker.nativeElement, 'is-invalid');
+    } else {
+      this.intermediaryResultsToggle.nativeElement.disabled = false;
+    }
   }
 
-  onAnonymousToggle() {
+  onAnonymousToggle(): void {
     this.isAnonymous = !this.isAnonymous;
   }
 
-  onPrivateToggle() {
+  onPrivateToggle(): void {
     this.isPrivate = !this.isPrivate;
+  }
+
+  onIntermediaryResultsToggle(): void {
+    this.isIntermediaryResults = !this.isIntermediaryResults;
+  }
+
+  onAlgoTypeSelectorInput() {
+    if (this.algoTypeSelector.nativeElement.value === Algo.STV) {
+      this.isIntermediaryResults = false;
+      this.intermediaryResultsToggle.nativeElement.checked = false;
+      this.intermediaryResultsToggle.nativeElement.disabled = true;
+      this.isLimitedTime = true;
+      this.endDateToggle.nativeElement.checked = true;
+      this.endDateToggle.nativeElement.disabled = true;
+      this.endDatePicker.nativeElement.disabled = false;
+    } else {
+      this.endDateToggle.nativeElement.disabled = false;
+      this.intermediaryResultsToggle.nativeElement.disabled = false;
+    }
   }
 }
 export class VoteToSend {
@@ -176,10 +222,9 @@ export class VoteToSend {
               private endDate: Date,
               private algo: Algo,
               private anonymous: boolean,
+              private intermediaryResult: boolean,
               private choices: { names : string[] }[],
-              private maxChoices: number ) {
-
-  }
+              private maxChoices: number) { }
 }
 
 enum Algo {
