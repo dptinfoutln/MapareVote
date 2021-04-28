@@ -134,6 +134,10 @@ export class CreateComponent implements OnInit, AfterViewInit {
       this.votesService.sendPublicVote(vote).then(
           newVote => {
             this.router.navigate(['/', 'votes', newVote.id]);
+          }, err => {
+            console.log(err);
+            this.submitBtn.nativeElement.disabled = false;
+            this.isPending = false;
           }
       );
     }
