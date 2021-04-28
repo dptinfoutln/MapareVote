@@ -1,6 +1,7 @@
 package fr.univtln.mapare.resources;
 
 import fr.univtln.mapare.controllers.Controllers;
+import fr.univtln.mapare.controllers.VoteUtils;
 import fr.univtln.mapare.dao.BallotDAO;
 import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.dao.VoteDAO;
@@ -47,13 +48,17 @@ public class VoteResource {
                     (!vote.hasResults() || vote.isIntermediaryResult()) && LocalDate.now().isAfter(vote.getEndDate()))
             ) {
                 vote.setIntermediaryResult(false);
-                vote.calculateResults();
+//                vote.calculateResults();
+//                Thread thread = new Thread(VoteUtils.voteResultsOf(vote));
+//                thread.start();
                 if (vote.getResultList() == null)
                     throw new NotFoundException("Algorithm not implemented.");
                 VoteDAO.of(Controllers.getEntityManager()).update(vote);
             }
             if (vote.isIntermediaryResult()) {
-                vote.calculateResults();
+//                vote.calculateResults();
+//                Thread thread = new Thread(VoteUtils.voteResultsOf(vote));
+//                thread.start();
                 if (vote.getResultList() == null)
                     throw new NotFoundException("Algorithm not implemented.");
                 VoteDAO.of(Controllers.getEntityManager()).update(vote);
@@ -62,6 +67,23 @@ public class VoteResource {
         }
         else
             throw new ForbiddenException("You don't have access to this vote's details.");
+    }
+
+    @GET
+    @JWTAuth
+    @Path("{id}/results")
+    public List<VoteResult> getVoteResults(@Context SecurityContext securityContext,
+                                           @PathParam("id") int id) throws NotFoundException, ForbiddenException {
+        Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
+
+        if (vote == null)
+            throw new NotFoundException();
+
+        if (vote.isPublic() || vote.getMembers().contains((User) securityContext.getUserPrincipal())) {
+            return vote.getResultList();
+        }
+        else
+            throw new ForbiddenException();
     }
 
     @POST
@@ -152,10 +174,10 @@ public class VoteResource {
                 int[] temparray = new int[vote.getChoices().size()];
                 for (BallotChoice bc : ballot.getChoices()) {
                     // We verify that all values are coherent for borda count.
-                    if (bc.getWeight() > vote.getChoices().size())
-                        throw new ForbiddenException("Invalid choice weight for borda count algorithm.");
+                    if (bc.getWeight() > vote.getChoices().size() || bc.getWeight() <= 0)
+                        throw new ForbiddenException("Invalid choice weight for borda count algorithm: " + bc.getWeight() + ".");
                     if (temparray[bc.getWeight() - 1] != 0)
-                        throw new ForbiddenException("Duplicate choice weight for borda count algorithm.");
+                        throw new ForbiddenException("Duplicate choice weight for borda count algorithm: " + bc.getWeight() + ".");
                     temparray[bc.getWeight() - 1] = 1;
                 }
                 break;
