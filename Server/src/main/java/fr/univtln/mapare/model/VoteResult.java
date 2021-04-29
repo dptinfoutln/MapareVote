@@ -1,5 +1,7 @@
 package fr.univtln.mapare.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,12 +21,14 @@ import java.io.Serializable;
 public class VoteResult implements Serializable {
     @Id
     @OneToOne
+    @JsonIgnoreProperties({"vote"})
     @JoinColumn(name = "\"choice\"")
     private Choice choice;
 
     @Column(name = "\"value\"")
     private int value;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "\"vote\"")
     private Vote vote;

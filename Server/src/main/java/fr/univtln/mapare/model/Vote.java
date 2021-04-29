@@ -80,9 +80,13 @@ public class Vote implements Serializable {
             "passwordHash", "salt", "emailToken"})
     private List<User> members = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
     @JoinColumn(name = "\"result\"")
     private List<VoteResult> resultList;
+
+    @JsonIgnore
+    private transient LocalDate lastCalculated = null;
 
     @Builder
     @SneakyThrows
@@ -110,7 +114,7 @@ public class Vote implements Serializable {
             members.add(member);
     }
 
-    private static final transient List<String> algolist = Arrays.asList("majority");
+    private static final transient List<String> algolist = Arrays.asList("majority", "borda", "STV");
 
     public static List<String> getAlgolist() {
         return algolist;
@@ -144,29 +148,5 @@ public class Vote implements Serializable {
 
     public boolean hasResults() {
         return resultList.isEmpty();
-    }
-
-    public void calculateResults() {
-        switch (algo) {
-            case "majority":
-            case "borda":
-                Map<Choice, Integer> countmap = new HashMap<>();
-                for (Choice c : choices)
-                    countmap.put(c, 0);
-                for (Ballot b : ballots) {
-                    for (BallotChoice bc : b.getChoices()) {
-                        countmap.put(bc.getChoice(), countmap.get(bc.getChoice()) + bc.getWeight());
-                    }
-                }
-                resultList = new ArrayList<>();
-                for (Choice c : choices) {
-                    resultList.add(new VoteResult(c, countmap.get(c), this));
-                }
-                break;
-            case "STV":
-            default:
-                setResultList(null);
-                break;
-        }
     }
 }

@@ -7,7 +7,8 @@ import jakarta.persistence.Persistence;
 import java.util.List;
 
 public class Controllers {
-    private static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("maparevotedb");
+    private static EntityManagerFactory EMF = null;
+    private static EntityManagerFactory TestEMF = null;
     private static EntityManager entityManager = null;
 
     private Controllers() {}
@@ -21,8 +22,15 @@ public class Controllers {
     }
 
     public static void init() {
+        EMF = Persistence.createEntityManagerFactory("maparevotedb");
         if (entityManager == null)
             entityManager = EMF.createEntityManager();
+    }
+
+    public static void testinit() {
+        TestEMF = Persistence.createEntityManagerFactory("maparevotedev");
+        if (entityManager == null)
+            entityManager = TestEMF.createEntityManager();
     }
 
     public static void close() {

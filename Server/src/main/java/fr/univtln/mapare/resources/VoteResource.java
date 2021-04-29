@@ -1,6 +1,7 @@
 package fr.univtln.mapare.resources;
 
 import fr.univtln.mapare.controllers.Controllers;
+import fr.univtln.mapare.controllers.VoteUtils;
 import fr.univtln.mapare.dao.BallotDAO;
 import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.dao.VoteDAO;
@@ -42,26 +43,45 @@ public class VoteResource {
         if (vote == null)
             throw new NotFoundException();
 
+        Thread thread;
         if (vote.isPublic() || vote.getMembers().contains((User) securityContext.getUserPrincipal())) {
             if (vote.getEndDate() != null && (
                     (!vote.hasResults() || vote.isIntermediaryResult()) && LocalDate.now().isAfter(vote.getEndDate()))
             ) {
                 vote.setIntermediaryResult(false);
-                vote.calculateResults();
-                if (vote.getResultList() == null)
-                    throw new NotFoundException("Algorithm not implemented.");
+                thread = new Thread(VoteUtils.voteResultsOf(vote));
+                thread.start();
                 VoteDAO.of(Controllers.getEntityManager()).update(vote);
             }
-            if (vote.isIntermediaryResult()) {
-                vote.calculateResults();
-                if (vote.getResultList() == null)
-                    throw new NotFoundException("Algorithm not implemented.");
+            if (vote.isIntermediaryResult() &&
+                    (vote.getBallots().size() < 1000 ||
+                            !vote.getLastCalculated().equals(LocalDate.now()))) {
+                vote.setLastCalculated(LocalDate.now());
+                thread = new Thread(VoteUtils.voteResultsOf(vote));
+                thread.start();
                 VoteDAO.of(Controllers.getEntityManager()).update(vote);
             }
             return vote;
         }
         else
             throw new ForbiddenException("You don't have access to this vote's details.");
+    }
+
+    @GET
+    @JWTAuth
+    @Path("{id}/results")
+    public List<VoteResult> getVoteResults(@Context SecurityContext securityContext,
+                                           @PathParam("id") int id) throws NotFoundException, ForbiddenException {
+        Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
+
+        if (vote == null)
+            throw new NotFoundException();
+
+        if (vote.isPublic() || vote.getMembers().contains((User) securityContext.getUserPrincipal())) {
+            return vote.getResultList();
+        }
+        else
+            throw new ForbiddenException();
     }
 
     @POST
@@ -90,20 +110,20 @@ public class VoteResource {
             throw new ForbiddenException("Invalid algorithm");
         if (vote.getMaxChoices() < 1)
             throw new ForbiddenException("Please enter a proper value for your maxChoices count.");
-        if (vote.getChoices().size() < vote.getMaxChoices())
+        if (vote.getChoices().size() <= vote.getMaxChoices())
             throw new ForbiddenException("Please enter enough choices to reach your maxChoices count or lower your maxChoices count.");
-        if (vote.getChoices().size() == 1)
-            throw new ForbiddenException("Please offer more than one choice in this vote.");
-        if (vote.getStartDate().isBefore(LocalDate.now()))
+        if (vote.getStartDate().isBefore(LocalDate.now().minusDays(1)))
             throw new ForbiddenException("Start date before today.");
         if (vote.getEndDate() != null && vote.getEndDate().isBefore(vote.getStartDate().plus(1, ChronoUnit.DAYS)))
             throw new ForbiddenException("End date before start date.");
         if (vote.getEndDate() == null && !vote.isIntermediaryResult())
             throw new ForbiddenException("Vote with no end date and no intermediary results: invalid.");
-        vote.setId(0);
-        if (vote.getAlgo() == "borda"){
+        if (vote.getEndDate() == null && vote.getAlgo().equals("STV"))
+            throw new ForbiddenException("Votes with the STV algorithm have to have an end date.");
+        if (vote.getAlgo().equals("borda")){
             vote.setMaxChoices(vote.getChoices().size());
         }
+        vote.setId(0);
         for (Choice c : vote.getChoices())
             c.setVote(vote);
         try {
@@ -126,8 +146,7 @@ public class VoteResource {
     @JWTAuth
     @Path("{id}/ballots")
     public Ballot addBallot(@Context SecurityContext securityContext, @PathParam ("id") int id, Ballot ballot) throws BusinessException {
-        //TODO: check borda weight 0.
-        //TODO: check maxchoices
+        //TODO: check choices
         User voter = (User) securityContext.getUserPrincipal();
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
         if (voter.isBanned())
@@ -149,17 +168,21 @@ public class VoteResource {
                 }
                 break;
             case "borda":
+            case "STV":
+                if (vote.getChoices().size() != ballot.getChoices().size())
+                    throw new ForbiddenException("Not enough choices for " + vote.getAlgo() + " algorithm.");
                 int[] temparray = new int[vote.getChoices().size()];
                 for (BallotChoice bc : ballot.getChoices()) {
                     // We verify that all values are coherent for borda count.
-                    if (bc.getWeight() > vote.getChoices().size())
-                        throw new ForbiddenException("Invalid choice weight for borda count algorithm.");
+                    if (bc.getWeight() > vote.getChoices().size() || bc.getWeight() <= 0)
+                        throw new ForbiddenException("Invalid choice weight for " + vote.getAlgo() + " algorithm: "
+                                + bc.getWeight() + ".");
                     if (temparray[bc.getWeight() - 1] != 0)
-                        throw new ForbiddenException("Duplicate choice weight for borda count algorithm.");
+                        throw new ForbiddenException("Duplicate choice weight for " + vote.getAlgo() + " algorithm: "
+                                + bc.getWeight() + ".");
                     temparray[bc.getWeight() - 1] = 1;
                 }
                 break;
-            case "STV":
             default:
                 break;
         }
