@@ -114,7 +114,7 @@ public class Vote implements Serializable {
             members.add(member);
     }
 
-    private static final transient List<String> algolist = Arrays.asList("majority");
+    private static final transient List<String> algolist = Arrays.asList("majority", "borda", "STV");
 
     public static List<String> getAlgolist() {
         return algolist;
