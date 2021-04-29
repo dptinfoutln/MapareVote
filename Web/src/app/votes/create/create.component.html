@@ -2,14 +2,13 @@
     <div class="row">
         <div class="col-md-10 offset-md-1 col-xxl-8 offset-xxl-2">
             <h1 class="bd-title mb-5">Créer un vote</h1>
-            <form [formGroup]="createVoteForm" (ngSubmit)="onSubmit()">
+            <form (ngSubmit)="onSubmit()">
                 <div class="mb-3 form-floating">
-                    <input type="text" id="label" #labelInput class="form-control" placeholder="Titre du vote"
-                           formControlName="label" (focusout)="onLabelInputFocusOut()">
+                    <input type="text" id="label" #labelInput class="form-control" placeholder="Titre du vote" (focusout)="onLabelInputFocusOut()">
                     <label for="label">Titre du vote</label>
                 </div>
                 <div class="col mb-3 form-floating">
-                    <select name="algoType" #algoType id="algoType" class="form-select" formControlName="algoType"
+                    <select name="algoType" #algoType id="algoType" class="form-select"
                             aria-label="Floating label select" (input)="onAlgoTypeSelectorInput()">
                         <option *ngFor="let algoOption of algoOptions" [value]="algoOption.value">{{algoOption.name}}</option>
                     </select>
@@ -26,10 +25,19 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-lg-10 offset-lg-2 mb-3 form-floating">
-                            <input type="date" id="endDatePicker" #endDatePicker class="form-control datepicker"
-                                   placeholder="Date de fin" formControlName="endDate" (focusout)="onDatePickerFocusOut()">
-                            <label class="ms-1" for="endDatePicker">Date de fin</label>
+                        <div class="container g-2 offset-lg-1 mb-3">
+                            <div class="row align-items-center g-2">
+                                <div class="col-6 col-lg-6 mb-3 form-floating">
+                                    <input type="date" id="startDatePicker" #startDatePicker class="form-control datepicker"
+                                           placeholder="Date de début" (focusout)="onStartDatePickerFocusOut()">
+                                    <label class="ms-1" for="endDatePicker">Date de début</label>
+                                </div>
+                                <div class="col-6 col-lg-6 mb-3 form-floating">
+                                    <input type="date" id="endDatePicker" #endDatePicker class="form-control datepicker"
+                                           placeholder="Date de fin" (focusout)="onEndDatePickerFocusOut()">
+                                    <label class="ms-1" for="endDatePicker">Date de fin</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-6">

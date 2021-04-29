@@ -25,6 +25,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
   @ViewChild('privateToggle') privateToggle: ElementRef;
   @ViewChild('intermediaryResultsToggle') intermediaryResultsToggle: ElementRef;
   @ViewChild('algoType') algoTypeSelector: ElementRef;
+  @ViewChild('startDatePicker') startDatePicker: ElementRef;
   @ViewChild('endDatePicker') endDatePicker: ElementRef;
   @ViewChild('maxChoice') maxChoice: ElementRef;
   @ViewChildren('choices') choiceInputs: QueryList<ElementRef>;
@@ -60,18 +61,13 @@ export class CreateComponent implements OnInit, AfterViewInit {
   private membersLastId = 2;
   private emailRegExp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 
-  constructor(private fromBuilder: FormBuilder,
-              private authService: AuthService,
+  constructor(private authService: AuthService,
               private votesService: VotesService,
               private router: Router,
               private renderer: Renderer2) { }
 
   ngOnInit(): void {
-    this.createVoteForm = this.fromBuilder.group({
-      label: ['', [Validators.required]],
-      endDate: ['', [Validators.required]],
-      algoType: ['', [Validators.required, Validators.email]]
-    });
+
   }
 
   ngAfterViewInit(): void {
@@ -80,6 +76,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
     this.endDatePicker.nativeElement.disabled = true;
     this.intermediaryResultsToggle.nativeElement.checked = true;
     this.intermediaryResultsToggle.nativeElement.disabled = true;
+    this.startDatePicker.nativeElement.value = (new Date()).toISOString().substring(0,10);
   }
 
   setInvalidInvalidFields(): boolean {
@@ -87,8 +84,11 @@ export class CreateComponent implements OnInit, AfterViewInit {
     if (this.onLabelInputFocusOut()){
       EmptyFields.push(this.labelInput);
     }
-    if (this.isLimitedTime && this.onDatePickerFocusOut()) {
+    if (this.isLimitedTime && this.onEndDatePickerFocusOut()) {
       EmptyFields.push(this.endDatePicker);
+    }
+    if (this.onStartDatePickerFocusOut()) {
+      EmptyFields.push(this.startDatePicker);
     }
     this.choiceInputs.forEach((choiceInput, index) => {
       if (this.onChoiceInputFocusOut(index)){
@@ -120,11 +120,12 @@ export class CreateComponent implements OnInit, AfterViewInit {
       this.choiceInputs.forEach((choiceInput) => {
         choices.push({names: [choiceInput.nativeElement.value]});
       });
+      const startDate = new Date(this.startDatePicker.nativeElement.value);
       const endDate = new Date(this.endDatePicker.nativeElement.value);
       endDate.setHours(0, 0, 0, 0);
       const vote = new VoteToSend(
           this.labelInput.nativeElement.value,
-          new Date(),
+          startDate,
           endDate,
           this.algoTypeSelector.nativeElement.value,
           this.isAnonymous,
@@ -177,14 +178,34 @@ export class CreateComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onDatePickerFocusOut(): boolean {
-    const today = (new Date()).setHours(0, 0, 0, 0);
-    const pickedDate = new Date(this.endDatePicker.nativeElement.value).setHours(0, 0, 0, 0);
+  onEndDatePickerFocusOut(): boolean {
+    let today = new Date();
+    today.setTime(today.getTime() + today.getTimezoneOffset()*60*1000);
+    today.setHours(0, 0, 0, 0);
+    const pickedDate = new Date(this.endDatePicker.nativeElement.value);
+    pickedDate.setTime(pickedDate.getTime() + pickedDate.getTimezoneOffset()*60*1000);
+    pickedDate.setHours(0, 0, 0, 0);
     if (this.isLimitedTime && (today >= pickedDate || !this.endDatePicker.nativeElement.value)) {
       this.renderer.addClass(this.endDatePicker.nativeElement, 'is-invalid');
       return true;
     } else {
       this.renderer.removeClass(this.endDatePicker.nativeElement, 'is-invalid');
+      return false;
+    }
+  }
+
+  onStartDatePickerFocusOut(): boolean {
+    let today = new Date();
+    today.setTime(today.getTime() + today.getTimezoneOffset()*60*1000);
+    today.setHours(0, 0, 0, 0);
+    const pickedDate = new Date(this.startDatePicker.nativeElement.value);
+    pickedDate.setTime(pickedDate.getTime() + pickedDate.getTimezoneOffset()*60*1000);
+    pickedDate.setHours(0, 0, 0, 0);
+    if (today.getTime() > pickedDate.getTime()  || !this.startDatePicker.nativeElement.value) {
+      this.renderer.addClass(this.startDatePicker.nativeElement, 'is-invalid');
+      return true;
+    } else {
+      this.renderer.removeClass(this.startDatePicker.nativeElement, 'is-invalid');
       return false;
     }
   }
