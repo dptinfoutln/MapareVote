@@ -1,8 +1,9 @@
 package fr.univtln.mapare.controllers;
 
 import fr.univtln.mapare.model.*;
-import org.glassfish.grizzly.utils.Pair;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public abstract class VoteUtils {
@@ -25,6 +26,7 @@ public abstract class VoteUtils {
 
         public void calculateResults() {
             List<VoteResult> resultList;
+            int candidatecount = 1;
             switch (vote.getAlgo()) {
                 case "majority":
                 case "borda":
@@ -45,6 +47,7 @@ public abstract class VoteUtils {
                 case "STV":
                     resultList = new ArrayList<>();
 
+                    // IRV
                     if (vote.getMaxChoices() == 1) {
                         List<List<Choice>> collated = new ArrayList<>();
                         List<Choice> temp;
@@ -57,19 +60,43 @@ public abstract class VoteUtils {
                             collated.add(temp);
                         }
                         Map<Choice, Integer> voteCounting = new HashMap<>();
-                        for (Choice c : vote.getChoices())
-                            voteCounting.put(c, 0);
-                        for (List<Choice> lc : collated) {
-                            voteCounting.put(lc.get(0), voteCounting.get(lc.get(0)) + 1);
-                        }
 
-                        for (Choice c : vote.getChoices()) {
-                            if (voteCounting.get(c) > vote.getBallots().size() / 2)
-                                resultList.add(new VoteResult(c, 1, vote));
+                        Choice minchoice = null;
+                        int minval;
+
+                        while (true) {
+                            for (Choice c : vote.getChoices())
+                                voteCounting.put(c, 0);
+                            for (List<Choice> lc : collated) {
+                                voteCounting.put(lc.get(0), voteCounting.get(lc.get(0)) + 1);
+                            }
+
+                            for (Choice c : vote.getChoices()) {
+                                if (voteCounting.get(c) > vote.getBallots().size() / 2) {
+                                    resultList.add(new VoteResult(c, candidatecount, vote));
+                                    break;
+                                }
+                            }
+
+                            if (resultList.size() == 1)
+                                break;
+
+                            minval = vote.getBallots().size() + 1;
+                            for (Choice c : vote.getChoices()) {
+                                if (voteCounting.get(c) != 0 && voteCounting.get(c) < minval) {
+                                    minval = voteCounting.get(c);
+                                    minchoice = c;
+                                }
+                                for (List<Choice> lc : collated) {
+                                    lc.remove(minchoice);
+                                }
+                            }
                         }
                     }
+
+                    // STV
                     else {
-                        //TODO: later
+                        //TODO: it
                     }
 
                     vote.setResultList(resultList);
