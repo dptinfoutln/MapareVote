@@ -173,13 +173,13 @@ public class Main {
         //System.out.println(UserDAO.of(entityManager).findById(1));
 //        UserDAO.of(entityManager).findAll();
 
-        Vote vote = VoteDAO.of(entityManager).findById(3);
-        System.out.println(vote);
-//        vote.setResultList(Arrays.asList(new VoteResult(ChoiceDAO.of(entityManager).findById(7), 100, vote)));
-//        VoteDAO.of(entityManager).update(vote);
-        entityManager.getTransaction().begin();
-        entityManager.remove(vote);
-        entityManager.getTransaction().commit();
+//        Vote vote = VoteDAO.of(entityManager).findById(3);
+//        System.out.println(vote);
+////        vote.setResultList(Arrays.asList(new VoteResult(ChoiceDAO.of(entityManager).findById(7), 100, vote)));
+////        VoteDAO.of(entityManager).update(vote);
+//        entityManager.getTransaction().begin();
+//        entityManager.remove(vote);
+//        entityManager.getTransaction().commit();
     }
 
 }
