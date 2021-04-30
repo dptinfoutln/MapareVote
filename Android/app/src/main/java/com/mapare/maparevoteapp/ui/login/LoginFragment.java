@@ -6,8 +6,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +31,13 @@ import com.mapare.maparevoteapp.R;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class LoginFragment extends Fragment {
+    private EditText emailField;
+    private EditText passwordField;
+    private Button loginButton;
+    private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
 
     @Nullable
@@ -37,11 +45,36 @@ public class LoginFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
         return inflater.inflate(R.layout.fragment_login, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                String state = prefs.getString("state", null);
+                Log.i("debug", state+"");
+                if (state != null) {
+                    loginButton.setClickable(true);
+                    if (state.equals("CONNECTED")) {
+                        Toast.makeText(getContext(), "Connecté", Toast.LENGTH_SHORT).show();
+                        //Return back logged in
+                        getActivity().onBackPressed();
+                        // hide keyboard
+                        InputMethodManager inputMethodManager = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+                    }
+                    else {
+                        Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake);
+                        passwordField.setError(getResources().getString(R.string.incorrect_password));
+                        loginButton.startAnimation(shake);
+                        prefs.edit().putString("state", null).apply();
+                    }
+                }
+            }
+        };
+
         this.requireContext().getSharedPreferences("Login", Context.MODE_PRIVATE).getString("email", null);
         super.onViewCreated(view, savedInstanceState);
 
@@ -49,9 +82,9 @@ public class LoginFragment extends Fragment {
 
         String savedEmail = this.requireContext().getSharedPreferences("Login", Context.MODE_PRIVATE).getString("email", null);
 
-        EditText emailField = view.findViewById(R.id.emailField);
-        EditText passwordField = view.findViewById(R.id.passwordField);
-        Button loginButton = view.findViewById(R.id.loginButton);
+        emailField = view.findViewById(R.id.emailField);
+        passwordField = view.findViewById(R.id.passwordField);
+        loginButton = view.findViewById(R.id.loginButton);
 
         if (savedEmail != null)
             emailField.setText(savedEmail);
@@ -59,7 +92,6 @@ public class LoginFragment extends Fragment {
         loginButton.setOnClickListener(v -> {
             String email = emailField.getText().toString();
             String password = passwordField.getText().toString();
-            Animation shake = AnimationUtils.loadAnimation(this.getContext(), R.anim.shake);
             if(TextUtils.isEmpty(email)){
                 emailField.setError(getResources().getString(R.string.empty_email));
             }
@@ -67,22 +99,20 @@ public class LoginFragment extends Fragment {
                 passwordField.setError(getResources().getString(R.string.empty_password));
             }
             else {
-                Toast.makeText(getContext(),"Connexion en cours", Toast.LENGTH_SHORT).show();
+                loginButton.setClickable(false);
                 loginAttempt(this.requireContext(), email, password);
-                if (this.requireContext().getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null) == null)
-                    passwordField.setError(getResources().getString(R.string.incorrect_password));
-
-                else {
-                    //Return back logged in
-                    this.requireActivity().onBackPressed();
-                    // hide keyboard
-                    InputMethodManager inputMethodManager = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputMethodManager.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
-                }
             }
-            loginButton.startAnimation(shake);
         });
     }
+
+    @Override
+    public void onResume() {
+        // TODO: test avec une variable globale ici
+        super.onResume();
+        getContext().getSharedPreferences("Login", Context.MODE_PRIVATE).registerOnSharedPreferenceChangeListener(listener);
+    }
+
+
 
     private void loginAttempt(Context context, String email, String password) {
         // Instantiate the RequestQueue.
@@ -98,13 +128,15 @@ public class LoginFragment extends Fragment {
                         context.getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("token", response).apply();
                         // Store the last email authenticated
                         context.getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("email", email).apply();
-
-                        Toast.makeText(context, "Connexion réussie", Toast.LENGTH_SHORT).show();
+                        // Store the state (needed to validate or not with a listener)
+                        context.getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("state", "CONNECTED").apply();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 // TODO: manage errors
+                context.getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("state", "ERROR").apply();
+
             }
         })
         {
@@ -121,5 +153,4 @@ public class LoginFragment extends Fragment {
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
     }
-
 }
