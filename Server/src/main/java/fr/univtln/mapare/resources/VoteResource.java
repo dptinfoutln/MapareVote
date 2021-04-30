@@ -106,12 +106,16 @@ public class VoteResource {
     }
 
     public Vote addVote(Vote vote) throws BusinessException {
-        if (!Vote.getAlgolist().contains(vote.getAlgo()))
+        if (vote.getLabel() == null)
+            throw new ForbiddenException("Please send a title.");
+        if (vote.getAlgo() == null || !Vote.getAlgolist().contains(vote.getAlgo()))
             throw new ForbiddenException("Invalid algorithm");
         if (vote.getMaxChoices() < 1)
             throw new ForbiddenException("Please enter a proper value for your maxChoices count.");
         if (vote.getChoices().size() <= vote.getMaxChoices())
             throw new ForbiddenException("Please enter enough choices to reach your maxChoices count or lower your maxChoices count.");
+        if (vote.getStartDate() == null)
+            throw new ForbiddenException("Invalid start date.");
         if (vote.getStartDate().isBefore(LocalDate.now().minusDays(1)))
             throw new ForbiddenException("Start date before today.");
         if (vote.getEndDate() != null && vote.getEndDate().isBefore(vote.getStartDate().plus(1, ChronoUnit.DAYS)))
@@ -173,7 +177,7 @@ public class VoteResource {
                     throw new ForbiddenException("Not enough choices for " + vote.getAlgo() + " algorithm.");
                 int[] temparray = new int[vote.getChoices().size()];
                 for (BallotChoice bc : ballot.getChoices()) {
-                    // We verify that all values are coherent for borda count.
+                    // We verify that all values are coherent.
                     if (bc.getWeight() > vote.getChoices().size() || bc.getWeight() <= 0)
                         throw new ForbiddenException("Invalid choice weight for " + vote.getAlgo() + " algorithm: "
                                 + bc.getWeight() + ".");
