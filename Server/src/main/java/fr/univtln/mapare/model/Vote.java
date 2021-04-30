@@ -65,6 +65,7 @@ public class Vote implements Serializable {
     @PrivateOwned   // Permert d'update la bd à partir de la liste actuelle (pour les remove par ex)
     private List<Choice> choices = new ArrayList<>();
 
+    //TODO: new field for number of winners for STV
     @Column(nullable = false, name = "\"maxChoices\"")
     private int maxChoices = 1;
 
