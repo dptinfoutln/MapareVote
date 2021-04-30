@@ -1,6 +1,5 @@
 package fr.univtln.mapare;
 
-import fr.univtln.mapare.controllers.Controller;
 import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.exceptions.ConflictException;

@@ -88,6 +88,9 @@ public class Vote implements Serializable {
     @JsonIgnore
     private transient LocalDate lastCalculated = null;
 
+    @Transient
+    private boolean pendingResult = false;
+
     @Builder
     @SneakyThrows
     public Vote(String label, LocalDate startDate, LocalDate endDate, String algo, boolean anonymous, User votemaker) {
