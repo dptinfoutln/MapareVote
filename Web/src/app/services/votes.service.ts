@@ -1,12 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Vote } from '../models/vote.model';
-import { Subject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
-import {Ballot} from '../models/ballot.model';
-import {JsonObject} from '@angular/compiler-cli/ngcc/src/packages/entry_point';
-import {VoteToSend} from '../votes/create/create.component';
+import { Ballot } from '../models/ballot.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,14 +13,7 @@ export class VotesService {
   constructor(private http: HttpClient,
               private authService: AuthService ) { }
 
-  votes: Vote[] = [];
-  votesSubject = new Subject<Vote[]>();
-
-  emitVotes(): void {
-    this.votesSubject.next(this.votes);
-  }
-
-  sendPublicVote(vote: VoteToSend): Promise<Vote>{
+  sendPublicVote(vote): Promise<Vote>{
     const url = environment.apiURL + 'votes/public';
     let headers = environment.headers;
     headers = headers.set('Authorization', 'Bearer ' + this.authService.getToken());
@@ -42,16 +32,41 @@ export class VotesService {
     );
   }
 
-  getPublicVotes(page: number): Vote[] {
-    const url = environment.apiURL + 'votes';
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json; charset=utf-8',
-      Accept: 'text/plain'
-    });
+  getPublicVotes(pageNum?: number, pageSize?: number): Promise<any> {
+    const url = environment.apiURL + 'votes/public';
+    let headers = environment.headers;
+    headers = headers.set('Accept', 'application/json');
 
-    this.http.get(url, { headers } ).subscribe();
-    return [];
+    return new Promise(
+        (resolve , reject) => {
+          this.http.get<Vote[]>(url, { headers } ).subscribe(
+              votes => {
+                resolve(votes);
+              }, err => {
+                reject(err);
+              }
+          );
+        }
+    );
   }
+
+    getPrivateVotes(pageNum?: number, pageSize?: number): Promise<any> {
+        const url = environment.apiURL + 'votes/private/invited';
+        let headers = environment.headers;
+        headers = headers.set('Authorization', 'Bearer ' + this.authService.getToken());
+
+        return new Promise(
+            (resolve , reject) => {
+                this.http.get<Vote[]>(url, { headers } ).subscribe(
+                    votes => {
+                        resolve(votes);
+                    }, err => {
+                        reject(err);
+                    }
+                );
+            }
+        );
+    }
 
   getVote(id: number): Promise<Vote>{
     const url = environment.apiURL + 'votes/' + id;

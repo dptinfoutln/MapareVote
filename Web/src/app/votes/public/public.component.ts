@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {VotesService} from '../../services/votes.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-public',
@@ -7,9 +9,22 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PublicComponent implements OnInit {
 
-  constructor() { }
+    votes;
+    isLoading;
 
-  ngOnInit(): void {
-  }
+    constructor(private votesService: VotesService,
+                private router: Router) { }
 
+    ngOnInit(): void {
+        this.isLoading = true;
+        this.votesService.getPublicVotes().then(
+            votes => {
+                this.isLoading = false;
+                this.votes = votes;
+                // console.log(votes);
+            },
+            error => {
+                console.log(error);
+            });
+    }
 }

@@ -1,17 +1,7 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  OnInit,
-  QueryList,
-  Renderer2,
-  ViewChild,
-  ViewChildren
-} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from '../../services/auth.service';
-import {Router} from '@angular/router';
-import {VotesService} from '../../services/votes.service';
+import {AfterViewInit, Component, ElementRef, OnInit, QueryList, Renderer2, ViewChild, ViewChildren} from '@angular/core';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
+import { VotesService } from '../../services/votes.service';
 
 @Component({
   selector: 'app-create',
@@ -31,7 +21,6 @@ export class CreateComponent implements OnInit, AfterViewInit {
   @ViewChildren('choices') choiceInputs: QueryList<ElementRef>;
   @ViewChildren('members') memberInputs: QueryList<ElementRef>;
   @ViewChild('submitBtn') submitBtn: ElementRef;
-  createVoteForm: FormGroup;
   isPending: boolean;
   isLimitedTime = false;
   isPrivate = false;
@@ -40,19 +29,19 @@ export class CreateComponent implements OnInit, AfterViewInit {
   isMaxChoice = true;
   errorMessage: string;
   algoOptions = [
-      {
-        value : Algo.MAJORITY,
-        name : 'Majoritaire'
-      },
-      {
-        value : Algo.BORDA,
-        name : 'Borda'
-      },
-      {
-        value : Algo.STV,
-        name : 'Scrutin à vote unique transférable'
-      }
-    ];
+    {
+      value: Algo.MAJORITY,
+      name: 'Majoritaire'
+    },
+    {
+      value: Algo.BORDA,
+      name: 'Borda'
+    },
+    {
+      value: Algo.STV,
+      name: 'Scrutin à vote unique transférable'
+    }
+  ];
 
   choices = [{id: 1}, {id: 2}];
   members = [{id: 1}];
@@ -60,11 +49,15 @@ export class CreateComponent implements OnInit, AfterViewInit {
   private choicesLastId = 2;
   private membersLastId = 2;
   private emailRegExp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+  private today = new Date();
 
   constructor(private authService: AuthService,
               private votesService: VotesService,
               private router: Router,
-              private renderer: Renderer2) { }
+              private renderer: Renderer2) {
+    this.today.setTime(this.today.getTime() + this.today.getTimezoneOffset() * 60 * 1000);
+    this.today.setHours(0, 0, 0, 0);
+  }
 
   ngOnInit(): void {
 
@@ -76,12 +69,12 @@ export class CreateComponent implements OnInit, AfterViewInit {
     this.endDatePicker.nativeElement.disabled = true;
     this.intermediaryResultsToggle.nativeElement.checked = true;
     this.intermediaryResultsToggle.nativeElement.disabled = true;
-    this.startDatePicker.nativeElement.value = (new Date()).toISOString().substring(0,10);
+    this.startDatePicker.nativeElement.value = (new Date()).toISOString().substring(0, 10);
   }
 
   setInvalidInvalidFields(): boolean {
     const EmptyFields: ElementRef[] = [];
-    if (this.onLabelInputFocusOut()){
+    if (this.onLabelInputFocusOut()) {
       EmptyFields.push(this.labelInput);
     }
     if (this.isLimitedTime && this.onEndDatePickerFocusOut()) {
@@ -91,7 +84,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
       EmptyFields.push(this.startDatePicker);
     }
     this.choiceInputs.forEach((choiceInput, index) => {
-      if (this.onChoiceInputFocusOut(index)){
+      if (this.onChoiceInputFocusOut(index)) {
         EmptyFields.push(choiceInput);
       }
     });
@@ -99,7 +92,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
       EmptyFields.push(this.maxChoice);
     }
     this.memberInputs.forEach((memberInput, index) => {
-      if (this.onMemberInputFocusOut(index)){
+      if (this.onMemberInputFocusOut(index)) {
         EmptyFields.push(memberInput);
       }
     });
@@ -113,7 +106,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
 
   onSubmit(): void {
 
-    if (!this.setInvalidInvalidFields()){
+    if (!this.setInvalidInvalidFields()) {
       this.isPending = true;
       this.submitBtn.nativeElement.disabled = true;
       const choices = [];
@@ -124,7 +117,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
       const endDate = new Date(this.endDatePicker.nativeElement.value);
       endDate.setHours(0, 0, 0, 0);
       const vote = new VoteToSend(
-          this.labelInput.nativeElement.value,
+          this.labelInput.nativeElement.value.toString,
           startDate,
           endDate,
           this.algoTypeSelector.nativeElement.value,
@@ -132,9 +125,10 @@ export class CreateComponent implements OnInit, AfterViewInit {
           this.isIntermediaryResults,
           choices,
           this.maxChoice.nativeElement.value);
+
       this.votesService.sendPublicVote(vote).then(
           newVote => {
-            this.router.navigate(['/', 'votes', newVote.id]);
+            this.router.navigate(['/', 'votes', newVote.id]).then();
           }, err => {
             console.log(err);
             this.submitBtn.nativeElement.disabled = false;
@@ -155,7 +149,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
   }
 
   private setMaxChoiceMaxInput(): void {
-    if (this.algoTypeSelector.nativeElement.value === Algo.MAJORITY){
+    if (this.algoTypeSelector.nativeElement.value === Algo.MAJORITY) {
       this.renderer.setProperty(this.maxChoice.nativeElement, 'max', this.choices.length);
     }
   }
@@ -179,13 +173,10 @@ export class CreateComponent implements OnInit, AfterViewInit {
   }
 
   onEndDatePickerFocusOut(): boolean {
-    let today = new Date();
-    today.setTime(today.getTime() + today.getTimezoneOffset()*60*1000);
-    today.setHours(0, 0, 0, 0);
     const pickedDate = new Date(this.endDatePicker.nativeElement.value);
-    pickedDate.setTime(pickedDate.getTime() + pickedDate.getTimezoneOffset()*60*1000);
+    pickedDate.setTime(pickedDate.getTime() + pickedDate.getTimezoneOffset() * 60 * 1000);
     pickedDate.setHours(0, 0, 0, 0);
-    if (this.isLimitedTime && (today >= pickedDate || !this.endDatePicker.nativeElement.value)) {
+    if (this.isLimitedTime && (this.today.getTime() >= pickedDate.getTime() || !this.endDatePicker.nativeElement.value)) {
       this.renderer.addClass(this.endDatePicker.nativeElement, 'is-invalid');
       return true;
     } else {
@@ -195,13 +186,11 @@ export class CreateComponent implements OnInit, AfterViewInit {
   }
 
   onStartDatePickerFocusOut(): boolean {
-    let today = new Date();
-    today.setTime(today.getTime() + today.getTimezoneOffset()*60*1000);
-    today.setHours(0, 0, 0, 0);
+
     const pickedDate = new Date(this.startDatePicker.nativeElement.value);
-    pickedDate.setTime(pickedDate.getTime() + pickedDate.getTimezoneOffset()*60*1000);
+    pickedDate.setTime(pickedDate.getTime() + pickedDate.getTimezoneOffset() * 60 * 1000);
     pickedDate.setHours(0, 0, 0, 0);
-    if (today.getTime() > pickedDate.getTime()  || !this.startDatePicker.nativeElement.value) {
+    if (this.today.getTime() > pickedDate.getTime() || !this.startDatePicker.nativeElement.value) {
       this.renderer.addClass(this.startDatePicker.nativeElement, 'is-invalid');
       return true;
     } else {
@@ -255,7 +244,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
   }
 
   onAlgoTypeSelectorInput(): void {
-    if (this.algoTypeSelector.nativeElement.value !== Algo.MAJORITY){
+    if (this.algoTypeSelector.nativeElement.value !== Algo.MAJORITY) {
       this.isMaxChoice = false;
     }
     if (this.algoTypeSelector.nativeElement.value === Algo.STV) {
@@ -267,7 +256,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
       this.endDateToggle.nativeElement.disabled = true;
       this.endDatePicker.nativeElement.disabled = false;
     } else {
-      if (this.algoTypeSelector.nativeElement.value === Algo.MAJORITY){
+      if (this.algoTypeSelector.nativeElement.value === Algo.MAJORITY) {
         this.isMaxChoice = true;
       }
       this.endDateToggle.nativeElement.disabled = false;
@@ -286,19 +275,25 @@ export class CreateComponent implements OnInit, AfterViewInit {
     }
   }
 }
-export class VoteToSend {
-  constructor(private label: string,
-              private startDate: Date,
-              private endDate: Date,
-              private algo: Algo,
-              private anonymous: boolean,
-              private intermediaryResult: boolean,
-              private choices: { names: string[] }[],
-              private maxChoices: number) { }
-}
 
+// @ts-ignore
+class VoteToSend {
+  constructor(public label: string,
+              public startDate: Date,
+              public endDate: Date,
+              public algo: Algo,
+              public anonymous: boolean,
+              public intermediaryResult: boolean,
+              public choices: { names: string[] }[],
+              public maxChoices: number) {
+  }
+}
 enum Algo {
+  // @ts-ignore
   MAJORITY = 'majority',
+  // @ts-ignore
   BORDA = 'borda',
+  // @ts-ignore
   STV = 'stv',
 }
+// @ts-ignore

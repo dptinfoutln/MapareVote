@@ -100,6 +100,7 @@ export class SignupComponent implements OnInit {
       this.isPending = true;
       this.authService.signUp(firstname, lastname, email, password).then(
           () => {
+            this.isPending = false;
             this.errorMessageType = 'text-success';
             this.errorMessage = 'La création du compte à bien été prise en compte. Veuillez vous connecter';
           },
