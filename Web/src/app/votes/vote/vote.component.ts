@@ -1,11 +1,11 @@
 import {Component, ElementRef, OnInit, QueryList, Renderer2, ViewChild, ViewChildren} from '@angular/core';
+import { Location } from '@angular/common';
 import {Vote} from '../../models/vote.model';
-import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {VotesService} from '../../services/votes.service';
 import {registerLocaleData} from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import localeFrExtra from '@angular/common/locales/fr';
-import {filter} from 'rxjs/operators';
 import {AuthService} from '../../services/auth.service';
 import {Choice} from '../../models/choice.model';
 
@@ -36,6 +36,7 @@ export class VoteComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private votesService: VotesService,
+              private location: Location,
               private router: Router,
               private authService: AuthService,
               private renderer: Renderer2) {
@@ -45,11 +46,12 @@ export class VoteComponent implements OnInit {
     this.selfUser = this.authService.getSelfUser();
     const id = this.route.snapshot.params.id;
 
-    this.router.events
-        .pipe(filter(event => event instanceof NavigationEnd))
-        .subscribe((event: NavigationEnd) => {
-          this.previousUrl = event.url;
-        });
+    // this.router.events
+    //     .pipe(filter(event => event instanceof NavigationEnd))
+    //     .subscribe((event: NavigationEnd) => {
+    //       this.previousUrl = event.url;
+    //       console.log(this.previousUrl);
+    //     });
 
     this.votesService.getVote(+id).then(
       (vote: Vote) => {
@@ -59,7 +61,7 @@ export class VoteComponent implements OnInit {
           this.vote = vote;
           this.isLoaded = true;
           this.checkIfUserVoted();
-          console.log('vote anonyme ? ', this.vote.anonymous);
+          // console.log('vote anonyme ? ', this.vote.anonymous);
           if (this.isVoted && !this.vote.anonymous) {
             this.setCheckedChoices(+id);
           }
@@ -92,7 +94,7 @@ export class VoteComponent implements OnInit {
   }
 
   onBack(): void {
-    this.router.navigate([this.previousUrl]);
+    this.location.back();
   }
 
   checkIfUserVoted(): void{
