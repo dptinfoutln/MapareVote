@@ -8,9 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -33,7 +30,6 @@ import com.mapare.maparevoteapp.R;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class LoginFragment extends Fragment {
     private EditText emailField;
@@ -69,14 +65,14 @@ public class LoginFragment extends Fragment {
                         Toast.makeText(getContext(), "Connecté", Toast.LENGTH_SHORT).show();
                         break;
                     case "Server not responding":
-                        // Manage
+                        // Manage ...
 
                         Log.i("debug", "problème serveur");
 
                         loginButton.setClickable(true);
                         break;
                     case "Wrong inputs":
-                        // Manage
+                        // Manage ...
 
                         Log.i("debug", "Informations rentrées incorrectes");
 
@@ -88,9 +84,6 @@ public class LoginFragment extends Fragment {
                 }
             }
         });
-
-        // force to reset the token (temporary)
-        this.requireContext().getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("token", null).apply();
 
         String savedEmail = this.requireContext().getSharedPreferences("Login", Context.MODE_PRIVATE).getString("email", null);
 
