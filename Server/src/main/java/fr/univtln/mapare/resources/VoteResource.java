@@ -53,7 +53,6 @@ public class VoteResource {
                 vote.setIntermediaryResult(false);
                 thread = new Thread(VoteUtils.voteResultsOf(vote));
                 thread.start();
-                VoteDAO.of(Controllers.getEntityManager()).update(vote);
             }
             // We check if the voter count is big, if so we only update once a day max.
             if (vote.isIntermediaryResult() &&
@@ -62,7 +61,6 @@ public class VoteResource {
                 vote.setLastCalculated(LocalDate.now());
                 thread = new Thread(VoteUtils.voteResultsOf(vote));
                 thread.start();
-                VoteDAO.of(Controllers.getEntityManager()).update(vote);
             }
             return vote;
         }
