@@ -1,5 +1,6 @@
 package fr.univtln.mapare.controllers;
 
+import fr.univtln.mapare.dao.VoteDAO;
 import fr.univtln.mapare.model.*;
 
 import java.util.*;
@@ -166,6 +167,7 @@ public abstract class VoteUtils {
                         break;
                 }
                 vote.setPendingResult(false);
+                VoteDAO.of(Controllers.getEntityManager()).update(vote);
             }
         }
 
