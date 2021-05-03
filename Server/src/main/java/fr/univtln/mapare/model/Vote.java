@@ -50,7 +50,7 @@ public class Vote implements Serializable {
     @Column(nullable = false, name = "\"intermediaryResult\"")
     private boolean intermediaryResult = false;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "\"STARTED_VOTES\"",
             joinColumns = @JoinColumn(name = "\"vote\""),
             inverseJoinColumns = @JoinColumn(name = "\"votemaker\""))

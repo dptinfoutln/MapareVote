@@ -71,6 +71,7 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     public void persist(Vote entity) throws BusinessException {
         if (entity.getVotemaker() == null)
             throw new ConflictException("No votemaker.");
+        entity.getVotemaker().addStartedVote(entity);
         super.persist(entity);
     }
 }

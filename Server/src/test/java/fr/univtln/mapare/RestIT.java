@@ -4,6 +4,7 @@ import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.exceptions.ConflictException;
 import fr.univtln.mapare.model.User;
+import fr.univtln.mapare.model.Vote;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.Query;
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -134,5 +136,70 @@ public class RestIT {
         List<User> deletedList = response.readEntity(List.class);
 
         assertEquals(beforeList.size(), deletedList.size());
+    }
+
+    @Test
+    public void createVote() {
+        Response response = webTarget.path("users").request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .post(Entity.entity(
+                        "{\"email\":\"carlorff@hotmail.fr\",\"lastname\":\"orff\",\"firstname\":\"carl\",\"password\":\"ofortuna\"}",
+                        MediaType.APPLICATION_JSON));
+
+        User carlorff = response.readEntity(User.class);
+
+        String token;
+
+        response = webTarget.path("auth/signin")
+                .request()
+                .accept(MediaType.TEXT_PLAIN)
+                .header("Authorization",  "Basic "+java.util.Base64.getEncoder()
+                        .encodeToString(("carlorff@hotmail.fr:ofortuna").getBytes()))
+                .get();
+
+        token = response.readEntity(String.class);
+
+        String todaysdate, dateintendays;
+
+        todaysdate = LocalDate.now() + "";
+
+        dateintendays = LocalDate.now().plusDays(10) + "";
+
+        String[] tempArray = todaysdate.split("-");
+        for (int i = 1; i < 3; i++)
+            if (tempArray[i].charAt(0) == '0')
+                tempArray[i] = String.valueOf(tempArray[i].charAt(1));
+        todaysdate = "[" + tempArray[0] + "," + tempArray[1] + "," + tempArray[2] + "]";
+
+        tempArray = dateintendays.split("-");
+        for (int i = 1; i < 3; i++)
+            if (tempArray[i].charAt(0) == '0')
+                tempArray[i] = String.valueOf(tempArray[i].charAt(1));
+        dateintendays = "[" + tempArray[0] + "," + tempArray[1] + "," + tempArray[2] + "]";
+
+        webTarget.path("votes/public").request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header( "Authorization",  "Bearer " + token)
+                .post(Entity.entity(
+                        "{\"label\":\"Meilleur composition musicale\",\"startDate\":" + todaysdate +
+                        ",\"endDate\":" + dateintendays +
+                                ",\"algo\":\"majority\",\"anonymous\":false,\"choices\":" +
+                                "[{\"names\":[\"Carmina Burana\"]},{\"names\":[\"Catulli Carmina\"]}," +
+                                "{\"names\":[\"Trionfo di Afrodite\"]}],\"maxChoices\":\"1\"}"
+                , MediaType.APPLICATION_JSON));
+
+        response = webTarget.path("votes/public").request(MediaType.APPLICATION_JSON).get();
+
+        List<Vote> voteList = response.readEntity(List.class);
+
+        assertEquals(1, voteList.size());
+
+        webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
+
+        response = webTarget.path("votes/public").request(MediaType.APPLICATION_JSON).get();
+
+        voteList = response.readEntity(List.class);
+
+        assertEquals(0, voteList.size());
     }
 }
