@@ -88,8 +88,10 @@ export class CreateComponent implements OnInit, AfterViewInit {
         EmptyFields.push(choiceInput);
       }
     });
-    if (this.onMaxChoiceInput()) {
-      EmptyFields.push(this.maxChoice);
+    if (this.maxChoice) {
+      if (this.onMaxChoiceInput()) {
+        EmptyFields.push(this.maxChoice);
+      }
     }
     this.memberInputs.forEach((memberInput, index) => {
       if (this.onMemberInputFocusOut(index)) {
@@ -116,17 +118,21 @@ export class CreateComponent implements OnInit, AfterViewInit {
       const startDate = new Date(this.startDatePicker.nativeElement.value);
       const endDate = new Date(this.endDatePicker.nativeElement.value);
       endDate.setHours(0, 0, 0, 0);
+      let maxChoice = 1;
+      if (this.maxChoice) {
+        maxChoice = this.maxChoice.nativeElement.value
+      }
       const vote = new VoteToSend(
-          this.labelInput.nativeElement.value.toString,
+          this.labelInput.nativeElement.value,
           startDate,
           endDate,
           this.algoTypeSelector.nativeElement.value,
           this.isAnonymous,
           this.isIntermediaryResults,
           choices,
-          this.maxChoice.nativeElement.value);
+          maxChoice);
 
-      this.votesService.sendPublicVote(vote).then(
+      this.votesService.sendVote(vote, !this.isPrivate).then(
           newVote => {
             this.router.navigate(['/', 'votes', newVote.id]).then();
           }, err => {
@@ -294,6 +300,6 @@ enum Algo {
   // @ts-ignore
   BORDA = 'borda',
   // @ts-ignore
-  STV = 'stv',
+  STV = 'STV',
 }
 // @ts-ignore
