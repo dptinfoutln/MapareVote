@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -63,6 +64,8 @@ public class LoginFragment extends Fragment {
                         Log.i("debug", "connecté");
 
                         Toast.makeText(getContext(), "Connecté", Toast.LENGTH_SHORT).show();
+                        InputMethodManager inputMethodManager = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
                         break;
                     case "Server not responding":
                         // Manage ...
