@@ -144,7 +144,7 @@ public class Vote implements Serializable {
                 ", algo='" + algo + '\'' +
                 ", anonymous=" + anonymous +
                 ", deleted=" + deleted +
-                ", votemaker=" + votemaker +
+                ", votemaker=" + votemaker.getId() +
                 ", choices=" + choices +
                 ", resultList=" + resultList +
                 '}';
