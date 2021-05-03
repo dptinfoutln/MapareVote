@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MapareVoteApp">
         <activity
-            android:name=".MasterActivity"
+            android:name=".MainActivity"
             android:label="@string/title_activity_master"
             android:theme="@style/Theme.MapareVoteApp.NoActionBar">
             <intent-filter>
@@ -21,8 +21,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".MainActivity" />
     </application>
 
 </manifest>

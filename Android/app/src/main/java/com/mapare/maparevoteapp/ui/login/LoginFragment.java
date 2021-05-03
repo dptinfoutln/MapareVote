@@ -4,6 +4,8 @@ package com.mapare.maparevoteapp.ui.login;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -37,7 +39,7 @@ public class LoginFragment extends Fragment {
     private EditText emailField;
     private EditText passwordField;
     private Button loginButton;
-    private SharedPreferences.OnSharedPreferenceChangeListener listener;
+    MutableLiveData<String> CONNECTED_STATE_CODE;
 
 
     @Nullable
@@ -51,33 +53,43 @@ public class LoginFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                String state = prefs.getString("state", null);
-                Log.i("debug", state+"");
-                if (state != null) {
-                    loginButton.setClickable(true);
-                    if (state.equals("CONNECTED")) {
+        super.onViewCreated(view, savedInstanceState);
+
+        CONNECTED_STATE_CODE = new MutableLiveData<>();
+
+        CONNECTED_STATE_CODE.observe(requireActivity(), new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                switch (s) {
+                    case "Connection successful":
+                        // FAIRE QQCH
+
+                        Log.i("debug", "connecté");
+
                         Toast.makeText(getContext(), "Connecté", Toast.LENGTH_SHORT).show();
-                        //Return back logged in
-                        getActivity().onBackPressed();
-                        // hide keyboard
-                        InputMethodManager inputMethodManager = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inputMethodManager.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
-                    }
-                    else {
+                        break;
+                    case "Server not responding":
+                        // Manage
+
+                        Log.i("debug", "problème serveur");
+
+                        loginButton.setClickable(true);
+                        break;
+                    case "Wrong inputs":
+                        // Manage
+
+                        Log.i("debug", "Informations rentrées incorrectes");
+
                         Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake);
                         passwordField.setError(getResources().getString(R.string.incorrect_password));
                         loginButton.startAnimation(shake);
-                        prefs.edit().putString("state", null).apply();
-                    }
+                        loginButton.setClickable(true);
+                        break;
                 }
             }
-        };
+        });
 
-        this.requireContext().getSharedPreferences("Login", Context.MODE_PRIVATE).getString("email", null);
-        super.onViewCreated(view, savedInstanceState);
-
+        // force to reset the token (temporary)
         this.requireContext().getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("token", null).apply();
 
         String savedEmail = this.requireContext().getSharedPreferences("Login", Context.MODE_PRIVATE).getString("email", null);
@@ -100,19 +112,11 @@ public class LoginFragment extends Fragment {
             }
             else {
                 loginButton.setClickable(false);
+                // Makes the request
                 loginAttempt(this.requireContext(), email, password);
             }
         });
     }
-
-    @Override
-    public void onResume() {
-        // TODO: test avec une variable globale ici
-        super.onResume();
-        getContext().getSharedPreferences("Login", Context.MODE_PRIVATE).registerOnSharedPreferenceChangeListener(listener);
-    }
-
-
 
     private void loginAttempt(Context context, String email, String password) {
         // Instantiate the RequestQueue.
@@ -128,15 +132,15 @@ public class LoginFragment extends Fragment {
                         context.getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("token", response).apply();
                         // Store the last email authenticated
                         context.getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("email", email).apply();
-                        // Store the state (needed to validate or not with a listener)
-                        context.getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("state", "CONNECTED").apply();
+
+                        CONNECTED_STATE_CODE.setValue("Connection successful");
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // TODO: manage errors
-                context.getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("state", "ERROR").apply();
+                // TODO: manage different types of errors
 
+                CONNECTED_STATE_CODE.setValue("Wrong inputs");
             }
         })
         {
