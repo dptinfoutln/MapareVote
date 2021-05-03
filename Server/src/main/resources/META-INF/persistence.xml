@@ -65,7 +65,7 @@
             <property name="jakarta.persistence.jdbc.password" value="alfrni666" />
 
             <!-- Les options de générations des tables -->
-            <property name="jakarta.persistence.schema-generation.database.action" value="create" />
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
 
             <!-- Specific to eclipselink -->
             <property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.PostgreSQLPlatform"/>

@@ -1,12 +1,12 @@
 package fr.univtln.mapare;
 
-import fr.univtln.mapare.controllers.Controller;
 import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.exceptions.ConflictException;
 import fr.univtln.mapare.model.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Persistence;
+import jakarta.persistence.Query;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class RestIT {
@@ -133,14 +134,5 @@ public class RestIT {
         List<User> deletedList = response.readEntity(List.class);
 
         assertEquals(beforeList.size(), deletedList.size());
-
-        System.out.println(beforeList);
-    }
-
-    @Test
-    public void deleteCarl() {
-        UserDAO.of(Controllers.getEntityManager()).remove(UserDAO.of(Controllers.getEntityManager()).findByEmail("carlorff@hotmail.fr"));
-
-        assertTrue(true);
     }
 }

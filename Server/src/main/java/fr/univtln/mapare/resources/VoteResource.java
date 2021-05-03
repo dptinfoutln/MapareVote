@@ -9,6 +9,7 @@ import fr.univtln.mapare.dao.VoteResultDAO;
 import fr.univtln.mapare.exceptions.BusinessException;
 import fr.univtln.mapare.exceptions.ForbiddenException;
 import fr.univtln.mapare.exceptions.NotFoundException;
+import fr.univtln.mapare.exceptions.TooEarlyException;
 import fr.univtln.mapare.model.*;
 import fr.univtln.mapare.security.annotations.JWTAuth;
 import jakarta.ws.rs.*;
@@ -38,6 +39,7 @@ public class VoteResource {
     @JWTAuth
     @Path("{id}")
     public Vote getVote(@Context SecurityContext securityContext, @PathParam("id") int id) throws NotFoundException, ForbiddenException {
+        //TODO: check if enddate before today and no ballots
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
 
         if (vote == null)
@@ -53,6 +55,7 @@ public class VoteResource {
                 thread.start();
                 VoteDAO.of(Controllers.getEntityManager()).update(vote);
             }
+            // We check if the voter count is big, if so we only update once a day max.
             if (vote.isIntermediaryResult() &&
                     (vote.getBallots().size() < 1000 ||
                             !vote.getLastCalculated().equals(LocalDate.now()))) {
@@ -71,11 +74,14 @@ public class VoteResource {
     @JWTAuth
     @Path("{id}/results")
     public List<VoteResult> getVoteResults(@Context SecurityContext securityContext,
-                                           @PathParam("id") int id) throws NotFoundException, ForbiddenException {
+                                           @PathParam("id") int id) throws NotFoundException, ForbiddenException, TooEarlyException {
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
 
         if (vote == null)
             throw new NotFoundException();
+
+        if(vote.isPendingResult())
+            throw new TooEarlyException();
 
         if (vote.isPublic() || vote.getMembers().contains((User) securityContext.getUserPrincipal())) {
             return vote.getResultList();
@@ -106,12 +112,16 @@ public class VoteResource {
     }
 
     public Vote addVote(Vote vote) throws BusinessException {
-        if (!Vote.getAlgolist().contains(vote.getAlgo()))
+        if (vote.getLabel() == null)
+            throw new ForbiddenException("Please send a title.");
+        if (vote.getAlgo() == null || !Vote.getAlgolist().contains(vote.getAlgo()))
             throw new ForbiddenException("Invalid algorithm");
         if (vote.getMaxChoices() < 1)
             throw new ForbiddenException("Please enter a proper value for your maxChoices count.");
         if (vote.getChoices().size() <= vote.getMaxChoices())
             throw new ForbiddenException("Please enter enough choices to reach your maxChoices count or lower your maxChoices count.");
+        if (vote.getStartDate() == null)
+            throw new ForbiddenException("Invalid start date.");
         if (vote.getStartDate().isBefore(LocalDate.now().minusDays(1)))
             throw new ForbiddenException("Start date before today.");
         if (vote.getEndDate() != null && vote.getEndDate().isBefore(vote.getStartDate().plus(1, ChronoUnit.DAYS)))
@@ -173,7 +183,7 @@ public class VoteResource {
                     throw new ForbiddenException("Not enough choices for " + vote.getAlgo() + " algorithm.");
                 int[] temparray = new int[vote.getChoices().size()];
                 for (BallotChoice bc : ballot.getChoices()) {
-                    // We verify that all values are coherent for borda count.
+                    // We verify that all values are coherent.
                     if (bc.getWeight() > vote.getChoices().size() || bc.getWeight() <= 0)
                         throw new ForbiddenException("Invalid choice weight for " + vote.getAlgo() + " algorithm: "
                                 + bc.getWeight() + ".");
