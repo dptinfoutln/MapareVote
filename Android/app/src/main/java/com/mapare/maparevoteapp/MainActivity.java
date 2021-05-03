@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -22,11 +23,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import java.time.LocalDateTime;
-
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
     private AppBarConfiguration mAppBarConfiguration;
 
     // Needs to be here (don't listen to IDE)
@@ -35,25 +33,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // force to reset the token (TEMPORARY)
-        getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("token", null).apply();
-
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
+
         // TODO: Need to have a look (QRcode, nfc)
         fab.setVisibility(View.INVISIBLE);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        drawerLayout = findViewById(R.id.drawer_layout);
+        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show());
 
+        drawerLayout = findViewById(R.id.drawer_layout);
         // Needed to close the keyboard if needed
         drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
@@ -82,7 +72,23 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+        // Listener on the items of the nav menu
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_logout) {
+                Log.i("debug", "clicked");
 
+                Toast.makeText(getBaseContext(), "Déconnecté", Toast.LENGTH_SHORT).show();
+                getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("token", null).apply();
+            } else {
+                // TODO: talk about it with the others to know if it's interesting
+                // This is for closing the drawer after acting on it, doesn't want this feature when menu_logout button is clicked on
+                drawerLayout.closeDrawer(GravityCompat.START);
+            }
+            // This is for maintaining the behavior of the Navigation view
+            NavigationUI.onNavDestinationSelected(item, navController);
+            return true;
+        });
         // Defines the visibility of the items by default
         String token = getSharedPreferences("Login", MODE_PRIVATE).getString("token", null);
         Menu nav_Menu = navigationView.getMenu();
@@ -91,18 +97,20 @@ public class MainActivity extends AppCompatActivity {
         nav_Menu.findItem(R.id.nav_logout).setVisible(token != null);
 
         // Listener to know when the user switch between login and logout
-        listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                Menu nav_Menu = navigationView.getMenu();
+        listener = (prefs, key) -> {
+            Menu nav_Menu1 = navigationView.getMenu();
 
-                String token = prefs.getString("token", null);
-                Log.i("token", token + "");
+            String token1 = prefs.getString("token", null);
+            Log.i("token", token1 + "");
 
-                // Add items if it depends that the user needs to be connected
-                nav_Menu.findItem(R.id.nav_login).setVisible(token == null);
-                nav_Menu.findItem(R.id.nav_signup).setVisible(token == null);
-                nav_Menu.findItem(R.id.nav_logout).setVisible(token != null);
-            }
+            // Add items if it depends on the user who should be logged in or not
+            nav_Menu1.findItem(R.id.nav_login).setVisible(token1 == null);
+            nav_Menu1.findItem(R.id.nav_signup).setVisible(token1 == null);
+            nav_Menu1.findItem(R.id.nav_logout).setVisible(token1 != null);
+
+            // When disconnected or connected, navigate to the "home page"
+            navController.navigate(R.id.nav_home);
+            drawerLayout.openDrawer(GravityCompat.START);
         };
         getSharedPreferences("Login", MODE_PRIVATE).registerOnSharedPreferenceChangeListener(listener);
     }

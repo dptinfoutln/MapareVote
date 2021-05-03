@@ -8,7 +8,7 @@
     tools:context=".ui.login.LoginFragment">
 
     <EditText
-        android:id="@+id/emailField"
+        android:id="@+id/login_emailField"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:autofillHints="@string/email_text_view"
@@ -19,10 +19,10 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.25" />
+        app:layout_constraintVertical_bias="0.2" />
 
     <EditText
-        android:id="@+id/passwordField"
+        android:id="@+id/login_passwordField"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:autofillHints="@string/password_text_view"
@@ -31,7 +31,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/emailField"
+        app:layout_constraintTop_toBottomOf="@+id/login_emailField"
         app:layout_constraintVertical_bias="0.1" />
 
     <Button
@@ -43,25 +43,25 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordField"
+        app:layout_constraintTop_toBottomOf="@+id/login_passwordField"
         app:layout_constraintVertical_bias="0.1" />
 
     <TextView
         android:id="@+id/emailTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:labelFor="@id/emailField"
+        android:labelFor="@id/login_emailField"
         android:text="@string/email_text_view"
-        app:layout_constraintBottom_toTopOf="@+id/emailField"
-        app:layout_constraintStart_toStartOf="@+id/emailField" />
+        app:layout_constraintBottom_toTopOf="@+id/login_emailField"
+        app:layout_constraintStart_toStartOf="@+id/login_emailField" />
 
     <TextView
         android:id="@+id/passwordTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:labelFor="@id/passwordField"
+        android:labelFor="@id/login_passwordField"
         android:text="@string/password_text_view"
-        app:layout_constraintBottom_toTopOf="@+id/passwordField"
-        app:layout_constraintStart_toStartOf="@+id/passwordField" />
+        app:layout_constraintBottom_toTopOf="@+id/login_passwordField"
+        app:layout_constraintStart_toStartOf="@+id/login_passwordField" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

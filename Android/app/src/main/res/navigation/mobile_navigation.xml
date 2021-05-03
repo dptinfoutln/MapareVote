@@ -28,4 +28,10 @@
         android:name="com.mapare.maparevoteapp.ui.login.LoginFragment"
         android:label="@string/menu_login"
         tools:layout="@layout/fragment_login" />
+
+    <fragment
+        android:id="@+id/nav_signup"
+        android:name="com.mapare.maparevoteapp.ui.register.RegisterFragment"
+        android:label="@string/menu_register"
+        tools:layout="@layout/fragment_register" />
 </navigation>

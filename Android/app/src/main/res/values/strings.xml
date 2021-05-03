@@ -1,40 +1,47 @@
 <resources>
     <string name="app_name">MapareVoteApp</string>
+
+    <!-- Strings related to buttons -->
     <string name="login">Connexion</string>
-    <string name="logout">Déconnexion</string>
-    <string name="signup">Créer un compte</string>
+    <string name="signup">Créer</string>
+
+    <!-- Strings related to forms -->
     <string name="email_text_view">Email</string>
     <string name="password_text_view">Mot de passe</string>
+    <string name="name_text_view">Nom</string>
+    <string name="firstname_text_view">Prénom</string>
+    <string name="confirm_password_text_view">Confirmer Mot de passe</string>
+
+    <!-- Strings related to login & register-->
+    <string name="incorrect_email">Email non valide</string>
     <string name="incorrect_password">Mot de passe incorrect</string>
     <string name="empty_email">Veuillez entrer une adresse email</string>
     <string name="empty_password">Veuillez entrer un mot de passe</string>
+    <string name="empty_name">Veuillez entrer un nom</string>
+    <string name="empty_firstname">Veuillez entrer un prénom</string>
+
+
+    <!-- Strings related to REST API -->
+    <string name="API_URL">https://api.maparevote.siannos.fr</string>
+    <string name="LOGIN_URL">/auth/signin</string>
+    <string name="SIGNUP_URL">/users</string>
+
+
+    <!-- Strings related to navigation menu -->
     <string name="user">Utilisateur</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_login">Connexion</string>
+    <string name="menu_logout">Déconnexion</string>
+    <string name="menu_register">Créer un compte</string>
 
-    <string name="API_URL">https://api.maparevote.siannos.fr/</string>
-    <string name="LOGIN_URL">auth/signin</string>
-
-    <string name="title_activity_master">MasterActivity</string>
+    <!-- Strings related to (To determinate) -->
+    <string name="title_activity_main">MainActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
-    <string name="menu_login">Connexion</string>
-
-    <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome!"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
-
-
 </resources>
