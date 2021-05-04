@@ -16,6 +16,15 @@ public class Controllers {
         return entityManager;
     }
 
+    public static EntityManagerFactory getEMF() {
+        if (EMF != null)
+            return EMF;
+        else if (TestEMF != null)
+            return TestEMF;
+        else
+            throw new IllegalStateException("EMF uninitialized.");
+    }
+
     public static boolean isOpen() {
         return entityManager != null;
     }

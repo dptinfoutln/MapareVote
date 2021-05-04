@@ -3,6 +3,7 @@ package fr.univtln.mapare.model;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
+import org.eclipse.persistence.annotations.AdditionalCriteria;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import java.io.Serializable;
@@ -14,7 +15,8 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+@AdditionalCriteria("this.label LIKE :LABEL")
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class,property="id", scope=Vote.class)
 @Table(name = "\"VOTE\"")
 @NamedQueries({
         @NamedQuery(name = "Vote.findByVotemaker", query = "SELECT V FROM Vote V WHERE V.votemaker = :votemaker AND V.deleted = false"),
@@ -50,7 +52,7 @@ public class Vote implements Serializable {
     @Column(nullable = false, name = "\"intermediaryResult\"")
     private boolean intermediaryResult = false;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinTable(name = "\"STARTED_VOTES\"",
             joinColumns = @JoinColumn(name = "\"vote\""),
             inverseJoinColumns = @JoinColumn(name = "\"votemaker\""))

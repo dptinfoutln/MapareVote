@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class RestIT {
@@ -153,7 +154,7 @@ public class RestIT {
         response = webTarget.path("auth/signin")
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
-                .header("Authorization",  "Basic "+java.util.Base64.getEncoder()
+                .header("Authorization",  "Basic " + java.util.Base64.getEncoder()
                         .encodeToString(("carlorff@hotmail.fr:ofortuna").getBytes()))
                 .get();
 
@@ -194,6 +195,46 @@ public class RestIT {
 
         assertEquals(1, voteList.size());
 
+        webTarget.path("votes/public").request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header( "Authorization",  "Bearer " + token)
+                .post(Entity.entity(
+                        "{\"label\":\"Test\",\"startDate\":" + todaysdate +
+                                ",\"endDate\":" + dateintendays +
+                                ",\"algo\":\"majority\",\"anonymous\":false,\"choices\":" +
+                                "[{\"names\":[\"Carmina Burana\"]},{\"names\":[\"Catulli Carmina\"]}," +
+                                "{\"names\":[\"Trionfo di Afrodite\"]}],\"maxChoices\":\"1\"}"
+                        , MediaType.APPLICATION_JSON));
+
+        voteList = webTarget.path("votes/public").queryParam("name_like","Test").request(MediaType.APPLICATION_JSON).get(List.class);
+
+        assertEquals(1, voteList.size());
+
+        voteList = webTarget.path("votes/public").queryParam("name_like","ofortuna").request(MediaType.APPLICATION_JSON).get(List.class);
+
+        assertEquals(0, voteList.size());
+
+        voteList = webTarget.path("votes/public").queryParam("name_like","e").request(MediaType.APPLICATION_JSON).get(List.class);
+
+        assertEquals(2, voteList.size());
+
+        webTarget.path("votes/private").request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header( "Authorization",  "Bearer " + token)
+                .post(Entity.entity(
+                        "{\"label\":\"Privatvot\",\"startDate\":" + todaysdate +
+                                ",\"endDate\":" + dateintendays +
+                                ",\"algo\":\"majority\",\"anonymous\":false,\"choices\":" +
+                                "[{\"names\":[\"Carmina Burana\"]},{\"names\":[\"Catulli Carmina\"]}," +
+                                "{\"names\":[\"Trionfo di Afrodite\"]}],\"maxChoices\":\"1\"}"
+                        , MediaType.APPLICATION_JSON));
+
+
+        voteList = webTarget.path("votes/private/invited").request(MediaType.APPLICATION_JSON)
+                .header( "Authorization",  "Bearer " + token).get(List.class);
+
+        assertEquals(1, voteList.size());
+
         webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
 
         response = webTarget.path("votes/public").request(MediaType.APPLICATION_JSON).get();
@@ -201,5 +242,113 @@ public class RestIT {
         voteList = response.readEntity(List.class);
 
         assertEquals(0, voteList.size());
+    }
+
+    @Test
+    public void voting() throws InterruptedException {
+        Response response = webTarget.path("users").request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .post(Entity.entity(
+                        "{\"email\":\"carlorff@hotmail.fr\",\"lastname\":\"orff\",\"firstname\":\"carl\",\"password\":\"ofortuna\"}",
+                        MediaType.APPLICATION_JSON));
+
+        User carlorff = response.readEntity(User.class);
+
+        String token;
+
+        response = webTarget.path("auth/signin")
+                .request()
+                .accept(MediaType.TEXT_PLAIN)
+                .header("Authorization",  "Basic " + java.util.Base64.getEncoder()
+                        .encodeToString(("carlorff@hotmail.fr:ofortuna").getBytes()))
+                .get();
+
+        token = response.readEntity(String.class);
+
+        String todaysdate, dateintendays;
+
+        todaysdate = LocalDate.now() + "";
+
+        dateintendays = LocalDate.now().plusDays(10) + "";
+
+        String[] tempArray = todaysdate.split("-");
+        for (int i = 1; i < 3; i++)
+            if (tempArray[i].charAt(0) == '0')
+                tempArray[i] = String.valueOf(tempArray[i].charAt(1));
+        todaysdate = "[" + tempArray[0] + "," + tempArray[1] + "," + tempArray[2] + "]";
+
+        tempArray = dateintendays.split("-");
+        for (int i = 1; i < 3; i++)
+            if (tempArray[i].charAt(0) == '0')
+                tempArray[i] = String.valueOf(tempArray[i].charAt(1));
+        dateintendays = "[" + tempArray[0] + "," + tempArray[1] + "," + tempArray[2] + "]";
+
+        response = webTarget.path("votes/public").request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header( "Authorization",  "Bearer " + token)
+                .post(Entity.entity(
+                        "{\"label\":\"Meilleur composition musicale\",\"startDate\":" + todaysdate +
+                                ",\"endDate\":" + dateintendays +
+                                ",\"algo\":\"majority\",\"anonymous\":false,\"intermediaryResult\":true,\"choices\":"
+                                + "[{\"names\":[\"Carmina Burana\"]},{\"names\":[\"Catulli Carmina\"]}," +
+                                "{\"names\":[\"Trionfo di Afrodite\"]}],\"maxChoices\":\"1\"}"
+                        , MediaType.APPLICATION_JSON));
+
+        response = webTarget.path("votes/public").request(MediaType.APPLICATION_JSON).get();
+
+        List<Vote> voteList = response.readEntity(List.class);
+
+        System.out.println(voteList);
+
+        Vote vote = webTarget.path("votes/" + voteList.toString().charAt(5))
+                .request(MediaType.APPLICATION_JSON)
+                .header( "Authorization",  "Bearer " + token)
+                .get(Vote.class);
+
+        System.out.println(vote);
+
+        int delay = 250;
+
+        Thread.sleep(delay);
+
+        webTarget.path("votes/" + vote.getId() + "/ballots").request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header( "Authorization",  "Bearer " + token)
+                .post(Entity.entity(
+                        "{\"id\":\"0\",\"choices\":[{\"choice\":{\"id\":" + vote.getChoices().get(0).getId() +
+                                "},\"weight\":1, \"ballot\":\"0\"}]}"
+                , MediaType.APPLICATION_JSON));
+
+        webTarget.path("votes/" + vote.getId() + "/myballot").request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header( "Authorization",  "Bearer " + token)
+                .get();
+
+        webTarget.path("votes/" + vote.getId())
+                .request(MediaType.APPLICATION_JSON)
+                .header( "Authorization",  "Bearer " + token)
+                .get();
+
+        Thread.sleep(delay);
+
+        webTarget.path("users").request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .post(Entity.entity(
+                        "{\"email\":\"tchaikovsky@hotmail.fr\",\"lastname\":\"tchaikovsky\",\"firstname\":\"pyotr\",\"password\":\"1812\"}",
+                        MediaType.APPLICATION_JSON));
+
+        token = webTarget.path("auth/signin")
+                .request()
+                .accept(MediaType.TEXT_PLAIN)
+                .header("Authorization",  "Basic " + java.util.Base64.getEncoder()
+                        .encodeToString(("tchaikovsky@hotmail.fr:1812").getBytes()))
+                .get(String.class);
+
+        webTarget.path("votes/" + vote.getId() + "/results")
+                .request(MediaType.APPLICATION_JSON)
+                .header( "Authorization",  "Bearer " + token)
+                .get();
+
+        webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
     }
 }

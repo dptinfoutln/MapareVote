@@ -51,5 +51,13 @@ public class VotedVote implements Serializable {
         this.token = base64Encoder.encodeToString(randomBytes);
     }
 
+    @Override
+    public String toString() {
+        return "VotedVote{" +
+                "token='" + token + '\'' +
+                ", vote=" + vote.getId() +
+                ", user=" + user.getId() +
+                '}';
+    }
 }
 

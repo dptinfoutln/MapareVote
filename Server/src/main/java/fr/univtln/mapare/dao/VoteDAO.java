@@ -21,10 +21,12 @@ public class VoteDAO extends GenericIdDAO<Vote> {
 
     @Override
     public List<Vote> findAll() {
+        entityManager.setProperty("LABEL", "%");
         return entityManager.createNamedQuery("Vote.findAll", Vote.class).getResultList();
     }
 
-    public List<Vote> findAll(int pageIndex, int pageSize) {
+    public List<Vote> findAll(int pageIndex, int pageSize, String labelCriterion) {
+        entityManager.setProperty("LABEL", labelCriterion);
         return entityManager.createNamedQuery("Vote.findAll", Vote.class)
                 .setMaxResults(pageSize)
                 .setFirstResult((pageIndex-1) * pageSize)
@@ -33,10 +35,12 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     }
 
     public List<Vote> findByVotemaker(User votemaker) {
+        entityManager.setProperty("LABEL", "%");
         return entityManager.createNamedQuery("Vote.findByVotemaker", Vote.class).setParameter("votemaker", votemaker).getResultList();
     }
 
-    public List<Vote> findByVotemaker(User votemaker, int pageIndex, int pageSize) {
+    public List<Vote> findByVotemaker(User votemaker, int pageIndex, int pageSize, String labelCriterion) {
+        entityManager.setProperty("LABEL", labelCriterion);
         return entityManager.createNamedQuery("Vote.findByVotemaker", Vote.class)
                 .setParameter("votemaker", votemaker)
                 .setMaxResults(pageSize)
@@ -45,10 +49,12 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     }
 
     public List<Vote> findAllPublic() {
+        entityManager.setProperty("LABEL", "%");
         return entityManager.createNamedQuery("Vote.findPublic", Vote.class).getResultList();
     }
 
-    public List<Vote> findAllPublic(int pageIndex, int pageSize) {
+    public List<Vote> findAllPublic(int pageIndex, int pageSize, String labelCriterion) {
+        entityManager.setProperty("LABEL", labelCriterion);
         return entityManager.createNamedQuery("Vote.findPublic", Vote.class)
                 .setMaxResults(pageSize)
                 .setFirstResult((pageIndex-1) * pageSize)
@@ -56,15 +62,23 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     }
 
     public List<Vote> findPrivateByUser(User user) {
+        entityManager.setProperty("LABEL", "%");
         return entityManager.createNamedQuery("Vote.findPrivateByUser", Vote.class).setParameter("user", user).getResultList();
     }
 
-    public List<Vote> findPrivateByUser(User user, int pageIndex, int pageSize) {
+    public List<Vote> findPrivateByUser(User user, int pageIndex, int pageSize, String labelCriterion) {
+        entityManager.setProperty("LABEL", labelCriterion);
         return entityManager.createNamedQuery("Vote.findPrivateByUser", Vote.class)
                 .setParameter("user", user)
                 .setMaxResults(pageSize)
                 .setFirstResult((pageIndex-1) * pageSize)
                 .getResultList();
+    }
+
+    @Override
+    public Vote findById(int id) {
+        entityManager.setProperty("LABEL", "%");
+        return super.findById(id);
     }
 
     @Override
