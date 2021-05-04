@@ -20,13 +20,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mapare.maparevoteapp.R;
-import com.mapare.maparevoteapp.model.User;
+import com.mapare.maparevoteapp.model.entity_to_send.User;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -133,15 +134,15 @@ public class RegisterFragment extends Fragment {
                     User userToRegister = new User(email, name, firstname, password);
                     //registerButton.setClickable(false);
                     // Makes the request
-                    registerAttempt(userToRegister);
+                    registerAttempt(getContext(), userToRegister);
                 }
             }
         });
     }
 
-    private void registerAttempt(User user) {
+    private void registerAttempt(Context context, User user) {
         // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(requireContext());
+        RequestQueue queue = Volley.newRequestQueue(context);
         String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.SIGNUP_URL);
 
         // Request a string response from the provided URL.
@@ -165,8 +166,18 @@ public class RegisterFragment extends Fragment {
 
             @Override
             public byte[] getBody() {
-                Gson gson = new Gson();
-                String json = gson.toJson(user);
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+                String json = null;
+                try {
+                    json = objectMapper.writeValueAsString(user);
+                } catch (JsonProcessingException e) { // shouldn't happen
+                    e.printStackTrace();
+                }
+
+                assert json != null;
+
                 return json.getBytes();
             }
         };

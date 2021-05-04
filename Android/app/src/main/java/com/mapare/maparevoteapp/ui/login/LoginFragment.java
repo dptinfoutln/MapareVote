@@ -96,14 +96,14 @@ public class LoginFragment extends Fragment {
             else {
                 loginButton.setClickable(false);
                 // Makes the request
-                loginAttempt(requireContext(), email, password);
+                loginAttempt(getContext(), email, password);
             }
         });
     }
 
     private void loginAttempt(Context context, String email, String password) {
         // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(requireContext());
+        RequestQueue queue = Volley.newRequestQueue(context);
         String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.LOGIN_URL);
 
         // Request a string response from the provided URL.

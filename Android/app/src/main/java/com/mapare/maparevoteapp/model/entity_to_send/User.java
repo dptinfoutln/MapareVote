@@ -1,18 +1,23 @@
-package com.mapare.maparevoteapp.model;
+package com.mapare.maparevoteapp.model.entity_to_send;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class User implements Serializable {
+public class User {
 
-    @SerializedName("email")
+    @JsonProperty("email")
     private String email;
-    @SerializedName("lastname")
+
+    @JsonProperty("lastname")
     private String name;
-    @SerializedName("firstname")
+
+    @JsonProperty("firstname")
     private String firstname;
-    @SerializedName("password")
+
+    @JsonProperty("password")
     private String password;
 
     public User(String email, String name, String firstname, String password) {
