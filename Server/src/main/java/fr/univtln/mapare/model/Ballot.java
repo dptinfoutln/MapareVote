@@ -57,4 +57,15 @@ public class Ballot implements Serializable {
         if (!choices.contains(choice))
             choices.add(choice);
     }
+
+    @Override
+    public String toString() {
+        return "Ballot{" +
+                "id=" + id +
+                ", date=" + date +
+                ", vote=" + vote.getId() +
+                ", voter=" + voter.getId() +
+                ", choices=" + choices +
+                '}';
+    }
 }
