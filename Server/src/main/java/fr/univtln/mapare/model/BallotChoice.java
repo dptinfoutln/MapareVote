@@ -29,7 +29,7 @@ public class BallotChoice implements Serializable {
     public String toString() {
         return "BallotChoice{" +
                 "ballot=" + ballot.getId() +
-                ", choice=" + choice +
+                ", choice=" + choice.getId() +
                 ", weight=" + weight +
                 '}';
     }

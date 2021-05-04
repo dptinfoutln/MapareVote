@@ -33,4 +33,12 @@ public class VoteResult implements Serializable {
     @JoinColumn(name = "\"vote\"")
     private Vote vote;
 
+    @Override
+    public String toString() {
+        return "VoteResult{" +
+                "choice=" + choice.getNames() +
+                ", value=" + value +
+                ", vote=" + vote.getLabel() +
+                '}';
+    }
 }

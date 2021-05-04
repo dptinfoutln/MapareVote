@@ -2,6 +2,7 @@ package fr.univtln.mapare.controllers;
 
 import fr.univtln.mapare.dao.VoteDAO;
 import fr.univtln.mapare.model.*;
+import jakarta.persistence.EntityManager;
 
 import java.util.*;
 
@@ -166,8 +167,12 @@ public abstract class VoteUtils {
                         vote.setResultList(null);
                         break;
                 }
-                vote.setPendingResult(false);
+//                EntityManager tempEM = Controllers.getEMF().createEntityManager();
+//                VoteDAO.of(tempEM).update(vote);
+//                tempEM.close();
+
                 VoteDAO.of(Controllers.getEntityManager()).update(vote);
+                vote.setPendingResult(false);
             }
         }
 

@@ -27,6 +27,7 @@ public class UserResource {
     @GET
     public List<User> getUsers(@DefaultValue("1") @QueryParam("page_num") int pagenum,
                          @DefaultValue("20") @QueryParam("page_size") int pagesize) throws NotFoundException {
+        // TODO: add admin authentication
         //Lancer DAO
         //Pagination
         //rentrer users dans liste
@@ -80,6 +81,7 @@ public class UserResource {
     @Path("{id}")
     public int deleteUser(@PathParam("id") int id) throws NotFoundException {
         //TODO: test it with users who have ballots
+        //TODO: add authentication before deleting
         UserDAO dao = UserDAO.of(Controllers.getEntityManager());
         if (dao.findById(id) != null) {
             dao.remove(id);

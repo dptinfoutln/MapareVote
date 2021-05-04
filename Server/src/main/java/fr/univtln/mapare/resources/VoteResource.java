@@ -2,10 +2,7 @@ package fr.univtln.mapare.resources;
 
 import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.controllers.VoteUtils;
-import fr.univtln.mapare.dao.BallotDAO;
-import fr.univtln.mapare.dao.UserDAO;
-import fr.univtln.mapare.dao.VoteDAO;
-import fr.univtln.mapare.dao.VoteResultDAO;
+import fr.univtln.mapare.dao.*;
 import fr.univtln.mapare.exceptions.BusinessException;
 import fr.univtln.mapare.exceptions.ForbiddenException;
 import fr.univtln.mapare.exceptions.NotFoundException;
@@ -17,6 +14,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.SecurityContext;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -27,12 +25,17 @@ public class VoteResource {
     @GET
     @Path("public")
     public List<Vote> getVotes(@QueryParam("page_num") int pagenum,
-                         @QueryParam("page_size") int pagesize) {
+                         @QueryParam("page_size") int pagesize,
+                               @QueryParam("name_like") String approxname) {
+        if (approxname == null)
+            approxname = "%";
+        else
+            approxname = "%" + approxname + "%";
         if (pagenum == 0)
             pagenum = 1;
         if (pagesize == 0)
             pagesize = 20;
-        return VoteDAO.of(Controllers.getEntityManager()).findAllPublic(pagenum, pagesize);
+        return VoteDAO.of(Controllers.getEntityManager()).findAllPublic(pagenum, pagesize, approxname);
     }
 
     @GET
@@ -155,19 +158,25 @@ public class VoteResource {
     @Path("{id}/ballots")
     public Ballot addBallot(@Context SecurityContext securityContext, @PathParam ("id") int id, Ballot ballot) throws BusinessException {
         //TODO: check choices
+        ballot.setId(0);
         User voter = (User) securityContext.getUserPrincipal();
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
+        if (vote == null)
+            throw new NotFoundException("Vote does not exist.");
         if (voter.isBanned())
             throw new ForbiddenException("User is banned.");
         if (vote.isDeleted())
             throw new ForbiddenException("Vote deleted.");
-        if (vote.getEndDate() != null && ballot.getDate().isAfter(ChronoLocalDateTime.from(vote.getEndDate())))
+        if (LocalDate.now().isBefore(vote.getStartDate()))
+            throw new ForbiddenException("Too early.");
+        if (vote.getEndDate() != null && LocalDate.now().isAfter(vote.getEndDate()))
             throw new ForbiddenException("Too late.");
         if (ballot.getChoices().size() > vote.getMaxChoices())
             throw new ForbiddenException("Too many choices.");
 //        for (BallotChoice bc : ballot.getChoices())
 //            if (!vote.getChoices().contains(bc.getChoice()))
 //                throw new ForbiddenException("Bad choice(s).");
+        ballot.setDate(LocalDateTime.now());
         ballot.setVote(vote);
         switch (vote.getAlgo()) {
             case "majority":
@@ -195,24 +204,26 @@ public class VoteResource {
                 break;
         }
         ballot.setVoter(voter);
+        ChoiceDAO choiceDAO = ChoiceDAO.of(Controllers.getEntityManager());
+        Choice tempchoice;
         for (BallotChoice bc : ballot.getChoices()) {
             bc.setBallot(ballot);
+            tempchoice = choiceDAO.findById(bc.getChoice().getId());
+            if (tempchoice == null)
+                throw new ForbiddenException("No such choice in database:" + bc.getChoice());
+            if (!vote.getChoices().contains(tempchoice))
+                throw new ForbiddenException("This choice is not for this vote:" + bc.getChoice());
+            bc.setChoice(tempchoice);
         }
         try {
             BallotDAO.of(Controllers.getEntityManager()).persist(ballot);
+            vote.addBallot(ballot);
         } catch (BusinessException e) {
             e.printStackTrace();
             throw e;
         }
         return ballot;
     }
-
-//    @PATCH
-//    @Path("{id}")
-//    public int modifyDate(@PathParam ("id") int id, LocalDate date) {
-//        Controllers.Votes.mapGet(id).setEndDate(date);
-//        return 0;
-//    }
 
     @GET
     @JWTAuth
