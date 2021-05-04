@@ -6,13 +6,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.MutableLiveData;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
@@ -29,28 +28,25 @@ import java.util.List;
 import java.util.Map;
 
 public class PublicVotesFragment extends Fragment {
-
-    private PublicVotesViewModel publicVotesViewModel;
+    private List<Vote> voteList;
+    private MutableLiveData<String> LOADING_STATE_CODE;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        publicVotesViewModel =
-                new ViewModelProvider(this).get(PublicVotesViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_public_votes, container, false);
-        final TextView textView = root.findViewById(R.id.text_home);
-        publicVotesViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
-        return root;
+        return inflater.inflate(R.layout.fragment_public_votes, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        ListView listView = view.findViewById(R.id.vote_list);
+
+        LOADING_STATE_CODE = new MutableLiveData<>();
+        LOADING_STATE_CODE.observe(requireActivity(), s -> {
+            VoteAdapter adapter = new VoteAdapter(getContext(), voteList);
+            listView.setAdapter(adapter);
+        });
         publicVotesRequest(getContext());
     }
 
@@ -71,14 +67,13 @@ public class PublicVotesFragment extends Fragment {
 //
 //                    Gson gson = new Gson();
 //                    List<Vote> voteList = gson.fromJson(response, listOfMyClassObject);
-                    List<Vote> voteList = null;
                     try {
                         voteList = objectMapper.readValue(response, new TypeReference<List<Vote>>(){});
+                        LOADING_STATE_CODE.setValue("Finished");
                     } catch (IOException e) { // shouldn't happen
                         e.printStackTrace();
                     }
 
-                    assert voteList != null;
                     Log.i("debug", voteList.toString()+"");
 
                 }, error -> {
