@@ -8,6 +8,8 @@ import localeFr from '@angular/common/locales/fr';
 import localeFrExtra from '@angular/common/locales/fr';
 import {AuthService} from '../../services/auth.service';
 import {Choice} from '../../models/choice.model';
+import {Algo} from '../algo';
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 
 registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
 
@@ -19,8 +21,8 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
 export class VoteComponent implements OnInit {
 
     vote: Vote;
-    btnType = 'checkbox';
-    choices: number[] = [];
+    btnType = 'hidden';
+    choices: Choice[];
     isLoaded = false;
     isVoted = false;
     tokenStyle = 'blur';
@@ -30,7 +32,7 @@ export class VoteComponent implements OnInit {
     myBallot;
     results;
     isPending = false;
-    isResults: false;
+    isResults = false;
 
     @ViewChildren('choices') choicesElem: QueryList<ElementRef>;
     @ViewChild('submitBtn') submitBtn: ElementRef;
@@ -60,21 +62,22 @@ export class VoteComponent implements OnInit {
                     this.router.navigate(['/']);
                 } else {
                     this.vote = vote;
+                    this.choices = vote.choices;
                     this.isLoaded = true;
                     this.checkIfUserVoted();
                     // console.log('vote anonyme ? ', this.vote.anonymous);
                     if (this.isVoted && !this.vote.anonymous) {
                         this.setCheckedChoices(+id);
                     }
-                    this.setChoiceBtnType(vote.maxChoices);
-                  this.votesService.getVoteResults(+id).then(
-                      resultList => {
-                        this.resultList = resultList;
-                        console.log(resultList);
-                      });
-                    // if (this.vote.resultList.length > 0){
-                    //   this.setResults();
-                    // }
+                    this.setChoiceBtnType();
+                    this.votesService.getVoteResults(+id).then(
+                        resultList => {
+                            this.results = resultList;
+                            if (this.results.length !== 0){
+                                this.isResults = true;
+                                this.setResults();
+                            }
+                        });
                 }
             }, err => {
                 console.error(err);
@@ -84,19 +87,9 @@ export class VoteComponent implements OnInit {
     }
 
     private setResults(): void {
-        this.results = this.vote.resultList;
         this.results.sort((a, b) => {
             return b.value - a.value;
         });
-    }
-
-    getChoiceById(id: number): Choice {
-        for (const choice of this.vote.choices) {
-            if (choice.id === id) {
-                return choice;
-            }
-        }
-        return null;
     }
 
     onBack(): void {
@@ -113,11 +106,13 @@ export class VoteComponent implements OnInit {
         }
     }
 
-    setChoiceBtnType(maxChoices): void {
-        if (maxChoices === 1) {
-            this.btnType = 'radio';
-        } else {
-            this.btnType = 'checkbox';
+    setChoiceBtnType(): void {
+        if (this.vote.algo === Algo.MAJORITY){
+            if (this.vote.maxChoices === 1) {
+                this.btnType = 'radio';
+            } else {
+                this.btnType = 'checkbox';
+            }
         }
     }
 
@@ -127,8 +122,7 @@ export class VoteComponent implements OnInit {
                 this.myBallot = myBallot;
                 myBallot.choices.forEach(choice => {
                     this.choicesElem.forEach(elemChoice => {
-                        // tslint:disable-next-line:triple-equals
-                        if (elemChoice.nativeElement.value == choice.choice.id) {
+                        if (Number(elemChoice.nativeElement.value) === choice.choice.id) {
                             this.renderer.setProperty(elemChoice.nativeElement, 'checked', true);
                         }
                     });
@@ -137,61 +131,29 @@ export class VoteComponent implements OnInit {
         );
     }
 
-    toggleChoice(id: number): void {
-        if (this.btnType === 'checkbox') {
-            if (this.choices.includes(id)) {
-                this.choices.splice(this.choices.indexOf(id), 1);
-            } else {
-                this.choices.push(id);
-            }
-        } else {
-            this.choices = [id];
-        }
-    }
 
-    setBallotChoices(): void {
-        const tmpChoices = [];
-        for (const choiceElem of this.choicesElem) {
-            if (choiceElem.nativeElement.checked) {
-
-            }
-        }
-    }
 
     onSubmit(): void {
         this.isPending = true;
         this.submitBtn.nativeElement.disabled = true;
         const tmpChoices = [];
-        // switch (this.vote.algo){
-        //   case 'majority':
-        //     this.setBallotChoices();
-        //     break;
-        //   default:
-        //     break;
-        // }
 
-
-        this.choices.forEach((choiceId) => {
-            this.vote.choices.forEach((choice) => {
-                if (choiceId === choice.id) {
-                    tmpChoices.push({
-                        choice: {
-                            id: choiceId,
-                            names: choice.names,
-                        },
-                        weight: 1,
-                        ballot: 0
-                    });
+        if (this.vote.algo === Algo.MAJORITY){
+            for (const choice of this.choicesElem){
+                if (choice.nativeElement.checked){
+                    tmpChoices.push({choice: {id: choice.nativeElement.value}, weight: 1});
                 }
+            }
+        } else {
+            this.choices.forEach((choice, index) => {
+                tmpChoices.push({choice: {id: choice.id}, weight: this.choices.length - index});
             });
-        });
-        const toSend = {
-            id: 0,
-            date: new Date(),
-            choices: tmpChoices
-        };
-        this.votesService.sendBallot(this.vote.id, toSend).then(
+        }
+        // console.log(tmpChoices);
+
+        this.votesService.sendBallot(this.vote.id, {choices: tmpChoices}).then(
             ballot => {
+                console.log(ballot);
                 this.authService.importSelf().then(
                     () => {
                         this.ngOnInit();
@@ -212,5 +174,8 @@ export class VoteComponent implements OnInit {
         }
     }
 
+    drop(event: CdkDragDrop<string[]>): void {
+        moveItemInArray(this.choices, event.previousIndex, event.currentIndex);
+    }
 
 }

@@ -1,7 +1,8 @@
 import {AfterViewInit, Component, ElementRef, OnInit, QueryList, Renderer2, ViewChild, ViewChildren} from '@angular/core';
-import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
-import { VotesService } from '../../services/votes.service';
+import {AuthService} from '../../services/auth.service';
+import {Router} from '@angular/router';
+import {VotesService} from '../../services/votes.service';
+import {Algo} from '../algo';
 
 @Component({
   selector: 'app-create',
@@ -282,7 +283,6 @@ export class CreateComponent implements OnInit, AfterViewInit {
   }
 }
 
-// @ts-ignore
 class VoteToSend {
   constructor(public label: string,
               public startDate: Date,
@@ -294,12 +294,4 @@ class VoteToSend {
               public maxChoices: number) {
   }
 }
-enum Algo {
-  // @ts-ignore
-  MAJORITY = 'majority',
-  // @ts-ignore
-  BORDA = 'borda',
-  // @ts-ignore
-  STV = 'STV',
-}
-// @ts-ignore
+

@@ -123,7 +123,7 @@ export class VotesService {
     }
 
     sendBallot(voteId: number,
-               ballot: { date: Date; choices: { weight: number; choice: { names: string[]; id: number } }[] }): Promise<Ballot> {
+               ballot: { choices: { choice: { id: number }, weight: number }[] }): Promise<Ballot> {
         const url = environment.apiURL + 'votes/' + voteId + '/ballots';
         let headers = environment.headers;
         headers = headers.set('Authorization', 'Bearer ' + this.authService.getToken());
