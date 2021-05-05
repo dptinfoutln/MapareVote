@@ -64,7 +64,7 @@ public class RestIT {
     }
 
     @Test
-    public void testCreateAccount() {
+    public void createAccountTest() {
         Response response = webTarget.path("users").request(MediaType.APPLICATION_JSON).get();
 
         List<User> beforeList = response.readEntity(List.class);
@@ -153,7 +153,7 @@ public class RestIT {
     }
 
     @Test
-    public void createVote() {
+    public void createVoteTest() {
         Response response = webTarget.path("users").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(
@@ -219,6 +219,14 @@ public class RestIT {
                                 "{\"names\":[\"Trionfo di Afrodite\"]}],\"maxChoices\":\"1\"}"
                         , MediaType.APPLICATION_JSON));
 
+        voteList = webTarget.path("votes/public").queryParam("starts_with","Te").request(MediaType.APPLICATION_JSON).get(List.class);
+
+        assertEquals(1, voteList.size());
+
+        voteList = webTarget.path("votes/public").queryParam("starts_with","X").request(MediaType.APPLICATION_JSON).get(List.class);
+
+        assertEquals(0, voteList.size());
+
         voteList = webTarget.path("votes/public").queryParam("name_like","Test").request(MediaType.APPLICATION_JSON).get(List.class);
 
         assertEquals(1, voteList.size());
@@ -230,6 +238,31 @@ public class RestIT {
         voteList = webTarget.path("votes/public").queryParam("name_like","e").request(MediaType.APPLICATION_JSON).get(List.class);
 
         assertEquals(2, voteList.size());
+
+        voteList = webTarget.path("votes/public").queryParam("ends_with","st").request(MediaType.APPLICATION_JSON).get(List.class);
+
+        assertEquals(1, voteList.size());
+
+        voteList = webTarget.path("votes/public").queryParam("ends_with","X").request(MediaType.APPLICATION_JSON).get(List.class);
+
+        assertEquals(0, voteList.size());
+
+        voteList = webTarget.path("votes/public")
+                .queryParam("stars_with", "Te")
+                .queryParam("ends_with","st")
+                .request(MediaType.APPLICATION_JSON)
+                .get(List.class);
+
+        assertEquals(1, voteList.size());
+
+        voteList = webTarget.path("votes/public")
+                .queryParam("stars_with", "Me")
+                .queryParam("name_like", "composition")
+                .queryParam("ends_with","le")
+                .request(MediaType.APPLICATION_JSON)
+                .get(List.class);
+
+        assertEquals(1, voteList.size());
 
         webTarget.path("votes/private").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -264,7 +297,7 @@ public class RestIT {
     }
 
     @Test
-    public void voting() throws InterruptedException {
+    public void votingTest() throws InterruptedException {
         Response response = webTarget.path("users").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(
@@ -334,7 +367,7 @@ public class RestIT {
 
         int delay = 250;
 
-        Thread.sleep(delay);
+//        Thread.sleep(delay);
 
         webTarget.path("votes/" + vote.getId() + "/ballots").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -354,7 +387,7 @@ public class RestIT {
                 .header( "Authorization",  "Bearer " + token)
                 .get();
 
-        Thread.sleep(delay);
+//        Thread.sleep(delay);
 
         response = webTarget.path("users").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)

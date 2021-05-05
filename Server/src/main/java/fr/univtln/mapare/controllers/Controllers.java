@@ -6,8 +6,7 @@ import jakarta.persistence.Persistence;
 
 
 public class Controllers {
-    private static EntityManagerFactory EMF = null;
-    private static EntityManagerFactory TestEMF = null;
+    private static EntityManagerFactory eMF = null;
     private static EntityManager entityManager = null;
 
     private Controllers() {}
@@ -17,10 +16,8 @@ public class Controllers {
     }
 
     public static EntityManagerFactory getEMF() {
-        if (EMF != null)
-            return EMF;
-        else if (TestEMF != null)
-            return TestEMF;
+        if (eMF != null)
+            return eMF;
         else
             throw new IllegalStateException("EMF uninitialized.");
     }
@@ -30,17 +27,19 @@ public class Controllers {
     }
 
     public static void init() {
-        EMF = Persistence.createEntityManagerFactory("maparevotedb");
-        if (entityManager == null)
-            entityManager = EMF.createEntityManager();
-        entityManager.setProperty("LABEL", "%");
+        init("maparevotedb");
     }
 
     public static void testinit() {
-        TestEMF = Persistence.createEntityManagerFactory("maparevotedev");
+        init("maparevotedev");
+    }
+
+    private static void init(String persistenceUnitName) {
+        eMF = Persistence.createEntityManagerFactory(persistenceUnitName);
         if (entityManager == null)
-            entityManager = TestEMF.createEntityManager();
+            entityManager = eMF.createEntityManager();
         entityManager.setProperty("LABEL", "%");
+        entityManager.setProperty("ALGO", "%");
     }
 
     public static void close() {

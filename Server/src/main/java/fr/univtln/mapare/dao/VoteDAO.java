@@ -54,13 +54,15 @@ public class VoteDAO extends GenericIdDAO<Vote> {
         return entityManager.createNamedQuery("Vote.findPublic", Vote.class).getResultList();
     }
 
-    public List<Vote> findAllPublic(int pageIndex, int pageSize, String labelCriterion) {
+    public List<Vote> findAllPublic(int pageIndex, int pageSize, String labelCriterion, String algoname) {
         entityManager.setProperty("LABEL", labelCriterion);
+        entityManager.setProperty("ALGO", algoname);
         List<Vote> voteList = entityManager.createNamedQuery("Vote.findPublic", Vote.class)
                 .setMaxResults(pageSize)
                 .setFirstResult((pageIndex-1) * pageSize)
                 .getResultList();
         entityManager.setProperty("LABEL", "%");
+        entityManager.setProperty("ALGO", "%");
         return voteList;
     }
 

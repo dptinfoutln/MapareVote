@@ -25,45 +25,62 @@ public class VoteResource {
     @GET
     @Path("public")
     public List<Vote> getVotes(@QueryParam("page_num") int pagenum,
-                         @QueryParam("page_size") int pagesize,
-                               @QueryParam("name_like") String approxname) {
-        if (approxname == null)
-            approxname = "%";
-        else
-            approxname = "%" + approxname + "%";
+                               @QueryParam("page_size") int pagesize,
+                               @QueryParam("name_like") String approxname,
+                               @QueryParam("starts_with") String namestart,
+                               @QueryParam("ends_with") String nameend,
+                               @QueryParam("algo") String algoname) throws ForbiddenException {
+        String nameformat = "%";
+        if (namestart != null)
+            nameformat = namestart + nameformat;
+        if (approxname != null)
+            nameformat = nameformat + approxname + "%";
+        if (nameend != null)
+            nameformat = nameformat + nameend;
         if (pagenum == 0)
             pagenum = 1;
         if (pagesize == 0)
             pagesize = 20;
-        return VoteDAO.of(Controllers.getEntityManager()).findAllPublic(pagenum, pagesize, approxname);
+
+        // To prevent SQL injections
+        if (nameformat.contains("--") || (algoname != null && algoname.contains("--")))
+            throw new ForbiddenException("You may not have -- in your search.");
+        if (nameformat.contains(";") || (algoname != null && algoname.contains(";")))
+            throw new ForbiddenException("You may not have ; in your search.");
+        nameformat = nameformat.replace("'", "%").replace("\"", "");
+        if (algoname != null)
+            algoname = algoname.replace("'", "%").replace("\"", "");
+
+        return VoteDAO.of(Controllers.getEntityManager()).findAllPublic(pagenum, pagesize, nameformat, algoname);
     }
 
     @GET
     @JWTAuth
     @Path("{id}")
     public Vote getVote(@Context SecurityContext securityContext, @PathParam("id") int id) throws NotFoundException, ForbiddenException {
-        //TODO: check if enddate before today and no ballots
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
 
         if (vote == null)
             throw new NotFoundException();
 
-        Thread thread;
+//        Thread thread;
         if (vote.isPublic() || vote.getMembers().contains((User) securityContext.getUserPrincipal())) {
             if (vote.getEndDate() != null && (
                     (!vote.hasResults() || vote.isIntermediaryResult()) && LocalDate.now().isAfter(vote.getEndDate()))
             ) {
                 vote.setIntermediaryResult(false);
-                thread = new Thread(VoteUtils.voteResultsOf(vote));
-                thread.start();
+//                thread = new Thread(VoteUtils.voteResultsOf(vote));
+//                thread.start();
+                VoteUtils.voteResultsOf(vote).calculateResults();
             }
             // We check if the voter count is big, if so we only update once a day max.
             if (vote.isIntermediaryResult() &&
                     (vote.getBallots().size() < 1000 ||
                             !vote.getLastCalculated().equals(LocalDate.now()))) {
                 vote.setLastCalculated(LocalDate.now());
-                thread = new Thread(VoteUtils.voteResultsOf(vote));
-                thread.start();
+//                thread = new Thread(VoteUtils.voteResultsOf(vote));
+//                thread.start();
+                VoteUtils.voteResultsOf(vote).calculateResults();
             }
             return vote;
         }
