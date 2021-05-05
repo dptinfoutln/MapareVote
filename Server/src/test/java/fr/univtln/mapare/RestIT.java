@@ -130,6 +130,19 @@ public class RestIT {
         User carlorff2 = UserDAO.of(Controllers.getEntityManager()).findById(carlorff.getId());
         assertTrue(carlorff2.checkPassword("ofortuna"));
 
+        String token = webTarget.path("auth/signin")
+                .request()
+                .accept(MediaType.TEXT_PLAIN)
+                .header("Authorization",  "Basic " + java.util.Base64.getEncoder()
+                        .encodeToString(("carlorff@hotmail.fr:ofortuna").getBytes()))
+                .get(String.class);
+
+        webTarget.path("users/me")
+                .request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header( "Authorization",  "Bearer " + token)
+                .get();
+
         webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
 
         response = webTarget.path("users").request(MediaType.APPLICATION_JSON).get();
@@ -235,6 +248,12 @@ public class RestIT {
 
         assertEquals(1, voteList.size());
 
+        webTarget.path("users/me")
+                .request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header( "Authorization",  "Bearer " + token)
+                .get();
+
         webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
 
         response = webTarget.path("votes/public").request(MediaType.APPLICATION_JSON).get();
@@ -266,6 +285,12 @@ public class RestIT {
         token = response.readEntity(String.class);
 
         String todaysdate, dateintendays;
+
+        webTarget.path("users/me")
+                .request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header( "Authorization",  "Bearer " + token)
+                .get();
 
         todaysdate = LocalDate.now() + "";
 
@@ -331,11 +356,19 @@ public class RestIT {
 
         Thread.sleep(delay);
 
-        webTarget.path("users").request(MediaType.APPLICATION_JSON)
+        response = webTarget.path("users").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(
                         "{\"email\":\"tchaikovsky@hotmail.fr\",\"lastname\":\"tchaikovsky\",\"firstname\":\"pyotr\",\"password\":\"1812\"}",
                         MediaType.APPLICATION_JSON));
+
+        User tchaikovsky = response.readEntity(User.class);
+
+        webTarget.path("users/me")
+                .request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header( "Authorization",  "Bearer " + token)
+                .get();
 
         token = webTarget.path("auth/signin")
                 .request()
@@ -350,5 +383,8 @@ public class RestIT {
                 .get();
 
         webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
+
+
+        webTarget.path("users/" + tchaikovsky.getId()).request(MediaType.APPLICATION_JSON).delete();
     }
 }
