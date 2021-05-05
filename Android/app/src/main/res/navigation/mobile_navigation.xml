@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_publicVotes">
 
     <fragment
-        android:id="@+id/nav_home"
+        android:id="@+id/nav_publicVotes"
         android:name="com.mapare.maparevoteapp.ui.public_votes.PublicVotesFragment"
         android:label="@string/menu_public_votes"
         tools:layout="@layout/fragment_public_votes" />

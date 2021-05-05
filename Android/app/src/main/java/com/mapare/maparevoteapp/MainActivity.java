@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_login, R.id.nav_signup, R.id.nav_logout)
+                R.id.nav_publicVotes, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_login, R.id.nav_signup, R.id.nav_logout)
                 .setDrawerLayout(drawerLayout)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -109,10 +109,13 @@ public class MainActivity extends AppCompatActivity {
             nav_Menu1.findItem(R.id.nav_logout).setVisible(token1 != null);
 
             // When disconnected or connected, navigate to the "home page"
-            navController.navigate(R.id.nav_home);
+            navController.navigate(R.id.nav_publicVotes);
             drawerLayout.openDrawer(GravityCompat.START);
         };
         getSharedPreferences("Login", MODE_PRIVATE).registerOnSharedPreferenceChangeListener(listener);
+
+        // Start the app with the drawer opened
+        drawerLayout.openDrawer(GravityCompat.START);
     }
 
     @Override
