@@ -27,6 +27,7 @@
     <string name="SIGNUP_URL">/users</string>
     <string name="PUBLIC_VOTE_URL">/votes/public"</string>
     <string name="VOTE_URL">/votes/</string>
+    <string name="BALLOT_URL">/ballots</string>
 
     <!-- Strings related to navigation menu -->
     <string name="user">Utilisateur</string>

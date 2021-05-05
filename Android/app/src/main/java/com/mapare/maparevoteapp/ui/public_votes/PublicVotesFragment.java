@@ -85,7 +85,7 @@ public class PublicVotesFragment extends Fragment {
 
                 }, error -> {
             // TODO: manage different types of errors
-            Log.i("votesPublic_request", "erreur_public_votes " + error.toString());
+            Log.i("votesPublic_request", "requête non réussi: " + error.toString());
 
         })
         {

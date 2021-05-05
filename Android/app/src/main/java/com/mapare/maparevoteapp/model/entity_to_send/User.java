@@ -5,16 +5,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class User {
 
     @JsonProperty("email")
-    private String email;
+    private final String email;
 
     @JsonProperty("lastname")
-    private String name;
+    private final String name;
 
     @JsonProperty("firstname")
-    private String firstname;
+    private final String firstname;
 
     @JsonProperty("password")
-    private String password;
+    private final String password;
 
     public User(String email, String name, String firstname, String password) {
         this.email = email;
