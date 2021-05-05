@@ -188,7 +188,7 @@ public class VoteResource {
             throw new ForbiddenException("Too early.");
         if (vote.getEndDate() != null && LocalDate.now().isAfter(vote.getEndDate()))
             throw new ForbiddenException("Too late.");
-        if (ballot.getChoices().size() > vote.getMaxChoices())
+        if (!vote.getAlgo().equals("STV") && ballot.getChoices().size() > vote.getMaxChoices())
             throw new ForbiddenException("Too many choices.");
 //        for (BallotChoice bc : ballot.getChoices())
 //            if (!vote.getChoices().contains(bc.getChoice()))

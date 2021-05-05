@@ -32,6 +32,17 @@ public class UserResource {
         //Pagination
         //rentrer users dans liste
         List<User> check = UserDAO.of(Controllers.getEntityManager()).findAll();
+        for (User u : check) {
+            try {
+                System.out.println(u.getStartedVotes().size() + " " + u.getPrivateVoteList().size() + " " + u.getVotedVotes().size());
+            }
+            catch (Exception e) {
+                System.out.println("Koh lanta");
+                u.setPrivateVoteList(new ArrayList<>());
+                u.setStartedVotes(new ArrayList<>());
+                u.setVotedVotes(new ArrayList<>());
+            }
+        }
         if (check == null)
             throw new NotFoundException();
         else

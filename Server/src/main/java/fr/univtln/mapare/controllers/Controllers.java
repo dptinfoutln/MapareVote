@@ -12,6 +12,8 @@ public class Controllers {
     private Controllers() {}
 
     public static EntityManager getEntityManager() {
+
+        entityManager.setProperty("LABEL", "%");
         return entityManager;
     }
 

@@ -264,6 +264,14 @@ public class RestIT {
 
         assertEquals(1, voteList.size());
 
+        voteList = webTarget.path("votes/public").queryParam("algo","majority").request(MediaType.APPLICATION_JSON).get(List.class);
+
+        assertEquals(2, voteList.size());
+
+        voteList = webTarget.path("votes/public").queryParam("algo","majorit").request(MediaType.APPLICATION_JSON).get(List.class);
+
+        assertEquals(0, voteList.size());
+
         webTarget.path("votes/private").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .header( "Authorization",  "Bearer " + token)
@@ -347,7 +355,7 @@ public class RestIT {
                 .post(Entity.entity(
                         "{\"label\":\"Meilleur composition musicale\",\"startDate\":" + todaysdate +
                                 ",\"endDate\":" + dateintendays +
-                                ",\"algo\":\"majority\",\"anonymous\":false,\"intermediaryResult\":true,\"choices\":"
+                                ",\"algo\":\"STV\",\"anonymous\":false,\"intermediaryResult\":true,\"choices\":"
                                 + "[{\"names\":[\"Carmina Burana\"]},{\"names\":[\"Catulli Carmina\"]}," +
                                 "{\"names\":[\"Trionfo di Afrodite\"]}],\"maxChoices\":\"1\"}"
                         , MediaType.APPLICATION_JSON));
@@ -374,8 +382,12 @@ public class RestIT {
                 .header( "Authorization",  "Bearer " + token)
                 .post(Entity.entity(
                         "{\"id\":\"0\",\"choices\":[{\"choice\":{\"id\":" + vote.getChoices().get(0).getId() +
-                                "},\"weight\":1, \"ballot\":\"0\"}]}"
-                , MediaType.APPLICATION_JSON));
+                                "},\"weight\":1, \"ballot\":\"0\"}, {\"choice\":{\"id\":" +
+                                vote.getChoices().get(1).getId() +
+                                "},\"weight\":2, \"ballot\":\"0\"}, {\"choice\":{\"id\":" +
+                                vote.getChoices().get(2).getId() +
+                                "},\"weight\":3, \"ballot\":\"0\"}]}"
+                        , MediaType.APPLICATION_JSON));
 
         webTarget.path("votes/" + vote.getId() + "/myballot").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -386,6 +398,9 @@ public class RestIT {
                 .request(MediaType.APPLICATION_JSON)
                 .header( "Authorization",  "Bearer " + token)
                 .get();
+
+
+        webTarget.path("users").request(MediaType.APPLICATION_JSON).get();
 
 //        Thread.sleep(delay);
 
@@ -416,7 +431,6 @@ public class RestIT {
                 .get();
 
         webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
-
 
         webTarget.path("users/" + tchaikovsky.getId()).request(MediaType.APPLICATION_JSON).delete();
     }
