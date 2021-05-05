@@ -66,98 +66,104 @@ public abstract class VoteUtils {
                         }
                         Choice minchoice = null;
 
-
-                        // IRV = 1 winner.
-                        if (vote.getMaxChoices() == 1) {
-                            Map<Choice, Integer> voteCounting = new HashMap<>();
-                            int minval;
-
-                            while (true) {
-                                // We count the votes for each candidate.
-                                for (Choice c : vote.getChoices())
-                                    voteCounting.put(c, 0);
-                                for (List<Choice> lc : collated) {
-                                    voteCounting.put(lc.get(0), voteCounting.get(lc.get(0)) + 1);
-                                }
-
-                                // If we find a winner, we add it to the resultlist and end it here.
-                                for (Choice c : vote.getChoices()) {
-                                    if (voteCounting.get(c) > vote.getBallots().size() / 2) {
-                                        resultList.add(new VoteResult(c, candidatecount, vote));
-                                        break;
-                                    }
-                                }
-                                if (resultList.size() == 1)
-                                    break;
-
-                                // Otherwise we search for the lowest ranked vote currently.
-                                minval = vote.getBallots().size() + 1;
-                                for (Choice c : vote.getChoices()) {
-                                    if (voteCounting.get(c) != 0 && voteCounting.get(c) < minval) {
-                                        minval = voteCounting.get(c);
-                                        minchoice = c;
-                                    }
-                                    // Once found we remove it from everywhere.
-                                    for (List<Choice> lc : collated) {
-                                        lc.remove(minchoice);
-                                    }
-                                }
+                        if (vote.getBallots().isEmpty()) {
+                            for (Choice c : vote.getChoices()) {
+                                resultList.add(new VoteResult(c, -1, vote));
                             }
                         }
-
-                        // STV = more than 1 winner
                         else {
-                            Map<Choice, Double> countMap = new HashMap<>();
-                            double minval;
-                            boolean flag = false;
-                            double ratio;
-                            int votingforthis;
-                            // We init the vote count for each candidate
-                            for (Choice c : vote.getChoices())
-                                countMap.put(c, 0.0);
-                            for (List<Choice> lc : collated) {
-                                countMap.put(lc.get(0), countMap.get(lc.get(0)) + 1);
-                            }
+                            // IRV = 1 winner.
+                            if (vote.getMaxChoices() == 1) {
+                                int minval;
+                                Map<Choice, Integer> voteCounting = new HashMap<>();
 
-                            while (resultList.size() != vote.getMaxChoices()) {
-                                flag = false;
-                                for (Choice c : vote.getChoices()) {
-                                    // If we have someone who has enough votes, we can add him to the winners list.
-                                    if (countMap.get(c) >= ((double) vote.getBallots().size()) / vote.getMaxChoices()) {
-                                        flag = true;
-                                        resultList.add(new VoteResult(c, candidatecount, vote));
-                                        candidatecount++;
-                                        // We calculate the ratio for vote redistribution
-                                        ratio = 1 - ((double) vote.getBallots().size()) / vote.getMaxChoices() / countMap.get(c);
-                                        // We redistribute the votes and remove the winner from every list
-                                        redistribute(collated, c, countMap, ratio);
-                                        break;
+                                while (true) {
+                                    // We count the votes for each candidate.
+                                    for (Choice c : vote.getChoices())
+                                        voteCounting.put(c, 0);
+                                    for (List<Choice> lc : collated) {
+                                        voteCounting.put(lc.get(0), voteCounting.get(lc.get(0)) + 1);
                                     }
-                                }
-                                // If flag is false, we have had no winner this round so we must eliminate a loser.
-                                if (!flag) {
-                                    // We find the candidate with the least amount of votes.
-                                    minval = vote.getBallots().size() + 1.0;
+
+                                    // If we find a winner, we add it to the resultlist and end it here.
                                     for (Choice c : vote.getChoices()) {
-                                        if (countMap.get(c) != 0 && countMap.get(c) < minval) {
-                                            minval = countMap.get(c);
-                                            minchoice = c;
+                                        if (voteCounting.get(c) > vote.getBallots().size() / 2) {
+                                            resultList.add(new VoteResult(c, candidatecount, vote));
+                                            break;
                                         }
                                     }
-                                    // Once found we redistribute the votes and remove it from the pool.
-                                    votingforthis = 0;
+                                    if (resultList.size() == 1)
+                                        break;
 
-                                    // To do this we first count the number of individual votes for it.
-                                    for (List<Choice> lc : collated) {
-                                        if (lc.get(0).equals(minchoice))
-                                            votingforthis++;
+                                    // Otherwise we search for the lowest ranked vote currently.
+                                    minval = vote.getBallots().size() + 1;
+                                    for (Choice c : vote.getChoices()) {
+                                        if (voteCounting.get(c) != 0 && voteCounting.get(c) < minval) {
+                                            minval = voteCounting.get(c);
+                                            minchoice = c;
+                                        }
+                                        // Once found we remove it from everywhere.
+                                        for (List<Choice> lc : collated) {
+                                            lc.remove(minchoice);
+                                        }
                                     }
+                                }
+                            }
 
-                                    // Then we calculate the ratio for this vote.
-                                    ratio = countMap.get(minchoice) / votingforthis;
+                            // STV = more than 1 winner
+                            else {
+                                Map<Choice, Double> countMap = new HashMap<>();
+                                double minval;
+                                boolean flag = false;
+                                double ratio;
+                                int votingforthis;
+                                // We init the vote count for each candidate
+                                for (Choice c : vote.getChoices())
+                                    countMap.put(c, 0.0);
+                                for (List<Choice> lc : collated) {
+                                    countMap.put(lc.get(0), countMap.get(lc.get(0)) + 1);
+                                }
 
-                                    // Then proceed with the redistribution.
-                                    redistribute(collated, minchoice, countMap, ratio);
+                                while (resultList.size() != vote.getMaxChoices()) {
+                                    flag = false;
+                                    for (Choice c : vote.getChoices()) {
+                                        // If we have someone who has enough votes, we can add him to the winners list.
+                                        if (countMap.get(c) >= ((double) vote.getBallots().size()) / vote.getMaxChoices()) {
+                                            flag = true;
+                                            resultList.add(new VoteResult(c, candidatecount, vote));
+                                            candidatecount++;
+                                            // We calculate the ratio for vote redistribution
+                                            ratio = 1 - ((double) vote.getBallots().size()) / vote.getMaxChoices() / countMap.get(c);
+                                            // We redistribute the votes and remove the winner from every list
+                                            redistribute(collated, c, countMap, ratio);
+                                            break;
+                                        }
+                                    }
+                                    // If flag is false, we have had no winner this round so we must eliminate a loser.
+                                    if (!flag) {
+                                        // We find the candidate with the least amount of votes.
+                                        minval = vote.getBallots().size() + 1.0;
+                                        for (Choice c : vote.getChoices()) {
+                                            if (countMap.get(c) != 0 && countMap.get(c) < minval) {
+                                                minval = countMap.get(c);
+                                                minchoice = c;
+                                            }
+                                        }
+                                        // Once found we redistribute the votes and remove it from the pool.
+                                        votingforthis = 0;
+
+                                        // To do this we first count the number of individual votes for it.
+                                        for (List<Choice> lc : collated) {
+                                            if (lc.get(0).equals(minchoice))
+                                                votingforthis++;
+                                        }
+
+                                        // Then we calculate the ratio for this vote.
+                                        ratio = countMap.get(minchoice) / votingforthis;
+
+                                        // Then proceed with the redistribution.
+                                        redistribute(collated, minchoice, countMap, ratio);
+                                    }
                                 }
                             }
                         }
