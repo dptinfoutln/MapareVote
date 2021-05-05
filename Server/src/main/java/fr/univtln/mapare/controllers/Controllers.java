@@ -33,12 +33,14 @@ public class Controllers {
         EMF = Persistence.createEntityManagerFactory("maparevotedb");
         if (entityManager == null)
             entityManager = EMF.createEntityManager();
+        entityManager.setProperty("LABEL", "%");
     }
 
     public static void testinit() {
         TestEMF = Persistence.createEntityManagerFactory("maparevotedev");
         if (entityManager == null)
             entityManager = TestEMF.createEntityManager();
+        entityManager.setProperty("LABEL", "%");
     }
 
     public static void close() {
