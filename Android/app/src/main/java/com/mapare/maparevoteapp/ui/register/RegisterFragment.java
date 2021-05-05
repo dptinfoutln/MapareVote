@@ -75,7 +75,6 @@ public class RegisterFragment extends Fragment {
                     // Manage ...
                     Log.i("debug", "problème serveur");
 
-                    registerButton.setClickable(true);
                     break;
                 case "Wrong inputs":
                     // Manage ...
@@ -84,12 +83,12 @@ public class RegisterFragment extends Fragment {
                     Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake);
                     emailField.setError(getResources().getString(R.string.incorrect_email));
                     registerButton.startAnimation(shake);
-                    registerButton.setClickable(true);
 
                     // Hides keyboard
                     inputMethodManager.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
                     break;
             }
+            registerButton.setClickable(true);
         });
 
         nameField = view.findViewById(R.id.register_nameField);
@@ -126,7 +125,7 @@ public class RegisterFragment extends Fragment {
             }
             else {
                 User userToRegister = new User(email, name, firstname, password);
-                //registerButton.setClickable(false);
+                registerButton.setClickable(false);
                 // Makes the request
                 registerAttempt(getContext(), userToRegister);
             }

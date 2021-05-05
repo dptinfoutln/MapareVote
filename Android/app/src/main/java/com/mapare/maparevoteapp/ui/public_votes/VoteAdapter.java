@@ -48,7 +48,7 @@ public class VoteAdapter extends BaseAdapter {
         ViewHolder holder;
 
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.vote_list, null);
+            convertView = inflater.inflate(R.layout.vote_list, null); // null needed here
             holder = new ViewHolder();
             holder.labelField = convertView.findViewById(R.id.votePublic_labelField);
             holder.votemakerField = convertView.findViewById(R.id.votePublic_votemakerField);

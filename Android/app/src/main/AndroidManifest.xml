@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MapareVoteApp">
         <activity
+            android:name=".VoteActivity"
+            android:label="@string/title_activity_vote" />
+        <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.MapareVoteApp.NoActionBar">

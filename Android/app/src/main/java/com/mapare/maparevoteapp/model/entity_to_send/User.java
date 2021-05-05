@@ -1,10 +1,6 @@
 package com.mapare.maparevoteapp.model.entity_to_send;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.gson.annotations.SerializedName;
-
-import java.io.Serializable;
 
 public class User {
 

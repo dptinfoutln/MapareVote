@@ -1,11 +1,13 @@
 package com.mapare.maparevoteapp.ui.public_votes;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +22,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mapare.maparevoteapp.R;
+import com.mapare.maparevoteapp.VoteActivity;
 import com.mapare.maparevoteapp.model.entity_to_reveive.Vote;
 
 import java.io.IOException;
@@ -47,6 +50,16 @@ public class PublicVotesFragment extends Fragment {
             VoteAdapter adapter = new VoteAdapter(getContext(), voteList);
             listView.setAdapter(adapter);
         });
+        listView.setOnItemClickListener((parent, view1, position, id) -> {
+            // Retrieve the selected vote
+            Vote selectedItem = (Vote) parent.getItemAtPosition(position);
+
+            // Start VoteActivity with passing the vote info
+            Intent intent = new Intent(getContext(), VoteActivity.class);
+            intent.putExtra("vote", selectedItem);
+            startActivity(intent);
+        });
+        // makes the request
         publicVotesRequest(getContext());
     }
 
@@ -58,15 +71,9 @@ public class PublicVotesFragment extends Fragment {
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.GET, url,
                 response -> {
-                    // do things
-                    Log.i("debug", response);
                     ObjectMapper objectMapper = new ObjectMapper();
                     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-//                    Type listOfMyClassObject = new TypeToken<ArrayList<Vote>>() {}.getType();
-//
-//                    Gson gson = new Gson();
-//                    List<Vote> voteList = gson.fromJson(response, listOfMyClassObject);
                     try {
                         voteList = objectMapper.readValue(response, new TypeReference<List<Vote>>(){});
                         LOADING_STATE_CODE.setValue("Finished");
@@ -74,11 +81,11 @@ public class PublicVotesFragment extends Fragment {
                         e.printStackTrace();
                     }
 
-                    Log.i("debug", voteList.toString()+"");
+                    Log.i("vote_request", voteList.toString());
 
                 }, error -> {
             // TODO: manage different types of errors
-            Log.i("debug", error.toString());
+            Log.i("debug", "erreur_public_votes " + error.toString());
 
         })
         {

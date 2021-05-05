@@ -2,8 +2,10 @@ package com.mapare.maparevoteapp.model.entity_to_reveive;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 
-public class VoteResult {
+
+public class VoteResult implements Serializable {
 
     @JsonProperty("choice")
     private Choice choice;

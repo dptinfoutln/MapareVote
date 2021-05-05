@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import java.io.Serializable;
 import java.util.List;
 
 @JsonIdentityInfo(scope=Vote.class, generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-public class Vote {
+public class Vote implements Serializable {
 
     @JsonProperty("id")
     private int id;

@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_publicVotes, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_login, R.id.nav_signup, R.id.nav_logout)
-                .setDrawerLayout(drawerLayout)
+                .setOpenableLayout(drawerLayout)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
@@ -81,12 +81,14 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), "Déconnecté", Toast.LENGTH_SHORT).show();
                 getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("token", null).apply();
             } else {
-                // TODO: talk about it with the others to know if it's interesting
                 // This is for closing the drawer after acting on it, doesn't want this feature when menu_logout button is clicked on
                 drawerLayout.closeDrawer(GravityCompat.START);
             }
-            // This is for maintaining the behavior of the Navigation view
-            NavigationUI.onNavDestinationSelected(item, navController);
+            // If already on the page that you want to navigate , doesn't reload the page
+            if( !(navigationView.getMenu().findItem(R.id.nav_publicVotes).isChecked() && id == R.id.nav_publicVotes) ) {
+                // This is for maintaining the behavior of the Navigation view
+                NavigationUI.onNavDestinationSelected(item, navController);
+            }
             return true;
         });
         // Defines the visibility of the items by default
