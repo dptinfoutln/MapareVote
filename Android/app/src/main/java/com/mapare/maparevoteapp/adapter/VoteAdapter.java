@@ -1,10 +1,9 @@
-package com.mapare.maparevoteapp.ui.public_votes;
+package com.mapare.maparevoteapp.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.mapare.maparevoteapp.R;
@@ -12,28 +11,12 @@ import com.mapare.maparevoteapp.model.entity_to_reveive.Vote;
 
 import java.util.List;
 
-public class VoteAdapter extends BaseAdapter {
-    private final List<Vote> voteList;
+public class VoteAdapter extends CustomAdapter<Vote> {
     private final LayoutInflater inflater;
 
     public VoteAdapter(Context context, List<Vote> voteList) {
+        super(voteList);
         inflater = LayoutInflater.from(context);
-        this.voteList = voteList;
-    }
-
-    @Override
-    public int getCount() {
-        return voteList.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return voteList.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
     }
 
     public static class ViewHolder {
@@ -56,17 +39,17 @@ public class VoteAdapter extends BaseAdapter {
             holder.startDateField = convertView.findViewById(R.id.votePublic_startDateField);
             convertView.setTag(holder);
         }else {
-            holder = (ViewHolder)convertView.getTag();
+            holder = (ViewHolder) convertView.getTag();
         }
-        holder.labelField.setText(voteList.get(position).getLabel());
+        holder.labelField.setText(entityList.get(position).getLabel());
 
-        String votemaker = voteList.get(position).getVotemaker().getFirstname() + " " + voteList.get(position).getVotemaker().getName();
+        String votemaker = entityList.get(position).getVotemaker().getFirstname() + " " + entityList.get(position).getVotemaker().getName();
         holder.votemakerField.setText(votemaker);
 
-        if (voteList.get(position).isIntermediaryResult())
+        if (entityList.get(position).isIntermediaryResult())
             holder.intermediaryResultField.setText("Résultats disponibles");
 
-        holder.startDateField.setText(voteList.get(position).getStartDate().toString());
+        holder.startDateField.setText(entityList.get(position).getStartDate().toString());
 
         return convertView;
     }

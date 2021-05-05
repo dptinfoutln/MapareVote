@@ -3,12 +3,13 @@ package com.mapare.maparevoteapp.model.entity_to_reveive;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.mapare.maparevoteapp.model.EntityWithId;
 
 import java.io.Serializable;
 import java.util.List;
 
 @JsonIdentityInfo(scope=Vote.class, generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-public class Vote implements Serializable {
+public class Vote implements Serializable, EntityWithId {
 
     @JsonProperty("id")
     private int id;

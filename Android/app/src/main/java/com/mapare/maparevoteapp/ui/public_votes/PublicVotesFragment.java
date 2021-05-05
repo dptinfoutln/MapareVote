@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -23,6 +22,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mapare.maparevoteapp.R;
 import com.mapare.maparevoteapp.VoteActivity;
+import com.mapare.maparevoteapp.adapter.VoteAdapter;
 import com.mapare.maparevoteapp.model.entity_to_reveive.Vote;
 
 import java.io.IOException;
@@ -52,14 +52,14 @@ public class PublicVotesFragment extends Fragment {
         });
         listView.setOnItemClickListener((parent, view1, position, id) -> {
             // Retrieve the selected vote
-            Vote selectedItem = (Vote) parent.getItemAtPosition(position);
-
+            int selectedItemId = (int) parent.getItemIdAtPosition(position);
+            // TODO: check token
             // Start VoteActivity with passing the vote info
             Intent intent = new Intent(getContext(), VoteActivity.class);
-            intent.putExtra("vote", selectedItem);
+            intent.putExtra("voteId", selectedItemId);
             startActivity(intent);
         });
-        // makes the request
+        // Makes the request
         publicVotesRequest(getContext());
     }
 
@@ -81,11 +81,11 @@ public class PublicVotesFragment extends Fragment {
                         e.printStackTrace();
                     }
 
-                    Log.i("vote_request", voteList.toString());
+                    Log.i("votesPublic_request", voteList.toString());
 
                 }, error -> {
             // TODO: manage different types of errors
-            Log.i("debug", "erreur_public_votes " + error.toString());
+            Log.i("votesPublic_request", "erreur_public_votes " + error.toString());
 
         })
         {
