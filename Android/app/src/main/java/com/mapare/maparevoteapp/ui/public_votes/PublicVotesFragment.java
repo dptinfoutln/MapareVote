@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class PublicVotesFragment extends Fragment {
     private List<Vote> voteList;
@@ -65,19 +66,19 @@ public class PublicVotesFragment extends Fragment {
                     intent.putExtra("vote", vote);
                     String token = null;
                     // if already voted then pass the token of the ballot
-                    if (voter.getVotedVotes() != null)
-                        for (VotedVote v : voter.getVotedVotes())
-                            if (v.getVote().getId() == vote.getId()) {
-                                token = v.getToken();
-                                break;
-                            }
+//                    if (voter.getVotedVotes() != null)
+//                        for (VotedVote v : voter.getVotedVotes())
+//                            if (v.getVote().getId() == vote.getId()) {
+//                                token = v.getToken();
+//                                break;
+//                            }
                     intent.putExtra("token", token);
                     startActivity(intent);
                     break;
                 case "not authorized":
                     Toast.makeText(getContext(), "Veuillez vous connecter", Toast.LENGTH_SHORT).show();
                     // Navigate to login page because access is denied
-                    getContext().getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("go_to", "login page").apply();
+                    requireContext().getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("go_to", "login page").apply();
                     break;
             }
         });
@@ -187,13 +188,13 @@ public class PublicVotesFragment extends Fragment {
                     ObjectMapper objectMapper = new ObjectMapper();
                     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-                    try {
-                        voter = objectMapper.readValue(response, User.class);
-                    } catch (IOException e) { // shouldn't happen
-                        e.printStackTrace();
-                    }
+//                    try {
+//                        voter = objectMapper.readValue(response, User.class);
+//                    } catch (IOException e) { // shouldn't happen
+//                        e.printStackTrace();
+//                    }
 
-                    Log.i("voter_request", voter.toString());
+                    //Log.i("voter_request", voter.toString()+"");
 
                 }, error -> {
             // TODO: manage different types of errors

@@ -41,9 +41,6 @@ public class Vote implements Serializable, EntityWithId {
     @JsonProperty("maxChoices")
     private int maxChoices;
 
-    @JsonProperty("resultList")
-    private List<VoteResult> resultList;
-
     public int getId() {
         return id;
     }
@@ -124,14 +121,6 @@ public class Vote implements Serializable, EntityWithId {
         this.maxChoices = maxChoices;
     }
 
-    public List<VoteResult> getResultList() {
-        return resultList;
-    }
-
-    public void setResultList(List<VoteResult> resultList) {
-        this.resultList = resultList;
-    }
-
     @Override
     public String toString() {
         return "Vote{" +
@@ -145,7 +134,6 @@ public class Vote implements Serializable, EntityWithId {
                 ", votemaker=" + votemaker +
                 ", choices=" + choices +
                 ", maxChoices=" + maxChoices +
-                ", resultList=" + resultList +
                 '}';
     }
 }

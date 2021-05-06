@@ -20,6 +20,9 @@ public class Ballot implements Serializable {
     @JsonProperty("choices")
     private List<BallotChoice> choices;
 
+    @JsonProperty("vote")
+    private Vote vote;
+
     public int getId() {
         return id;
     }

@@ -6,8 +6,11 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import java.io.Serializable;
 
-@JsonIdentityInfo(scope= BallotChoice.class, generator= ObjectIdGenerators.PropertyGenerator.class, property = "ballot")
+@JsonIdentityInfo(scope= BallotChoice.class, generator= ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class BallotChoice implements Serializable {
+
+    @JsonProperty("id")
+    private String id;
 
     @JsonProperty("ballot")
     private Ballot ballot;
