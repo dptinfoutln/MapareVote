@@ -7,9 +7,9 @@ import java.util.List;
 public class Ballot {
 
     @JsonProperty("choices")
-    private final List<Choice> choices;
+    private final List<BallotChoice> choices;
 
-    public Ballot(List<Choice> choices) {
+    public Ballot(List<BallotChoice> choices) {
         this.choices = choices;
     }
 }

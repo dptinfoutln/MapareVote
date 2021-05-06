@@ -12,11 +12,8 @@ import com.mapare.maparevoteapp.model.entity_to_reveive.Vote;
 import java.util.List;
 
 public class VoteAdapter extends CustomAdapter<Vote> {
-    private final LayoutInflater inflater;
-
     public VoteAdapter(Context context, List<Vote> voteList) {
-        super(voteList);
-        inflater = LayoutInflater.from(context);
+        super(context, voteList);
     }
 
     public static class ViewHolder {

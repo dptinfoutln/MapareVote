@@ -7,11 +7,7 @@ public class Choice {
     @JsonProperty("id")
     private final int id;
 
-    @JsonProperty("weight")
-    private final int weight;
-
-    public Choice(int id, int weight) {
+    public Choice(int id) {
         this.id = id;
-        this.weight = weight;
     }
 }

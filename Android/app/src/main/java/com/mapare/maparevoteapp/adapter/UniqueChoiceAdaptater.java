@@ -1,12 +1,10 @@
 package com.mapare.maparevoteapp.adapter;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
 
-import com.mapare.maparevoteapp.adapter.CustomAdapter;
 import com.mapare.maparevoteapp.R;
 import com.mapare.maparevoteapp.model.entity_to_reveive.Choice;
 
@@ -14,12 +12,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class UniqueChoiceAdaptater extends CustomAdapter<Choice> {
-    private final LayoutInflater inflater;
     private RadioButton selected = null;
 
     public UniqueChoiceAdaptater(Context context, List<Choice> choiceList) {
-        super(choiceList);
-        inflater = LayoutInflater.from(context);
+        super(context, choiceList);
     }
 
     public static class ViewHolder {
@@ -50,4 +46,6 @@ public class UniqueChoiceAdaptater extends CustomAdapter<Choice> {
 
         return convertView;
     }
+
+
 }

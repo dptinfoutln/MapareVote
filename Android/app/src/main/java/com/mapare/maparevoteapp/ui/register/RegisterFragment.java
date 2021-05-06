@@ -1,6 +1,7 @@
 package com.mapare.maparevoteapp.ui.register;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -40,6 +41,8 @@ public class RegisterFragment extends Fragment {
     private Button registerButton;
     private MutableLiveData<String> REGISTERED_STATE_CODE;
 
+    private String email;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -63,13 +66,11 @@ public class RegisterFragment extends Fragment {
                     // Hides keyboard
                     inputMethodManager.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
 
-                    // Clear fields (temporary)
-                    nameField.setText("");
-                    firstnameField.setText("");
-                    emailField.setText("");
-                    passwordField.setText("");
-                    confirmPasswordField.setText("");
-
+                    SharedPreferences prefs = getContext().getSharedPreferences("Login", Context.MODE_PRIVATE);
+                    // Save email for the next prompting
+                    prefs.edit().putString("email", email).apply();
+                    // Navigate to the login page right after a successful registration
+                    prefs.edit().putString("go_to", "login page").apply();
                     break;
                 case "Server not responding":
                     // Manage ...
@@ -101,7 +102,7 @@ public class RegisterFragment extends Fragment {
         registerButton.setOnClickListener(v -> {
             String name = nameField.getText().toString();
             String firstname = firstnameField.getText().toString();
-            String email = emailField.getText().toString();
+            email = emailField.getText().toString();
             String password = passwordField.getText().toString();
             String confirmPassword = confirmPasswordField.getText().toString();
 

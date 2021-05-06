@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -98,21 +99,32 @@ public class MainActivity extends AppCompatActivity {
         nav_Menu.findItem(R.id.nav_signup).setVisible(token == null);
         nav_Menu.findItem(R.id.nav_logout).setVisible(token != null);
 
-        // Listener to know when the user switch between login and logout
         listener = (prefs, key) -> {
-            Menu nav_Menu1 = navigationView.getMenu();
+            Log.i("key", key);
+            String content = prefs.getString(key, null);
+            // To know when the user switch between login and logout
+            if (key.equals("token")) {
 
-            String token1 = prefs.getString("token", null);
-            Log.i("token", token1 + "");
+                // Add items if it depends on the user who should be logged in or not
+                nav_Menu.findItem(R.id.nav_login).setVisible(content == null);
+                nav_Menu.findItem(R.id.nav_signup).setVisible(content == null);
+                nav_Menu.findItem(R.id.nav_logout).setVisible(content != null);
 
-            // Add items if it depends on the user who should be logged in or not
-            nav_Menu1.findItem(R.id.nav_login).setVisible(token1 == null);
-            nav_Menu1.findItem(R.id.nav_signup).setVisible(token1 == null);
-            nav_Menu1.findItem(R.id.nav_logout).setVisible(token1 != null);
-
-            // When disconnected or connected, navigate to the "home page"
-            navController.navigate(R.id.nav_publicVotes);
-            drawerLayout.openDrawer(GravityCompat.START);
+                // When disconnected or connected, navigate to the "home page"
+                navController.navigate(R.id.nav_publicVotes);
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+            // If navigate is needed
+            else if (key.equals("go_to")) {
+                Log.i("listener", content+"");
+                switch (content) {
+                    case "login page":
+                        navController.navigate(R.id.nav_login);
+                        break;
+                    // Add other destinations
+                }
+                prefs.edit().putString("go_to", "nowhere").apply();
+            }
         };
         getSharedPreferences("Login", MODE_PRIVATE).registerOnSharedPreferenceChangeListener(listener);
 

@@ -1,5 +1,7 @@
 package com.mapare.maparevoteapp.adapter;
 
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.widget.BaseAdapter;
 
 import com.mapare.maparevoteapp.model.EntityWithId;
@@ -7,10 +9,12 @@ import com.mapare.maparevoteapp.model.EntityWithId;
 import java.util.List;
 
 public abstract class CustomAdapter<E extends EntityWithId> extends BaseAdapter {
+    protected final LayoutInflater inflater;
     protected List<E> entityList;
     protected List<Integer> pickedIds;
 
-    public CustomAdapter(List<E> entityList) {
+    public CustomAdapter(Context context, List<E> entityList) {
+        this.inflater = LayoutInflater.from(context);
         this.entityList = entityList;
     }
 
