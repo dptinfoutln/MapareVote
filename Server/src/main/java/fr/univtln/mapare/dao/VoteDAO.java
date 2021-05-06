@@ -25,12 +25,8 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     }
 
     public List<Vote> findAll(int pageIndex, int pageSize, String labelCriterion) {
-        entityManager.setProperty("LABEL", labelCriterion);
         List<Vote> voteList = entityManager.createNamedQuery("Vote.findAll", Vote.class)
-                .setMaxResults(pageSize)
-                .setFirstResult((pageIndex-1) * pageSize)
                 .getResultList();
-        entityManager.setProperty("LABEL", "%");
         return voteList;
 
     }
@@ -40,13 +36,9 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     }
 
     public List<Vote> findByVotemaker(User votemaker, int pageIndex, int pageSize, String labelCriterion) {
-        entityManager.setProperty("LABEL", labelCriterion);
         List<Vote> voteList = entityManager.createNamedQuery("Vote.findByVotemaker", Vote.class)
                 .setParameter("votemaker", votemaker)
-                .setMaxResults(pageSize)
-                .setFirstResult((pageIndex-1) * pageSize)
                 .getResultList();
-        entityManager.setProperty("LABEL", "%");
         return voteList;
     }
 
@@ -55,14 +47,8 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     }
 
     public List<Vote> findAllPublic(int pageIndex, int pageSize, String labelCriterion, String algoname) {
-        entityManager.setProperty("LABEL", labelCriterion);
-        entityManager.setProperty("ALGO", algoname);
         List<Vote> voteList = entityManager.createNamedQuery("Vote.findPublic", Vote.class)
-                .setMaxResults(pageSize)
-                .setFirstResult((pageIndex-1) * pageSize)
                 .getResultList();
-        entityManager.setProperty("LABEL", "%");
-        entityManager.setProperty("ALGO", "%");
         return voteList;
     }
 
@@ -71,19 +57,10 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     }
 
     public List<Vote> findPrivateByUser(User user, int pageIndex, int pageSize, String labelCriterion) {
-        entityManager.setProperty("LABEL", labelCriterion);
         List<Vote> voteList = entityManager.createNamedQuery("Vote.findPrivateByUser", Vote.class)
                 .setParameter("user", user)
-                .setMaxResults(pageSize)
-                .setFirstResult((pageIndex-1) * pageSize)
                 .getResultList();
-        entityManager.setProperty("LABEL", "%");
         return voteList;
-    }
-
-    @Override
-    public Vote findById(int id) {
-        return super.findById(id);
     }
 
     @Override
