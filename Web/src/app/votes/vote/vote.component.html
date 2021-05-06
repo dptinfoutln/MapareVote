@@ -16,7 +16,7 @@
           <li class="list-group-item" [ngClass]="{'box': !isVoted && vote.algo !== 'majority'}" *ngFor="let choice of vote.choices; let index = index" cdkDrag [cdkDragDisabled]="isVoted || vote.algo === 'majority'">
             <div class="placeholder" *cdkDragPlaceholder></div>
             <label style="font-size: large">
-              <input [disabled]="isVoted" name="choices" #choices id="choice{{choice.id}}" [type]="btnType" value="{{choice.id}}">
+              <input [disabled]="isVoted" (change)="onChecked($event)"  name="choices" #choices id="choice{{choice.id}}" [type]="btnType" value="{{choice.id}}">
               {{choice.names}}
             </label>
           </li>

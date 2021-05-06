@@ -37,6 +37,8 @@ export class VoteComponent implements OnInit {
     @ViewChildren('choices') choicesElem: QueryList<ElementRef>;
     @ViewChild('submitBtn') submitBtn: ElementRef;
 
+    private checkedBoxes = [];
+
     constructor(private route: ActivatedRoute,
                 private votesService: VotesService,
                 private location: Location,
@@ -131,6 +133,17 @@ export class VoteComponent implements OnInit {
         );
     }
 
+    onChecked(event: any): void {
+        if (event.currentTarget.checked) {
+            this.checkedBoxes.push(event.currentTarget);
+            if (this.checkedBoxes.length > this.vote.maxChoices) {
+                this.checkedBoxes[0].checked = false;
+                this.checkedBoxes.splice(0, 1);
+            }
+        } else {
+            this.checkedBoxes.splice(this.checkedBoxes.indexOf(event.currentTarget), 1);
+        }
+    }
 
 
     onSubmit(): void {
