@@ -4,10 +4,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
-import java.util.List;
 
 public class Controllers {
-    private static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("maparevotedb");
+    private static EntityManagerFactory eMF = null;
     private static EntityManager entityManager = null;
 
     private Controllers() {}
@@ -16,13 +15,31 @@ public class Controllers {
         return entityManager;
     }
 
+    public static EntityManagerFactory getEMF() {
+        if (eMF != null)
+            return eMF;
+        else
+            throw new IllegalStateException("EMF uninitialized.");
+    }
+
     public static boolean isOpen() {
         return entityManager != null;
     }
 
     public static void init() {
+        init("maparevotedb");
+    }
+
+    public static void testinit() {
+        init("maparevotedev");
+    }
+
+    private static void init(String persistenceUnitName) {
+        eMF = Persistence.createEntityManagerFactory(persistenceUnitName);
         if (entityManager == null)
-            entityManager = EMF.createEntityManager();
+            entityManager = eMF.createEntityManager();
+        entityManager.setProperty("LABEL", "%");
+        entityManager.setProperty("ALGO", "%");
     }
 
     public static void close() {

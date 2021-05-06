@@ -104,9 +104,22 @@ class EntityIT {
         assertThrows(RollbackException.class, () -> voteDAO.persist(sent));
         sent.addMember(creator);
 
+
+
+//        creator.addStartedVote(sent);
+
+
+
+//        System.out.println(sent);
+
         userDAO.persist(creator);
         voteDAO.persist(sent);
-        System.out.println(sent);
+
+        System.out.println(creator.getPrivateVoteList().size());
+
+        System.out.println(userDAO.findAll());
+
+//        System.out.println(sent);
         assertTrue(sent.isPrivate());
 
         List<Vote> votes = voteDAO.findAll();
@@ -128,8 +141,10 @@ class EntityIT {
         assertEquals(sent.getStartDate(), received.getStartDate());
         assertEquals(sent.getVotemaker(), received.getVotemaker());
 
+        System.out.println(creator.getStartedVotes());
+
         userDAO.remove(creator.getId());
-        voteDAO.remove(sent.getId());
+        System.out.println(voteDAO.findAll());
 
         TEST_EM.close();
     }

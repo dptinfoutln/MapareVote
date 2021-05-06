@@ -2,7 +2,6 @@ package fr.univtln.mapare.exceptions;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Getter;
 
@@ -21,14 +20,14 @@ public class BusinessException extends Exception implements Serializable {
     /**
      * The Status.
      */
-    final Response.Status status;
+    final MyResponse.Status status;
 
     /**
      * Instantiates a new Business exception with the default message.
      *
      * @param status the status
      */
-    public BusinessException(Response.Status status) {
+    public BusinessException(MyResponse.Status status) {
         super(status.getReasonPhrase());
         this.status = status;
     }
@@ -39,7 +38,7 @@ public class BusinessException extends Exception implements Serializable {
      * @param status the status
      * @param message the message
      */
-    public BusinessException(Response.Status status,String message) {
+    public BusinessException(MyResponse.Status status,String message) {
         super(message);
         this.status = status;
     }

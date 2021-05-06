@@ -3,6 +3,7 @@ package fr.univtln.mapare.model;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
+import org.eclipse.persistence.annotations.AdditionalCriteria;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import java.io.Serializable;
@@ -14,7 +15,8 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+@AdditionalCriteria("this.label LIKE :LABEL and this.algo LIKE :ALGO")
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class,property="id", scope=Vote.class)
 @Table(name = "\"VOTE\"")
 @NamedQueries({
         @NamedQuery(name = "Vote.findByVotemaker", query = "SELECT V FROM Vote V WHERE V.votemaker = :votemaker AND V.deleted = false"),
@@ -65,6 +67,7 @@ public class Vote implements Serializable {
     @PrivateOwned   // Permert d'update la bd à partir de la liste actuelle (pour les remove par ex)
     private List<Choice> choices = new ArrayList<>();
 
+    //TODO: new field for number of winners for STV
     @Column(nullable = false, name = "\"maxChoices\"")
     private int maxChoices = 1;
 
@@ -80,9 +83,16 @@ public class Vote implements Serializable {
             "passwordHash", "salt", "emailToken"})
     private List<User> members = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
     @JoinColumn(name = "\"result\"")
     private List<VoteResult> resultList;
+
+    @JsonIgnore
+    private transient LocalDate lastCalculated = null;
+
+    @Transient
+    private boolean pendingResult = false;
 
     @Builder
     @SneakyThrows
@@ -110,7 +120,7 @@ public class Vote implements Serializable {
             members.add(member);
     }
 
-    private static final transient List<String> algolist = Arrays.asList("majority");
+    private static final transient List<String> algolist = Arrays.asList("majority", "borda", "STV");
 
     public static List<String> getAlgolist() {
         return algolist;
@@ -136,7 +146,7 @@ public class Vote implements Serializable {
                 ", algo='" + algo + '\'' +
                 ", anonymous=" + anonymous +
                 ", deleted=" + deleted +
-                ", votemaker=" + votemaker +
+                ", votemaker=" + votemaker.getId() +
                 ", choices=" + choices +
                 ", resultList=" + resultList +
                 '}';
@@ -144,29 +154,5 @@ public class Vote implements Serializable {
 
     public boolean hasResults() {
         return resultList.isEmpty();
-    }
-
-    public void calculateResults() {
-        switch (algo) {
-            case "majority":
-            case "borda":
-                Map<Choice, Integer> countmap = new HashMap<>();
-                for (Choice c : choices)
-                    countmap.put(c, 0);
-                for (Ballot b : ballots) {
-                    for (BallotChoice bc : b.getChoices()) {
-                        countmap.put(bc.getChoice(), countmap.get(bc.getChoice()) + bc.getWeight());
-                    }
-                }
-                resultList = new ArrayList<>();
-                for (Choice c : choices) {
-                    resultList.add(new VoteResult(c, countmap.get(c), this));
-                }
-                break;
-            case "STV":
-            default:
-                setResultList(null);
-                break;
-        }
     }
 }

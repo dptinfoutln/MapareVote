@@ -1,6 +1,7 @@
 package fr.univtln.mapare.dao;
 
 import fr.univtln.mapare.model.User;
+import fr.univtln.mapare.model.Vote;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
