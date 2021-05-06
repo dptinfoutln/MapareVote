@@ -22,7 +22,7 @@
 
 
     <!-- Strings related to REST API -->
-    <string name="API_URL">https://api.maparevote.siannos.fr</string>
+    <string name="API_URL">localhost:5431</string>
     <string name="LOGIN_URL">/auth/signin</string>
     <string name="SIGNUP_URL">/users</string>
     <string name="PUBLIC_VOTE_URL">/votes/public"</string>
