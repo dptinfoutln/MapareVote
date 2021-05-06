@@ -8,7 +8,6 @@ import android.widget.RadioButton;
 import com.mapare.maparevoteapp.R;
 import com.mapare.maparevoteapp.model.entity_to_reveive.Choice;
 
-import java.util.Collections;
 import java.util.List;
 
 public class UniqueChoiceAdaptater extends CustomAdapter<Choice> {
@@ -41,7 +40,7 @@ public class UniqueChoiceAdaptater extends CustomAdapter<Choice> {
                 selected.setChecked(false);
             holder.choiceField.setChecked(true);
             selected = holder.choiceField;
-            pickedIds = Collections.singletonList((int) getItemId(position));
+            pickedIds.add((int) getItemId(position));
         });
 
         return convertView;

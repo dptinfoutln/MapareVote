@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mapare.maparevoteapp.adapter.CustomAdapter;
+import com.mapare.maparevoteapp.adapter.MultipleChoicesAdapter;
 import com.mapare.maparevoteapp.model.entity_to_reveive.Vote;
 import com.mapare.maparevoteapp.adapter.UniqueChoiceAdaptater;
 import com.mapare.maparevoteapp.model.entity_to_send.Ballot;
@@ -65,13 +66,14 @@ public class VoteActivity extends AppCompatActivity {
                 if (vote.getMaxChoices() == 1) {
                     setContentView(R.layout.activity_vote_majority_unique);
                     listView = findViewById(R.id.choice_list);
-
-                    Log.i("debug", vote.getChoices().toString());
                     adapter = new UniqueChoiceAdaptater(this, vote.getChoices());
                     listView.setAdapter(adapter);
 
                 } else {
-                    // lancer l'autre layout
+                    setContentView(R.layout.activity_vote_majority_multiple);
+                    listView = findViewById(R.id.choice_list);
+                    adapter = new MultipleChoicesAdapter(this, vote.getChoices(), vote.getMaxChoices());
+                    listView.setAdapter(adapter);
                 }
                 break;
             default:

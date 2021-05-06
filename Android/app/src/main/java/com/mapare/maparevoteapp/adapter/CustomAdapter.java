@@ -6,12 +6,13 @@ import android.widget.BaseAdapter;
 
 import com.mapare.maparevoteapp.model.EntityWithId;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class CustomAdapter<E extends EntityWithId> extends BaseAdapter {
     protected final LayoutInflater inflater;
     protected List<E> entityList;
-    protected List<Integer> pickedIds;
+    protected List<Integer> pickedIds = new ArrayList<>();
 
     public CustomAdapter(Context context, List<E> entityList) {
         this.inflater = LayoutInflater.from(context);
