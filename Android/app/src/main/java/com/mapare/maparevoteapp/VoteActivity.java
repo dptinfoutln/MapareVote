@@ -1,13 +1,7 @@
 package com.mapare.maparevoteapp;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.media.session.PlaybackState;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -15,13 +9,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mapare.maparevoteapp.adapter.CustomAdapter;
@@ -32,18 +25,14 @@ import com.mapare.maparevoteapp.model.entity_to_send.Ballot;
 import com.mapare.maparevoteapp.model.entity_to_send.BallotChoice;
 import com.mapare.maparevoteapp.model.entity_to_send.Choice;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class VoteActivity extends AppCompatActivity {
-    private TextView labelField;
-    private TextView infofield;
-    private Button voteButton;
-    private Button backButton;
-    private ListView listView;
-    private List<BallotChoice> pickedChoices = new ArrayList<>();
+    private final List<BallotChoice> pickedChoices = new ArrayList<>();
 
     private CustomAdapter<?> adapter;
 
@@ -60,7 +49,11 @@ public class VoteActivity extends AppCompatActivity {
         });
 
         Vote vote = (Vote) getIntent().getSerializableExtra("vote");
+        String ballotToken = (String) getIntent().getSerializableExtra("token");
 
+        getBallotRequest(vote.getId());
+
+        ListView listView;
         switch (vote.getAlgo()) {
             case "majority":
                 if (vote.getMaxChoices() == 1) {
@@ -83,19 +76,14 @@ public class VoteActivity extends AppCompatActivity {
         }
 
         // Common fields across the layouts
-        labelField = findViewById(R.id.vote_labelField);
+        TextView labelField = findViewById(R.id.vote_labelField);
         labelField.setText(vote.getLabel());
 
-        infofield = findViewById(R.id.vote_infoField);
+        TextView infofield = findViewById(R.id.vote_infoField);
         String info = "Créé par " + vote.getVotemaker().getFirstname() +" "+ vote.getVotemaker().getName() + ", ouvert depuis le " + vote.getStartDate().toString();
         infofield.setText(info);
 
-        backButton = findViewById(R.id.backButton);
-        backButton.setOnClickListener(v -> {
-            finish();
-        });
-
-        voteButton = findViewById(R.id.voteButton);
+        Button voteButton = findViewById(R.id.voteButton);
         voteButton.setOnClickListener(v -> {
             // if none, prompt something
             if (adapter.getPickedOnes().isEmpty()) {
@@ -152,6 +140,48 @@ public class VoteActivity extends AppCompatActivity {
                 Log.i("ballot", json);
 
                 return json.getBytes();
+            }
+        };
+
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
+
+    private void getBallotRequest(int id) {
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.VOTE_URL) + id + getResources().getString(R.string.MYBALLOT_URL);
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.GET, url,
+                response -> {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+                    try {
+                        Log.i("response", response+"");
+                        com.mapare.maparevoteapp.model.entity_to_reveive.Ballot ballot =
+                                objectMapper.readValue(response, com.mapare.maparevoteapp.model.entity_to_reveive.Ballot.class);
+                        //LOADING_STATE_CODE.setValue("fetching all votes successful");
+                    } catch (IOException e) { // shouldn't happen
+                        e.printStackTrace();
+                    }
+
+                    //Log.i("votesPublic_request", voteList.toString());
+
+                }, error -> {
+            // TODO: manage different types of errors
+            Log.i("votesPublic_request", "requête non réussi: " + error.toString());
+
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<>();
+
+                String token = getSharedPreferences("Login", MODE_PRIVATE).getString("token", null);
+                params.put("Accept", "application/json");
+                params.put("Authorization", "Bearer " + token);
+                return params;
             }
         };
 

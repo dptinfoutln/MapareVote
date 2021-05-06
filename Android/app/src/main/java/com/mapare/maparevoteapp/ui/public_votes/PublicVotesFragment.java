@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 
@@ -26,7 +27,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mapare.maparevoteapp.R;
 import com.mapare.maparevoteapp.VoteActivity;
 import com.mapare.maparevoteapp.adapter.VoteAdapter;
+import com.mapare.maparevoteapp.model.entity_to_reveive.User;
 import com.mapare.maparevoteapp.model.entity_to_reveive.Vote;
+import com.mapare.maparevoteapp.model.entity_to_reveive.VotedVote;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,8 +39,8 @@ import java.util.Map;
 public class PublicVotesFragment extends Fragment {
     private List<Vote> voteList;
     private MutableLiveData<String> LOADING_STATE_CODE;
-    public static final int ACCESS_STATUS = 1;
     private Vote vote;
+    private User voter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -60,6 +63,15 @@ public class PublicVotesFragment extends Fragment {
                 case "fetching specific vote successful":
                     Intent intent = new Intent(getContext(), VoteActivity.class);
                     intent.putExtra("vote", vote);
+                    String token = null;
+                    // if already voted then pass the token of the ballot
+                    if (voter.getVotedVotes() != null)
+                        for (VotedVote v : voter.getVotedVotes())
+                            if (v.getVote().getId() == vote.getId()) {
+                                token = v.getToken();
+                                break;
+                            }
+                    intent.putExtra("token", token);
                     startActivity(intent);
                     break;
                 case "not authorized":
@@ -72,9 +84,11 @@ public class PublicVotesFragment extends Fragment {
         listView.setOnItemClickListener((parent, view1, position, id) -> {
             // Retrieve the selected vote
             int selectedItemId = (int) parent.getItemIdAtPosition(position);
-            // TODO: check token
+            // Makes the request for fecthing the user informations
+            getMeRequest(getContext());
             // Makes the request for fecthing the vote informations
             getVoteRequest(getContext(), selectedItemId);
+
 
         });
         // Makes the request
@@ -152,6 +166,47 @@ public class PublicVotesFragment extends Fragment {
 
                 String token = context.getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null);
                 Log.i("token", token + "");
+                params.put("Accept", "application/json");
+                params.put("Authorization", "Bearer " + token);
+                return params;
+            }
+        };
+
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
+
+    private void getMeRequest(Context context) {
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(context);
+        String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.ME_URL);
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.GET, url,
+                response -> {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+                    try {
+                        voter = objectMapper.readValue(response, User.class);
+                    } catch (IOException e) { // shouldn't happen
+                        e.printStackTrace();
+                    }
+
+                    Log.i("voter_request", voter.toString());
+
+                }, error -> {
+            // TODO: manage different types of errors
+            Log.i("voter_request", "requête non réussi: " + error.toString());
+            if (error instanceof AuthFailureError) {
+                LOADING_STATE_CODE.setValue("not authorized");
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<>();
+
+                String token = context.getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null);
                 params.put("Accept", "application/json");
                 params.put("Authorization", "Bearer " + token);
                 return params;

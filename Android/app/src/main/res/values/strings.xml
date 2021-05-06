@@ -28,6 +28,8 @@
     <string name="PUBLIC_VOTE_URL">/votes/public"</string>
     <string name="VOTE_URL">/votes/</string>
     <string name="BALLOT_URL">/ballots</string>
+    <string name="ME_URL">/users/me</string>
+    <string name="MYBALLOT_URL">/myballot</string>
 
     <!-- Strings related to navigation menu -->
     <string name="user">Utilisateur</string>

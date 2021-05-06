@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import java.io.Serializable;
+import java.util.List;
 
 
 @JsonIdentityInfo(scope=User.class, generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
@@ -27,6 +28,9 @@ public class User implements Serializable {
 
     @JsonProperty("banned")
     private boolean banned;
+
+    @JsonProperty("votedVotes")
+    private List<VotedVote> votedVotes;
 
     public int getId() {
         return id;
@@ -76,6 +80,14 @@ public class User implements Serializable {
         this.banned = banned;
     }
 
+    public List<VotedVote> getVotedVotes() {
+        return votedVotes;
+    }
+
+    public void setVotedVotes(List<VotedVote> votedVotes) {
+        this.votedVotes = votedVotes;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -85,6 +97,7 @@ public class User implements Serializable {
                 ", firstname='" + firstname + '\'' +
                 ", confirmed=" + confirmed +
                 ", banned=" + banned +
+                ", votedVotes=" + votedVotes +
                 '}';
     }
 }
