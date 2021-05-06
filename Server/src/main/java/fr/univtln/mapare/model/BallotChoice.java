@@ -33,4 +33,9 @@ public class BallotChoice implements Serializable {
                 ", weight=" + weight +
                 '}';
     }
+
+    @Transient
+    public String getId() {
+        return ballot.getId() + " " + choice.getId();
+    }
 }
