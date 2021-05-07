@@ -30,28 +30,15 @@ public class VoteResource {
                                @QueryParam("starts_with") String namestart,
                                @QueryParam("ends_with") String nameend,
                                @QueryParam("algo") String algoname) throws ForbiddenException {
-        String nameformat = "%";
-        if (namestart != null)
-            nameformat = namestart + nameformat;
-        if (approxname != null)
-            nameformat = nameformat + approxname + "%";
-        if (nameend != null)
-            nameformat = nameformat + nameend;
         if (pagenum == 0)
             pagenum = 1;
         if (pagesize == 0)
             pagesize = 20;
-
-        // To prevent SQL injections
-        if (nameformat.contains("--") || (algoname != null && algoname.contains("--")))
-            throw new ForbiddenException("You may not have -- in your search.");
-        if (nameformat.contains(";") || (algoname != null && algoname.contains(";")))
-            throw new ForbiddenException("You may not have ; in your search.");
-        nameformat = nameformat.replace("'", "%").replace("\"", "");
         if (algoname != null)
             algoname = algoname.replace("'", "%").replace("\"", "");
 
-        return VoteDAO.of(Controllers.getEntityManager()).findAllPublic(pagenum, pagesize, nameformat, algoname);
+        return VoteDAO.of(Controllers.getEntityManager()).findAllPublic(pagenum, pagesize, approxname, namestart,
+                nameend, algoname);
     }
 
     @GET

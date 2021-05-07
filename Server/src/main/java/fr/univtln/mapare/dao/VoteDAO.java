@@ -6,8 +6,11 @@ import fr.univtln.mapare.exceptions.ConflictException;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.model.Vote;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class VoteDAO extends GenericIdDAO<Vote> {
 
@@ -24,10 +27,10 @@ public class VoteDAO extends GenericIdDAO<Vote> {
         return entityManager.createNamedQuery("Vote.findAll", Vote.class).getResultList();
     }
 
-    public List<Vote> findAll(int pageIndex, int pageSize, String labelCriterion) {
-        List<Vote> voteList = entityManager.createNamedQuery("Vote.findAll", Vote.class)
-                .getResultList();
-        return voteList;
+    public List<Vote> findAll(int pageIndex, int pageSize, String exactmatch, String prefixmatch,
+                              String suffixmatch, String algoname) {
+        return filterAndSortList("Vote.findAll", null, null , pageIndex, pageSize, exactmatch,
+                prefixmatch, suffixmatch, algoname);
 
     }
 
@@ -35,32 +38,48 @@ public class VoteDAO extends GenericIdDAO<Vote> {
         return entityManager.createNamedQuery("Vote.findByVotemaker", Vote.class).setParameter("votemaker", votemaker).getResultList();
     }
 
-    public List<Vote> findByVotemaker(User votemaker, int pageIndex, int pageSize, String labelCriterion) {
-        List<Vote> voteList = entityManager.createNamedQuery("Vote.findByVotemaker", Vote.class)
-                .setParameter("votemaker", votemaker)
-                .getResultList();
-        return voteList;
+    public List<Vote> findByVotemaker(User votemaker, int pageIndex, int pageSize, String exactmatch, String prefixmatch,
+                                      String suffixmatch, String algoname) {
+        return filterAndSortList("Vote.findByVotemaker", votemaker, "votemaker", pageIndex, pageSize, exactmatch,
+                prefixmatch, suffixmatch, algoname);
     }
 
     public List<Vote> findAllPublic() {
         return entityManager.createNamedQuery("Vote.findPublic", Vote.class).getResultList();
     }
 
-    public List<Vote> findAllPublic(int pageIndex, int pageSize, String labelCriterion, String algoname) {
-        List<Vote> voteList = entityManager.createNamedQuery("Vote.findPublic", Vote.class)
-                .getResultList();
-        return voteList;
+    public List<Vote> findAllPublic(int pageIndex, int pageSize, String exactmatch, String prefixmatch,
+                                    String suffixmatch, String algoname) {
+        return filterAndSortList("Vote.findPublic", null, null, pageIndex, pageSize, exactmatch,
+                prefixmatch, suffixmatch, algoname);
     }
 
     public List<Vote> findPrivateByUser(User user) {
         return entityManager.createNamedQuery("Vote.findPrivateByUser", Vote.class).setParameter("user", user).getResultList();
     }
 
-    public List<Vote> findPrivateByUser(User user, int pageIndex, int pageSize, String labelCriterion) {
-        List<Vote> voteList = entityManager.createNamedQuery("Vote.findPrivateByUser", Vote.class)
-                .setParameter("user", user)
-                .getResultList();
-        return voteList;
+    public List<Vote> findPrivateByUser(User user, int pageIndex, int pageSize, String exactmatch, String prefixmatch,
+                                        String suffixmatch, String algoname) {
+        return filterAndSortList("Vote.findPrivateByUser", user, "user", pageIndex, pageSize, exactmatch,
+                prefixmatch, suffixmatch, algoname);
+    }
+
+    private List<Vote> filterAndSortList(String namedQuery, User parameter, String role, int pageIndex, int pageSize,
+                                         String exactmatch, String prefixmatch, String suffixmatch, String algoname) {
+        TypedQuery<Vote> query = entityManager.createNamedQuery(namedQuery, Vote.class);
+        if (parameter != null)
+            query.setParameter(role, parameter);
+        Stream<Vote> voteStream = query.getResultStream();
+        if (algoname != null)
+            voteStream = voteStream.filter(v -> v.getAlgo().equals(algoname));
+        if (exactmatch != null)
+            voteStream = voteStream.filter(v -> v.getLabel().contains(exactmatch));
+        if (prefixmatch != null)
+            voteStream = voteStream.filter(v -> v.getLabel().startsWith(prefixmatch));
+        if (suffixmatch != null)
+            voteStream = voteStream.filter(v -> v.getLabel().endsWith(suffixmatch));
+
+        return voteStream.collect(Collectors.toList());
     }
 
     @Override
