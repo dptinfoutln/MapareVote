@@ -1,5 +1,14 @@
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-end">
+        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+    </ul>
+</nav>
 <div class="container">
-    <div class="row">
+    <div class="row mb-5">
         <div class="col-md-8 offset-md-2">
             <div class="align-items-center d-flex justify-content-center">
                 <span *ngIf="isLoading" class="spinner-grow" role="status" aria-hidden="true"></span>
@@ -11,7 +20,7 @@
                         <small>Ouvert le {{ vote.startDate | date : 'd MMMM y' :'' : 'fr-FR' }}</small>
                     </div>
                     <div class="d-flex w-100 justify-content-between">
-                        <small>Créer par <span class="text-secondary">{{ vote.votemaker.firstname }} {{ vote.votemaker.lastname }}</span></small>
+                        <small>Créer par <span class="text-secondary">{{ getVotemakerName(vote.votemaker) }}</span></small>
                         <small *ngIf="vote.intermediaryResult != 0" class="badge bg-light text-secondary">Résultats intermédiaires disponibles</small>
                     </div>
                 </a>

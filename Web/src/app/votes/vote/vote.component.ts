@@ -48,7 +48,7 @@ export class VoteComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.selfUser = this.authService.getSelfUser();
+        this.selfUser = this.authService.utils.getSelfUser();
         const id = this.route.snapshot.params.id;
 
         // this.router.events
@@ -121,6 +121,7 @@ export class VoteComponent implements OnInit {
     setCheckedChoices(voteId): void {
         this.votesService.getMyBallot(voteId).then(
             myBallot => {
+                console.log(myBallot);
                 this.myBallot = myBallot;
                 myBallot.choices.forEach(choice => {
                     this.choicesElem.forEach(elemChoice => {

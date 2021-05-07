@@ -6,6 +6,8 @@ import jwt_decode, {JwtPayload} from 'jwt-decode';
 import { environment } from '../../environments/environment';
 import { User } from '../models/user.model';
 import {Subject} from 'rxjs';
+import {ErrorsService} from './errors.service';
+import {AuthUtilsService} from './auth-utils.service';
 
 
 @Injectable({
@@ -16,6 +18,8 @@ export class AuthService {
   selfUserSubject = new Subject<User>();
 
   constructor(private http: HttpClient,
+              public utils: AuthUtilsService,
+              private errorsService: ErrorsService,
               private cookieService: CookieService) {
   }
 
@@ -47,12 +51,12 @@ export class AuthService {
     let headers = environment.headers;
     headers = headers.set('Accept', 'text/plain');
     headers = headers.set('Authorization', 'Basic ' + btoa(email + ':' + password));
-
+    console.log(btoa(email + ':' + password));
     return new Promise(
       (resolve , reject) => {
         this.http.get(url, { headers, responseType: 'text' } ).subscribe(
           token => {
-            this.setToken(token);
+            this.utils.setToken(token);
             this.importSelf().then( user => {
               resolve();
             });
@@ -69,33 +73,27 @@ export class AuthService {
     );
   }
 
-  signOutUser(): Promise<void> | void{
-    this.removeToken();
-    this.removeSelfUser();
-    // this.isAuthSubject.next(false);
-    // const url = environment.apiURL + 'auth/signout';
-    // return new Promise(
-    //   (resolve , reject) => {
-    //     this.http.get(url).subscribe(
-    //       () => {
-    //         resolve();
-    //       }, (error) => {
-    //         reject(error);
-    //       }
-    //     );
-    //   }
-    // );
+  isStillAuth(): boolean {
+    let isAuth;
+    if (this.utils.isTokenExpired()) {
+      this.utils.signOutUser();
+      isAuth = false;
+      // TODO: check if not ban
+    } else {
+      isAuth = true;
+    }
+    return isAuth;
   }
 
   importSelf(): Promise<User> {
     const url = environment.apiURL + 'users/me';
-    const headers = environment.headers.append('Authorization', 'Bearer ' + this.getToken());
+    const headers = environment.headers.append('Authorization', 'Bearer ' + this.utils.getToken());
 
     return new Promise(
       (resolve , reject) => {
         this.http.get<User>(url, { headers } ).subscribe(
           user => {
-            this.setSelfUser(user);
+            this.utils.setSelfUser(user);
             this.selfUserSubject.next(user);
             resolve(user);
           }, err => {
@@ -106,76 +104,4 @@ export class AuthService {
       }
     );
   }
-
-  getSelfUser(): User {
-    if (this.cookieService.check('self')) {
-      return JSON.parse(this.cookieService.get('self')) as User;
-    }
-    return null;
-  }
-
-  setSelfUser(user: User): void {
-    this.removeSelfUser();
-    this.cookieService.set('self', JSON.stringify(user), this.getTokenExpirationDate(this.getToken()), '/');
-  }
-
-  removeSelfUser(): void {
-    while (this.cookieService.check('self')) {
-      this.cookieService.delete('self', '/');
-    }
-  }
-
-  getToken(): string {
-    return this.cookieService.get('token');
-  }
-
-  setToken(token: string): void {
-    this.removeToken();
-    this.cookieService.set('token', token, this.getTokenExpirationDate(token), '/');
-  }
-
-  removeToken(): void {
-    while (this.cookieService.check('token')) {
-      this.cookieService.delete('token', '/');
-    }
-  }
-
-  getTokenExpirationDate(token: string): Date {
-    const decode = (jwt_decode(token)) as JwtPayload;
-
-    if (decode.exp === undefined) { return null; }
-    const date = new Date(0);
-
-    date.setUTCSeconds(decode.exp);
-    return date;
-  }
-
-  isTokenExpired(): boolean {
-    const token = this.getToken();
-    if (!token) { return true; }
-
-    const date = this.getTokenExpirationDate(token);
-    if (date === undefined) { return false; }
-    return !(date.valueOf() > new Date().valueOf());
-  }
-
-  getTokenInfo(): string {
-    return (jwt_decode(this.getToken()));
-  }
-
-  isStillAuth(): boolean {
-    let isAuth;
-    if (this.isTokenExpired()) {
-      this.signOutUser();
-      isAuth = false;
-      // TODO: check if not ban
-    } else {
-      isAuth = true;
-    }
-    return isAuth;
-  }
-}
-
-export interface ISession {
-  self: User;
 }

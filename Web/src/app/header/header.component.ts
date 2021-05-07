@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {AuthService} from '../services/auth.service';
 import {Subscription} from 'rxjs';
+import {AuthUtilsService} from '../services/auth-utils.service';
 
 @Component({
   selector: 'app-header',
@@ -9,7 +10,7 @@ import {Subscription} from 'rxjs';
 })
 export class HeaderComponent implements OnInit {
 
-  selfUser = this.authService.getSelfUser();
+  selfUser = this.authService.utils.getSelfUser();
   userName: string;
 
   constructor( public authService: AuthService ) {
@@ -17,11 +18,11 @@ export class HeaderComponent implements OnInit {
       this.userName = String(this.selfUser.firstname + ' ' + this.selfUser.lastname);
     }
     this.authService.selfUserSubject.subscribe( () => {
-      this.selfUser = this.authService.getSelfUser();
+      this.selfUser = this.authService.utils.getSelfUser();
       if (this.selfUser !== null){
         this.userName = String(this.selfUser.firstname + ' ' + this.selfUser.lastname);
       }
-    })
+    });
   }
 
   ngOnInit(): void {
@@ -29,6 +30,6 @@ export class HeaderComponent implements OnInit {
   }
 
   onSignOut(): void {
-    this.authService.signOutUser();
+    this.authService.utils.signOutUser();
   }
 }
