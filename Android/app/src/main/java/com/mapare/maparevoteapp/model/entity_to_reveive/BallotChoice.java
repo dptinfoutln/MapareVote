@@ -44,4 +44,12 @@ public class BallotChoice implements Serializable {
     public void setWeight(int weight) {
         this.weight = weight;
     }
+
+    @Override
+    public String toString() {
+        return "BallotChoice{" +
+                ", choice=" + choice +
+                ", weight=" + weight +
+                '}';
+    }
 }

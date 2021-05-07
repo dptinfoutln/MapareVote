@@ -2,6 +2,8 @@ package com.mapare.maparevoteapp.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import com.mapare.maparevoteapp.model.EntityWithId;
@@ -37,4 +39,5 @@ public abstract class CustomAdapter<E extends EntityWithId> extends BaseAdapter 
     public List<Integer> getPickedOnes() {
         return pickedIds;
     }
+
 }

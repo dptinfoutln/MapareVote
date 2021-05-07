@@ -10,4 +10,8 @@ public class Choice {
     public Choice(int id) {
         this.id = id;
     }
+
+    public int getId() {
+        return id;
+    }
 }

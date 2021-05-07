@@ -46,4 +46,14 @@ public class Ballot implements Serializable {
     public void setChoices(List<BallotChoice> choices) {
         this.choices = choices;
     }
+
+    @Override
+    public String toString() {
+        return "Ballot{" +
+                "id=" + id +
+                ", date=" + date +
+                ", choices=" + choices +
+                ", voteId=" + vote.getId() +
+                '}';
+    }
 }

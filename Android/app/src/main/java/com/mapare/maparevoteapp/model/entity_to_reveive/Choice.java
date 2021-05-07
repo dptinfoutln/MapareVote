@@ -49,7 +49,6 @@ public class Choice implements Serializable, EntityWithId {
         return "Choice{" +
                 "id=" + id +
                 ", names=" + names +
-                ", voteId=" + vote.getId() +
                 '}';
     }
 }

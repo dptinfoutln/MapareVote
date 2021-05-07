@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
@@ -35,12 +36,18 @@ public class VoteActivity extends AppCompatActivity {
     private final List<BallotChoice> pickedChoices = new ArrayList<>();
 
     private CustomAdapter<?> adapter;
+    private ListView listView;
 
     private MutableLiveData<String> BALLOT_STATE_CODE;
+    private MutableLiveData<String> LOADING_STATE_CODE;
+
+    private com.mapare.maparevoteapp.model.entity_to_reveive.Ballot ballot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
 
         BALLOT_STATE_CODE = new MutableLiveData<>();
         BALLOT_STATE_CODE.observe(this, s -> {
@@ -51,22 +58,16 @@ public class VoteActivity extends AppCompatActivity {
         Vote vote = (Vote) getIntent().getSerializableExtra("vote");
         String ballotToken = (String) getIntent().getSerializableExtra("token");
 
-        getBallotRequest(vote.getId());
-
-        ListView listView;
+        // The layout depends on the algorithm related to the vote
         switch (vote.getAlgo()) {
             case "majority":
                 if (vote.getMaxChoices() == 1) {
                     setContentView(R.layout.activity_vote_majority_unique);
                     listView = findViewById(R.id.choice_list);
-                    adapter = new UniqueChoiceAdaptater(this, vote.getChoices());
-                    listView.setAdapter(adapter);
 
                 } else {
                     setContentView(R.layout.activity_vote_majority_multiple);
                     listView = findViewById(R.id.choice_list);
-                    adapter = new MultipleChoicesAdapter(this, vote.getChoices(), vote.getMaxChoices());
-                    listView.setAdapter(adapter);
                 }
                 break;
             default:
@@ -90,14 +91,54 @@ public class VoteActivity extends AppCompatActivity {
                 Toast.makeText(this, "Vous n'avez pas fait de choix", Toast.LENGTH_SHORT).show();
             }else {
                 // fetch the choices picked
-                pickedChoices.add(new BallotChoice(new Choice((int) adapter.getPickedOnes().get(0)), 1));
+                for (int id : adapter.getPickedOnes())
+                    pickedChoices.add(new BallotChoice(new Choice(id), 1));
                 // Makes the request to vote
                 voteRequest(vote.getId(), new Ballot(pickedChoices));
             }
         });
+
+
+        if (ballotToken != null) {
+            // deactivate the button, if already voted
+            voteButton.setEnabled(false);
+
+            LOADING_STATE_CODE = new MutableLiveData<>();
+            LOADING_STATE_CODE.observe(this, new Observer<String>() {
+                @Override
+                public void onChanged(String s) {
+                    switch (vote.getAlgo()) {
+                        case "majority":
+                            if (vote.getMaxChoices() == 1)
+                                adapter = new UniqueChoiceAdaptater(VoteActivity.this, vote.getChoices(), ballot);
+                            else
+                                adapter = new MultipleChoicesAdapter(VoteActivity.this, vote.getChoices(), vote.getMaxChoices(), ballot);
+                            break;
+                        default:
+                            break;
+                    }
+                    listView.setAdapter(adapter);
+
+                }
+            });
+            getBallotRequest(vote.getId());
+        } else {
+            switch (vote.getAlgo()) {
+                case "majority":
+                    if (vote.getMaxChoices() == 1)
+                        adapter = new UniqueChoiceAdaptater(VoteActivity.this, vote.getChoices());
+                    else
+                        adapter = new MultipleChoicesAdapter(VoteActivity.this, vote.getChoices(), vote.getMaxChoices());
+                    break;
+                default:
+                    break;
+            }
+            listView.setAdapter(adapter);
+        }
     }
 
     private void voteRequest(int id, Ballot ballot) {
+        Log.i("ballotenvoyé", ballot.toString());
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.VOTE_URL) + id + getResources().getString(R.string.BALLOT_URL);
@@ -137,8 +178,6 @@ public class VoteActivity extends AppCompatActivity {
 
                 assert json != null;
 
-                Log.i("ballot", json);
-
                 return json.getBytes();
             }
         };
@@ -159,19 +198,14 @@ public class VoteActivity extends AppCompatActivity {
                     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
                     try {
-                        Log.i("response", response+"");
-                        com.mapare.maparevoteapp.model.entity_to_reveive.Ballot ballot =
-                                objectMapper.readValue(response, com.mapare.maparevoteapp.model.entity_to_reveive.Ballot.class);
-                        //LOADING_STATE_CODE.setValue("fetching all votes successful");
-                    } catch (IOException e) { // shouldn't happen
-                        e.printStackTrace();
+                        ballot = objectMapper.readValue(response, com.mapare.maparevoteapp.model.entity_to_reveive.Ballot.class);
+                    } catch (IOException e) { // happens because the ballot is null is the vote is anonymous
                     }
-
-                    //Log.i("votesPublic_request", voteList.toString());
+                    LOADING_STATE_CODE.setValue("fetching myBallot successful");
 
                 }, error -> {
             // TODO: manage different types of errors
-            Log.i("votesPublic_request", "requête non réussi: " + error.toString());
+            Log.i("ballot_request", "requête non réussi: " + error.toString());
 
         }) {
             @Override

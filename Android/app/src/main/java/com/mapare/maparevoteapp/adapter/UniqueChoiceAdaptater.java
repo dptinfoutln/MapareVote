@@ -1,27 +1,37 @@
 package com.mapare.maparevoteapp.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
 
 import com.mapare.maparevoteapp.R;
+import com.mapare.maparevoteapp.model.entity_to_reveive.Ballot;
 import com.mapare.maparevoteapp.model.entity_to_reveive.BallotChoice;
 import com.mapare.maparevoteapp.model.entity_to_reveive.Choice;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class UniqueChoiceAdaptater extends CustomAdapter<Choice> {
     private RadioButton selected = null;
-    private List<BallotChoice> alreadyPickedChoices;
+    private Ballot ballot;
+    private Boolean anonymous;
 
     public UniqueChoiceAdaptater(Context context, List<Choice> choiceList) {
         super(context, choiceList);
     }
 
-    public UniqueChoiceAdaptater(Context context, List<Choice> choiceList, List<BallotChoice> alreadyPickedChoices) {
+    public UniqueChoiceAdaptater(Context context, List<Choice> choiceList, Ballot ballot) {
         super(context, choiceList);
-        this.alreadyPickedChoices = alreadyPickedChoices;
+        if (ballot == null)
+            this.anonymous = true;
+        else {
+            this.ballot = ballot;
+            anonymous = false;
+        }
     }
 
     public static class ViewHolder {
@@ -41,25 +51,30 @@ public class UniqueChoiceAdaptater extends CustomAdapter<Choice> {
             holder = (ViewHolder) convertView.getTag();
         }
         holder.choiceField.setText(entityList.get(position).getNames().toString());
-
-        if (alreadyPickedChoices != null) {
+        Log.i("anonymous", anonymous+"");
+        if (anonymous == null) { // If not voted
             holder.choiceField.setOnClickListener(v -> {
                 if (selected != null)
                     selected.setChecked(false);
                 holder.choiceField.setChecked(true);
                 selected = holder.choiceField;
-                pickedIds.add((int) getItemId(position));
+                pickedIds = Collections.singletonList((int) getItemId(position));
             });
+        } else {
+            if (position == 0) // bug ?
+                holder.choiceField.setChecked(false);
+
+            if (!anonymous) {
+                for (BallotChoice bc : ballot.getChoices()) {
+                    if (bc.getChoice().getId() == getItemId(position)) {
+                        holder.choiceField.setChecked(true);
+                        break;
+                    }
+                }
+            }
+            //else if TODO : print the fact that the vote is anonymous
+            holder.choiceField.setEnabled(false);
         }
-//        } else {
-//            for (BallotChoice bc : alreadyPickedChoices) {
-//                if (bc.getChoice().getId() == entityList.get(position).getId()) {
-//                    holder.choiceField.setChecked(true);
-//                    break;
-//                }
-//            }
-//            holder.choiceField.setEnabled(false);
-//        }
 
         return convertView;
     }

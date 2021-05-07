@@ -61,18 +61,21 @@ public class PublicVotesFragment extends Fragment {
                     VoteAdapter adapter = new VoteAdapter(getContext(), voteList);
                     listView.setAdapter(adapter);
                     break;
-                case "fetching specific vote successful":
+                case "fetching specific vote with voter successful":
                     Intent intent = new Intent(getContext(), VoteActivity.class);
                     intent.putExtra("vote", vote);
-                    String token = null;
+                    String ballotToken = null;
                     // if already voted then pass the token of the ballot
-//                    if (voter.getVotedVotes() != null)
-//                        for (VotedVote v : voter.getVotedVotes())
-//                            if (v.getVote().getId() == vote.getId()) {
-//                                token = v.getToken();
-//                                break;
-//                            }
-                    intent.putExtra("token", token);
+                    if (voter.getVotedVotes() != null)
+                        for (VotedVote v : voter.getVotedVotes())
+                            if (v.getVote().getId() == vote.getId()) {
+                                ballotToken = v.getToken();
+                                break;
+                            }
+                    intent.putExtra("token", ballotToken);
+                    // clean vote & vote, for back button pressed
+                    vote = null;
+                    voter = null;
                     startActivity(intent);
                     break;
                 case "not authorized":
@@ -148,11 +151,11 @@ public class PublicVotesFragment extends Fragment {
                     try {
                         vote = objectMapper.readValue(response, Vote.class);
                         LOADING_STATE_CODE.setValue("fetching specific vote successful");
+                        if (voter != null)
+                            LOADING_STATE_CODE.setValue("fetching specific vote with voter successful");
                     } catch (IOException e) { // shouldn't happen
                         e.printStackTrace();
                     }
-
-                    Log.i("vote_request", vote.toString());
 
                 }, error -> {
             // TODO: manage different types of errors
@@ -188,13 +191,14 @@ public class PublicVotesFragment extends Fragment {
                     ObjectMapper objectMapper = new ObjectMapper();
                     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-//                    try {
-//                        voter = objectMapper.readValue(response, User.class);
-//                    } catch (IOException e) { // shouldn't happen
-//                        e.printStackTrace();
-//                    }
+                    try {
+                        voter = objectMapper.readValue(response, User.class);
+                        if (vote != null)
+                            LOADING_STATE_CODE.setValue("fetching specific vote with voter successful");
 
-                    //Log.i("voter_request", voter.toString()+"");
+                    } catch (IOException e) { // shouldn't happen
+                        e.printStackTrace();
+                    }
 
                 }, error -> {
             // TODO: manage different types of errors

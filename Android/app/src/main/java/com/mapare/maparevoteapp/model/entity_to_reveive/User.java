@@ -32,6 +32,12 @@ public class User implements Serializable {
     @JsonProperty("votedVotes")
     private List<VotedVote> votedVotes;
 
+    @JsonProperty("startedVotes")
+    private List<Vote> startedVotes;
+
+    @JsonProperty("privateVoteList")
+    private List<Vote> privateVoteList;
+
     public int getId() {
         return id;
     }
@@ -88,6 +94,22 @@ public class User implements Serializable {
         this.votedVotes = votedVotes;
     }
 
+    public List<Vote> getStartedVotes() {
+        return startedVotes;
+    }
+
+    public void setStartedVotes(List<Vote> startedVotes) {
+        this.startedVotes = startedVotes;
+    }
+
+    public List<Vote> getPrivateVoteList() {
+        return privateVoteList;
+    }
+
+    public void setPrivateVoteList(List<Vote> privateVoteList) {
+        this.privateVoteList = privateVoteList;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -97,7 +119,6 @@ public class User implements Serializable {
                 ", firstname='" + firstname + '\'' +
                 ", confirmed=" + confirmed +
                 ", banned=" + banned +
-                ", votedVotes=" + votedVotes +
                 '}';
     }
 }

@@ -14,4 +14,12 @@ public class BallotChoice {
         this.choice = choice;
         this.weight = weight;
     }
+
+    @Override
+    public String toString() {
+        return "BallotChoice{" +
+                "choice=" + choice.getId() +
+                ", weight=" + weight +
+                '}';
+    }
 }

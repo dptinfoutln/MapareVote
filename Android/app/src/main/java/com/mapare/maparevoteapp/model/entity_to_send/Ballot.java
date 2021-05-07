@@ -12,4 +12,11 @@ public class Ballot {
     public Ballot(List<BallotChoice> choices) {
         this.choices = choices;
     }
+
+    @Override
+    public String toString() {
+        return "Ballot{" +
+                "choices=" + choices +
+                '}';
+    }
 }

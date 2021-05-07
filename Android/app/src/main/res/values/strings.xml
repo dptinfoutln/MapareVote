@@ -25,7 +25,7 @@
     <string name="API_URL">https://api.maparevote.siannos.fr</string>
     <string name="LOGIN_URL">/auth/signin</string>
     <string name="SIGNUP_URL">/users</string>
-    <string name="PUBLIC_VOTE_URL">/votes/public"</string>
+    <string name="PUBLIC_VOTE_URL">/votes/public?page_size=200"</string>
     <string name="VOTE_URL">/votes/</string>
     <string name="BALLOT_URL">/ballots</string>
     <string name="ME_URL">/users/me</string>
