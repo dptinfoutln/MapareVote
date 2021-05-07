@@ -79,6 +79,7 @@ public class VoteDAO extends GenericIdDAO<Vote> {
         if (suffixmatch != null)
             voteStream = voteStream.filter(v -> v.getLabel().endsWith(suffixmatch));
 
+        voteStream = voteStream.skip((long) pageSize * (pageIndex - 1)).limit(pageSize);
         return voteStream.collect(Collectors.toList());
     }
 
