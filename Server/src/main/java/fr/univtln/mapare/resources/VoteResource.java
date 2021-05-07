@@ -29,7 +29,8 @@ public class VoteResource {
                                @QueryParam("name_like") String approxname,
                                @QueryParam("starts_with") String namestart,
                                @QueryParam("ends_with") String nameend,
-                               @QueryParam("algo") String algoname) throws ForbiddenException {
+                               @QueryParam("algo") String algoname,
+                               @QueryParam("sort") String sortkey) throws ForbiddenException {
         if (pagenum == 0)
             pagenum = 1;
         if (pagesize == 0)
@@ -38,7 +39,7 @@ public class VoteResource {
             algoname = algoname.replace("'", "%").replace("\"", "");
 
         return VoteDAO.of(Controllers.getEntityManager()).findAllPublic(pagenum, pagesize, approxname, namestart,
-                nameend, algoname);
+                nameend, algoname, sortkey);
     }
 
     @GET

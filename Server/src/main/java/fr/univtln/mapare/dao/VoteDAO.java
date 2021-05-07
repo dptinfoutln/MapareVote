@@ -8,6 +8,7 @@ import fr.univtln.mapare.model.Vote;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,9 +29,9 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     }
 
     public List<Vote> findAll(int pageIndex, int pageSize, String exactmatch, String prefixmatch,
-                              String suffixmatch, String algoname) {
+                              String suffixmatch, String algoname, String sortkey) {
         return filterAndSortList("Vote.findAll", null, null , pageIndex, pageSize, exactmatch,
-                prefixmatch, suffixmatch, algoname);
+                prefixmatch, suffixmatch, algoname, sortkey);
 
     }
 
@@ -39,9 +40,9 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     }
 
     public List<Vote> findByVotemaker(User votemaker, int pageIndex, int pageSize, String exactmatch, String prefixmatch,
-                                      String suffixmatch, String algoname) {
+                                      String suffixmatch, String algoname, String sortkey) {
         return filterAndSortList("Vote.findByVotemaker", votemaker, "votemaker", pageIndex, pageSize, exactmatch,
-                prefixmatch, suffixmatch, algoname);
+                prefixmatch, suffixmatch, algoname, sortkey);
     }
 
     public List<Vote> findAllPublic() {
@@ -49,9 +50,9 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     }
 
     public List<Vote> findAllPublic(int pageIndex, int pageSize, String exactmatch, String prefixmatch,
-                                    String suffixmatch, String algoname) {
+                                    String suffixmatch, String algoname, String sortkey) {
         return filterAndSortList("Vote.findPublic", null, null, pageIndex, pageSize, exactmatch,
-                prefixmatch, suffixmatch, algoname);
+                prefixmatch, suffixmatch, algoname, sortkey);
     }
 
     public List<Vote> findPrivateByUser(User user) {
@@ -59,25 +60,38 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     }
 
     public List<Vote> findPrivateByUser(User user, int pageIndex, int pageSize, String exactmatch, String prefixmatch,
-                                        String suffixmatch, String algoname) {
+                                        String suffixmatch, String algoname, String sortkey) {
         return filterAndSortList("Vote.findPrivateByUser", user, "user", pageIndex, pageSize, exactmatch,
-                prefixmatch, suffixmatch, algoname);
+                prefixmatch, suffixmatch, algoname, sortkey);
     }
 
     private List<Vote> filterAndSortList(String namedQuery, User parameter, String role, int pageIndex, int pageSize,
-                                         String exactmatch, String prefixmatch, String suffixmatch, String algoname) {
+                                         String exactmatch, String prefixmatch, String suffixmatch, String algoname,
+                                         String sortkey) {
         TypedQuery<Vote> query = entityManager.createNamedQuery(namedQuery, Vote.class);
         if (parameter != null)
             query.setParameter(role, parameter);
         Stream<Vote> voteStream = query.getResultStream();
         if (algoname != null)
-            voteStream = voteStream.filter(v -> v.getAlgo().equals(algoname));
+            voteStream = voteStream.filter(v -> v.getAlgo().equalsIgnoreCase(algoname));
         if (exactmatch != null)
-            voteStream = voteStream.filter(v -> v.getLabel().contains(exactmatch));
+            voteStream = voteStream.filter(v -> v.getLabel().toUpperCase().contains(exactmatch.toUpperCase()));
         if (prefixmatch != null)
-            voteStream = voteStream.filter(v -> v.getLabel().startsWith(prefixmatch));
+            voteStream = voteStream.filter(v -> v.getLabel().toUpperCase().startsWith(prefixmatch.toUpperCase()));
         if (suffixmatch != null)
-            voteStream = voteStream.filter(v -> v.getLabel().endsWith(suffixmatch));
+            voteStream = voteStream.filter(v -> v.getLabel().toUpperCase().endsWith(suffixmatch.toUpperCase()));
+
+        if (sortkey != null)
+            switch (sortkey.toUpperCase()) {
+                case "ALPHA":
+                    voteStream = voteStream.sorted(Comparator.comparing(Vote::getLabel));
+                    break;
+                case "VOTES":
+                    voteStream = voteStream.sorted(Comparator.comparingInt(vote -> vote.getBallots().size()));
+                    break;
+                default:
+                    break;
+            }
 
         voteStream = voteStream.skip((long) pageSize * (pageIndex - 1)).limit(pageSize);
         return voteStream.collect(Collectors.toList());
