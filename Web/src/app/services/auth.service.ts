@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import {HttpClient} from '@angular/common/http';
-import jwt_decode, {JwtPayload} from 'jwt-decode';
 
 import { environment } from '../../environments/environment';
 import { User } from '../models/user.model';

@@ -16,12 +16,6 @@ export class VotesService {
                 private errorsService: ErrorsService,
                 private authService: AuthService) {
     }
-    
-    private errorPopupTemplate: `
-                                <div class="modal-dialog modal-dialog-centered">
-                                Erreur
-                                </div>
-                                `;
 
     sendVote(vote, publique: boolean): Promise<Vote> {
         let url;
