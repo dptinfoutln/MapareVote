@@ -172,6 +172,8 @@ public class VoteResource {
             throw new ForbiddenException("User is banned.");
         if (vote.isDeleted())
             throw new ForbiddenException("Vote deleted.");
+        if (voter.getVotedVotes().contains(vote))
+            throw new ForbiddenException("Already voted.");
         if (LocalDate.now().isBefore(vote.getStartDate()))
             throw new ForbiddenException("Too early.");
         if (vote.getEndDate() != null && LocalDate.now().isAfter(vote.getEndDate()))

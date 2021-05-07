@@ -399,7 +399,6 @@ public class RestIT {
                 .header( "Authorization",  "Bearer " + token)
                 .get();
 
-
         webTarget.path("users").request(MediaType.APPLICATION_JSON).get();
 
 //        Thread.sleep(delay);
