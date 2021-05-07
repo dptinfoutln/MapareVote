@@ -239,7 +239,7 @@ public class VoteResource {
                 UserDAO.of(Controllers.getEntityManager()).findById(userid));
     }
 
-    @GET
+    @PATCH
     @JWTAuth
     @Path("{id}/myballot")
     public Ballot getSpecificBallotforUser(@Context SecurityContext securityContext,

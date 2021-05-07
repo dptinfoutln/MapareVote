@@ -434,4 +434,74 @@ public class RestIT {
 
         webTarget.path("users/" + tchaikovsky.getId()).request(MediaType.APPLICATION_JSON).delete();
     }
+
+    //Note: We can't test patch verbs for some reason.
+//    @Test
+//    public void banUser() {
+//        Response response = webTarget.path("users").request(MediaType.APPLICATION_JSON)
+//                .accept(MediaType.APPLICATION_JSON)
+//                .post(Entity.entity(
+//                        "{\"email\":\"carlorff@hotmail.fr\",\"lastname\":\"orff\",\"firstname\":\"carl\",\"password\":\"ofortuna\"}",
+//                        MediaType.APPLICATION_JSON));
+//
+//        User carlorff = response.readEntity(User.class);
+//
+//        String carltoken;
+//
+//        response = webTarget.path("auth/signin")
+//                .request()
+//                .accept(MediaType.TEXT_PLAIN)
+//                .header("Authorization",  "Basic " + java.util.Base64.getEncoder()
+//                        .encodeToString(("carlorff@hotmail.fr:ofortuna").getBytes()))
+//                .get();
+//
+//        carltoken = response.readEntity(String.class);
+//
+//        webTarget.path("users").request(MediaType.APPLICATION_JSON)
+//                .accept(MediaType.APPLICATION_JSON)
+//                .post(Entity.entity(
+//                        "{\"email\":\"tchaikovsky@hotmail.fr\",\"lastname\":\"tchaikovsky\",\"firstname\":\"pyotr\",\"password\":\"1812\"}",
+//                        MediaType.APPLICATION_JSON));
+//
+//        String pyotrtoken = webTarget.path("auth/signin")
+//                .request()
+//                .accept(MediaType.TEXT_PLAIN)
+//                .header("Authorization",  "Basic " + java.util.Base64.getEncoder()
+//                        .encodeToString(("tchaikovsky@hotmail.fr:1812").getBytes()))
+//                .get(String.class);
+//
+//        User tchaikovsky = webTarget.path("users/me")
+//                .request(MediaType.APPLICATION_JSON)
+//                .accept(MediaType.APPLICATION_JSON)
+//                .header( "Authorization",  "Bearer " + pyotrtoken)
+//                .get(User.class);
+//
+//        response = webTarget.path("users/" + tchaikovsky.getId() + "/ban")
+//                .request()
+//                .header( "Authorization",  "Bearer " + carltoken)
+//                .patch();
+//
+//        assertEquals(403, response.getStatus());
+//
+//
+//        UserDAO dao = UserDAO.of(Controllers.getEntityManager());
+//        User temppyotr = dao.findById(tchaikovsky.getId());
+//        temppyotr.setAdmin(true);
+//        dao.update(temppyotr);
+//
+//        response = webTarget.path("users/" + carlorff.getId() + "/ban")
+//                .request()
+//                .header( "Authorization",  "Bearer " + pyotrtoken)
+//                .patch();
+//
+//        assertEquals(200, response.getStatus());
+//
+//        User tempcarl = dao.findById(carlorff.getId());
+//
+//        assertTrue(tempcarl.isBanned());
+//
+//        webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
+//
+//        webTarget.path("users/" + tchaikovsky.getId()).request(MediaType.APPLICATION_JSON).delete();
+//    }
 }
