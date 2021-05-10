@@ -10,7 +10,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,7 +81,7 @@ public class VoteDAO extends GenericIdDAO<Vote> {
 
         if (voteQuery.getSortkey() != null)
             switch (voteQuery.getSortkey().toUpperCase()) {
-                case "ALPHA":
+                case "NAME":
                     voteStream = voteStream.sorted(Comparator.comparing(Vote::getLabel));
                     break;
                 case "VOTES":
