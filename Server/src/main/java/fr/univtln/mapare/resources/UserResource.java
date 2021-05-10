@@ -100,7 +100,7 @@ public class UserResource {
     }
 
     @JWTAuth
-    @GET
+    @PATCH
     @Path("{id}/ban")
     public int banUser(@Context SecurityContext securityContext,
                        @PathParam("id") int id) throws ForbiddenException, NotFoundException, UnauthorizedException {

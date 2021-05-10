@@ -30,7 +30,8 @@ public class VoteResource {
                                @QueryParam("starts_with") String namestart,
                                @QueryParam("ends_with") String nameend,
                                @QueryParam("algo") String algoname,
-                               @QueryParam("sort") String sortkey) throws ForbiddenException {
+                               @QueryParam("sort") String sortkey,
+                               @QueryParam("open") boolean open) throws ForbiddenException {
         if (pagenum == 0)
             pagenum = 1;
         if (pagesize == 0)
@@ -38,8 +39,11 @@ public class VoteResource {
         if (algoname != null)
             algoname = algoname.replace("'", "%").replace("\"", "");
 
-        return VoteDAO.of(Controllers.getEntityManager()).findAllPublic(pagenum, pagesize, approxname, namestart,
-                nameend, algoname, sortkey);
+        return VoteDAO.of(Controllers.getEntityManager())
+                .findAllPublic(
+                        new VoteQuery(
+                                pagenum, pagesize, approxname, namestart, nameend, algoname, sortkey, open
+                        ));
     }
 
     @GET
@@ -241,7 +245,7 @@ public class VoteResource {
                 UserDAO.of(Controllers.getEntityManager()).findById(userid));
     }
 
-    @PATCH
+    @GET
     @JWTAuth
     @Path("{id}/myballot")
     public Ballot getSpecificBallotforUser(@Context SecurityContext securityContext,

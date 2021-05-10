@@ -5,6 +5,7 @@ import fr.univtln.mapare.exceptions.BusinessException;
 import fr.univtln.mapare.exceptions.ConflictException;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.model.Vote;
+import fr.univtln.mapare.resources.VoteQuery;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
@@ -28,10 +29,8 @@ public class VoteDAO extends GenericIdDAO<Vote> {
         return entityManager.createNamedQuery("Vote.findAll", Vote.class).getResultList();
     }
 
-    public List<Vote> findAll(int pageIndex, int pageSize, String exactmatch, String prefixmatch,
-                              String suffixmatch, String algoname, String sortkey) {
-        return filterAndSortList("Vote.findAll", null, null , pageIndex, pageSize, exactmatch,
-                prefixmatch, suffixmatch, algoname, sortkey);
+    public List<Vote> findAll(VoteQuery voteQuery) {
+        return filterAndSortList("Vote.findAll", null, null , voteQuery);
 
     }
 
@@ -39,61 +38,60 @@ public class VoteDAO extends GenericIdDAO<Vote> {
         return entityManager.createNamedQuery("Vote.findByVotemaker", Vote.class).setParameter("votemaker", votemaker).getResultList();
     }
 
-    public List<Vote> findByVotemaker(User votemaker, int pageIndex, int pageSize, String exactmatch, String prefixmatch,
-                                      String suffixmatch, String algoname, String sortkey) {
-        return filterAndSortList("Vote.findByVotemaker", votemaker, "votemaker", pageIndex, pageSize, exactmatch,
-                prefixmatch, suffixmatch, algoname, sortkey);
+    public List<Vote> findByVotemaker(User votemaker, VoteQuery voteQuery) {
+        return filterAndSortList("Vote.findByVotemaker", votemaker, "votemaker", voteQuery);
     }
 
     public List<Vote> findAllPublic() {
         return entityManager.createNamedQuery("Vote.findPublic", Vote.class).getResultList();
     }
 
-    public List<Vote> findAllPublic(int pageIndex, int pageSize, String exactmatch, String prefixmatch,
-                                    String suffixmatch, String algoname, String sortkey) {
-        return filterAndSortList("Vote.findPublic", null, null, pageIndex, pageSize, exactmatch,
-                prefixmatch, suffixmatch, algoname, sortkey);
+    public List<Vote> findAllPublic(VoteQuery voteQuery) {
+        return filterAndSortList("Vote.findPublic", null, null, voteQuery);
     }
 
     public List<Vote> findPrivateByUser(User user) {
         return entityManager.createNamedQuery("Vote.findPrivateByUser", Vote.class).setParameter("user", user).getResultList();
     }
 
-    public List<Vote> findPrivateByUser(User user, int pageIndex, int pageSize, String exactmatch, String prefixmatch,
-                                        String suffixmatch, String algoname, String sortkey) {
-        return filterAndSortList("Vote.findPrivateByUser", user, "user", pageIndex, pageSize, exactmatch,
-                prefixmatch, suffixmatch, algoname, sortkey);
+    public List<Vote> findPrivateByUser(User user, VoteQuery voteQuery) {
+        return filterAndSortList("Vote.findPrivateByUser", user, "user", voteQuery);
     }
 
-    private List<Vote> filterAndSortList(String namedQuery, User parameter, String role, int pageIndex, int pageSize,
-                                         String exactmatch, String prefixmatch, String suffixmatch, String algoname,
-                                         String sortkey) {
+    private List<Vote> filterAndSortList(String namedQuery, User parameter, String role, VoteQuery voteQuery) {
         TypedQuery<Vote> query = entityManager.createNamedQuery(namedQuery, Vote.class);
         if (parameter != null)
             query.setParameter(role, parameter);
         Stream<Vote> voteStream = query.getResultStream();
-        if (algoname != null)
-            voteStream = voteStream.filter(v -> v.getAlgo().equalsIgnoreCase(algoname));
-        if (exactmatch != null)
-            voteStream = voteStream.filter(v -> v.getLabel().toUpperCase().contains(exactmatch.toUpperCase()));
-        if (prefixmatch != null)
-            voteStream = voteStream.filter(v -> v.getLabel().toUpperCase().startsWith(prefixmatch.toUpperCase()));
-        if (suffixmatch != null)
-            voteStream = voteStream.filter(v -> v.getLabel().toUpperCase().endsWith(suffixmatch.toUpperCase()));
+        if (voteQuery.getAlgoname() != null)
+            voteStream = voteStream.filter(v -> v.getAlgo().equalsIgnoreCase(voteQuery.getAlgoname()));
+        if (voteQuery.getExactmatch() != null)
+            voteStream = voteStream.filter(v -> v.getLabel().toUpperCase()
+                    .contains(voteQuery.getExactmatch().toUpperCase()));
+        if (voteQuery.getPrefixmatch() != null)
+            voteStream = voteStream.filter(v -> v.getLabel().toUpperCase()
+                    .startsWith(voteQuery.getPrefixmatch().toUpperCase()));
+        if (voteQuery.getSuffixmatch() != null)
+            voteStream = voteStream.filter(v -> v.getLabel().toUpperCase()
+                    .endsWith(voteQuery.getSuffixmatch().toUpperCase()));
 
-        if (sortkey != null)
-            switch (sortkey.toUpperCase()) {
+        if (voteQuery.getSortkey() != null)
+            switch (voteQuery.getSortkey().toUpperCase()) {
                 case "ALPHA":
                     voteStream = voteStream.sorted(Comparator.comparing(Vote::getLabel));
                     break;
                 case "VOTES":
                     voteStream = voteStream.sorted(Comparator.comparingInt(vote -> vote.getBallots().size()));
                     break;
+                case "STARTDATE":
+                    voteStream = voteStream.sorted(Comparator.comparing(Vote::getStartDate));
+                    break;
                 default:
                     break;
             }
 
-        voteStream = voteStream.skip((long) pageSize * (pageIndex - 1)).limit(pageSize);
+        voteStream = voteStream.skip((long) voteQuery.getPageSize() * (voteQuery.getPageIndex() - 1))
+                .limit(voteQuery.getPageSize());
         return voteStream.collect(Collectors.toList());
     }
 
