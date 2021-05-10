@@ -9,6 +9,8 @@ import fr.univtln.mapare.resources.VoteQuery;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,6 +67,9 @@ public class VoteDAO extends GenericIdDAO<Vote> {
         Stream<Vote> voteStream = query.getResultStream();
         if (voteQuery.getAlgoname() != null)
             voteStream = voteStream.filter(v -> v.getAlgo().equalsIgnoreCase(voteQuery.getAlgoname()));
+        if (voteQuery.isOpen())
+            voteStream = voteStream.filter(v -> v.getStartDate().isBefore(LocalDate.now()) &&
+                    (v.getEndDate() == null || (v.getEndDate() != null && v.getEndDate().isAfter(LocalDate.now()))));
         if (voteQuery.getExactmatch() != null)
             voteStream = voteStream.filter(v -> v.getLabel().toUpperCase()
                     .contains(voteQuery.getExactmatch().toUpperCase()));
