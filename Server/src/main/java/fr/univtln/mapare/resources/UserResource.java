@@ -29,22 +29,7 @@ public class UserResource {
         //Lancer DAO
         //Pagination
         //rentrer users dans liste
-        List<User> check = UserDAO.of(Controllers.getEntityManager()).findAll();
-        for (User u : check) {
-            try {
-                System.out.println(u.getStartedVotes().size() + " " + u.getPrivateVoteList().size() + " " + u.getVotedVotes().size());
-            }
-            catch (Exception e) {
-                System.out.println("Koh lanta");
-                u.setPrivateVoteList(new ArrayList<>());
-                u.setStartedVotes(new ArrayList<>());
-                u.setVotedVotes(new ArrayList<>());
-            }
-        }
-        if (check == null)
-            throw new NotFoundException();
-        else
-            return check;
+        return UserDAO.of(Controllers.getEntityManager()).findAll();
     }
 
     @GET
@@ -83,6 +68,9 @@ public class UserResource {
         } catch (RollbackException re) {
             throw new ConflictException("Email already in use.");
         }
+
+        Controllers.sendConfirmationMail(user);
+
         return user;
     }
 
@@ -112,6 +100,9 @@ public class UserResource {
         if (!currUser.isAdmin())
             throw new ForbiddenException("You do not have the rights for this.");
 
+        if (!currUser.isConfirmed())
+            throw new ForbiddenException("You need to validate your email first.");
+
         UserDAO dao = UserDAO.of(Controllers.getEntityManager());
         User toBan = dao.findById(id);
 
@@ -123,5 +114,22 @@ public class UserResource {
         dao.update(toBan);
 
         return 0;
+    }
+
+    @GET
+    @Path("{id}/validate/{token}")
+    public String validateUser(@PathParam("id") int id, @PathParam("token") String token)
+            throws NotFoundException, ConflictException {
+        UserDAO dao = UserDAO.of(Controllers.getEntityManager());
+        User user = dao.findById(id);
+        if (user == null)
+            throw new NotFoundException("User not found.");
+        if (!user.isConfirmed()) {
+            if (!user.getEmailToken().equals(token))
+                throw new ConflictException("Token does not match.");
+            user.setConfirmed(true);
+            dao.update(user);
+        }
+        return "Ok";
     }
 }

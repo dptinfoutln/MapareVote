@@ -98,9 +98,4 @@ public class Controllers {
             e.printStackTrace();
         }
     }
-
-    public static void main(String[] args) {
-        sendConfirmationMail(new User("francois-palma@etud.univ-tln.fr", "Palma", "François",
-                "hello"));
-    }
 }

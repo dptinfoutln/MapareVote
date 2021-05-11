@@ -55,8 +55,13 @@ public class VoteResource {
         if (vote == null)
             throw new NotFoundException();
 
+        User user = (User) securityContext.getUserPrincipal();
+
+        if (!user.isConfirmed())
+            throw new ForbiddenException("You need to confirm your email first.");
+
 //        Thread thread;
-        if (vote.isPublic() || vote.getMembers().contains((User) securityContext.getUserPrincipal())) {
+        if (vote.isPublic() || vote.getMembers().contains(user)) {
             if (vote.getEndDate() != null && (
                     (!vote.hasResults() || vote.isIntermediaryResult()) && LocalDate.now().isAfter(vote.getEndDate()))
             ) {
@@ -90,10 +95,15 @@ public class VoteResource {
         if (vote == null)
             throw new NotFoundException();
 
+        User user = (User) securityContext.getUserPrincipal();
+
+        if (!user.isConfirmed())
+            throw new ForbiddenException("You need to confirm your email first.");
+
         if(vote.isPendingResult())
             throw new TooEarlyException();
 
-        if (vote.isPublic() || vote.getMembers().contains((User) securityContext.getUserPrincipal())) {
+        if (vote.isPublic() || vote.getMembers().contains(user)) {
             return vote.getResultList();
         }
         else
@@ -106,7 +116,12 @@ public class VoteResource {
     public Vote addPublicVote(@Context SecurityContext securityContext, Vote vote) throws BusinessException {
         vote.setMembers(null);
 
-        vote.setVotemaker(((User) securityContext.getUserPrincipal()));
+        User user = (User) securityContext.getUserPrincipal();
+
+        if (!user.isConfirmed())
+            throw new ForbiddenException("You need to confirm your email first.");
+
+        vote.setVotemaker(user);
 
         return addVote(vote);
     }
@@ -116,6 +131,10 @@ public class VoteResource {
     @Path("private")
     public Vote addPrivateVote(@Context SecurityContext securityContext, Vote vote) throws BusinessException {
         User voteMaker = (User) securityContext.getUserPrincipal();
+
+        if (!voteMaker.isConfirmed())
+            throw new ForbiddenException("You need to confirm your email first.");
+
         vote.setVotemaker(voteMaker);
         vote.setMembers(Arrays.asList(voteMaker));
         return addVote(vote);
@@ -174,9 +193,11 @@ public class VoteResource {
             throw new NotFoundException("Vote does not exist.");
         if (voter.isBanned())
             throw new ForbiddenException("User is banned.");
+        if (!voter.isConfirmed())
+            throw new ForbiddenException("You need to confirm your email first.");
         if (vote.isDeleted())
             throw new ForbiddenException("Vote deleted.");
-        if (voter.getVotedVotes().contains(vote))
+        if (voter.getVotesOnWhichTheUserHasVoted().contains(vote))
             throw new ForbiddenException("Already voted.");
         if (LocalDate.now().isBefore(vote.getStartDate()))
             throw new ForbiddenException("Too early.");
@@ -239,19 +260,27 @@ public class VoteResource {
     @GET
     @JWTAuth
     @Path("private/invited")
-    public List<Vote> getPrivateVotesForUser(@Context SecurityContext securityContext) {
-        int userid = ((User) securityContext.getUserPrincipal()).getId();
+    public List<Vote> getPrivateVotesForUser(@Context SecurityContext securityContext) throws ForbiddenException {
+        User user = (User) securityContext.getUserPrincipal();
+
+        if (!user.isConfirmed())
+            throw new ForbiddenException("You need to confirm your email first.");
+
         return VoteDAO.of(Controllers.getEntityManager()).findPrivateByUser(
-                UserDAO.of(Controllers.getEntityManager()).findById(userid));
+                UserDAO.of(Controllers.getEntityManager()).findById(user.getId()));
     }
 
     @GET
     @JWTAuth
     @Path("{id}/myballot")
     public Ballot getSpecificBallotforUser(@Context SecurityContext securityContext,
-                                           @PathParam("id") int id) {
+                                           @PathParam("id") int id) throws ForbiddenException {
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
         User voter = (User) securityContext.getUserPrincipal();
+
+        if (!voter.isConfirmed())
+            throw new ForbiddenException("You need to confirm your email first.");
+
         if (!vote.isAnonymous()) {
             return BallotDAO.of(Controllers.getEntityManager()).findByVoteByVoter(vote, voter);
         }
