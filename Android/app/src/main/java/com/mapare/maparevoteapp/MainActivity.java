@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                 navController.navigate(R.id.nav_publicVotes);
                 drawerLayout.openDrawer(GravityCompat.START);
             }
-            // If navigate is needed
+            // If navigation is needed
             else if (key.equals("go_to")) {
                 Log.i("listener", content+"");
                 switch (content) {

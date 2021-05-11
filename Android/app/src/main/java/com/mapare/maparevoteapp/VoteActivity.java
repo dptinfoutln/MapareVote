@@ -2,6 +2,7 @@ package com.mapare.maparevoteapp;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.MutableLiveData;
 
 import com.android.volley.RequestQueue;
@@ -31,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VoteActivity extends AppCompatActivity {
     private final List<BallotChoice> pickedChoices = new ArrayList<>();
@@ -41,13 +44,15 @@ public class VoteActivity extends AppCompatActivity {
     private MutableLiveData<String> BALLOT_STATE_CODE;
     private MutableLiveData<String> LOADING_STATE_CODE;
 
+    private ConstraintLayout parentLayout;
+
     private com.mapare.maparevoteapp.model.entity_to_reveive.Ballot ballot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
+        setContentView(R.layout.activity_vote);
+        parentLayout = findViewById(R.id.voteLayout);
 
         BALLOT_STATE_CODE = new MutableLiveData<>();
         BALLOT_STATE_CODE.observe(this, s -> {
@@ -58,7 +63,7 @@ public class VoteActivity extends AppCompatActivity {
         Vote vote = (Vote) getIntent().getSerializableExtra("vote");
         String ballotToken = (String) getIntent().getSerializableExtra("token");
 
-        setContentView(R.layout.activity_vote);
+
         listView = findViewById(R.id.choice_list);
 
         TextView labelField = findViewById(R.id.vote_labelField);
@@ -83,6 +88,10 @@ public class VoteActivity extends AppCompatActivity {
             }
         });
 
+        Button resultButton = findViewById(R.id.vote_resultButton);
+        resultButton.setVisibility(View.GONE);
+
+
 
         if (ballotToken != null) {
             // deactivate the button, if already voted
@@ -105,11 +114,30 @@ public class VoteActivity extends AppCompatActivity {
                         break;
                 }
                 listView.setAdapter(adapter);
-
+                resultButton.setVisibility(View.VISIBLE);
                 // Let the user know that he has already voted for this vote
                 TextView votedInfo = findViewById(R.id.vote_votedField);
                 votedInfo.setVisibility(View.VISIBLE);
+                // If results are available, give the button to display them
+                if (vote.isIntermediaryResult()){
 
+                    LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+                    final View view = inflater.inflate(R.layout.acivity_vote_inflated_with_results, parentLayout, false);
+                    parentLayout.addView(view);
+                    view.setVisibility(View.GONE);
+                    AtomicBoolean clicked = new AtomicBoolean(false);
+                    resultButton.setOnClickListener(v -> {
+                        if (clicked.get()) {
+                            view.setVisibility(View.GONE);
+                        } else {
+                            view.setVisibility(View.VISIBLE);
+                            // TODO: fill data into fields of result
+
+                        }
+                        clicked.set(!clicked.get());
+                    });
+
+                }
             });
             getBallotRequest(vote.getId());
         } else {
