@@ -51,13 +51,6 @@ export class VoteComponent implements OnInit {
         this.selfUser = this.authService.utils.getSelfUser();
         const id = this.route.snapshot.params.id;
 
-        // this.router.events
-        //     .pipe(filter(event => event instanceof NavigationEnd))
-        //     .subscribe((event: NavigationEnd) => {
-        //       this.previousUrl = event.url;
-        //       console.log(this.previousUrl);
-        //     });
-
         this.votesService.getVote(+id).then(
             (vote: Vote) => {
                 if (vote == null) {
@@ -121,7 +114,6 @@ export class VoteComponent implements OnInit {
     setCheckedChoices(voteId): void {
         this.votesService.getMyBallot(voteId).then(
             myBallot => {
-                console.log(myBallot);
                 this.myBallot = myBallot;
                 myBallot.choices.forEach(choice => {
                     this.choicesElem.forEach(elemChoice => {

@@ -50,7 +50,6 @@ export class AuthService {
     let headers = environment.headers;
     headers = headers.set('Accept', 'text/plain');
     headers = headers.set('Authorization', 'Basic ' + btoa(email + ':' + password));
-    console.log(btoa(email + ':' + password));
     return new Promise(
       (resolve , reject) => {
         this.http.get(url, { headers, responseType: 'text' } ).subscribe(

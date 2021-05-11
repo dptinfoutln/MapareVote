@@ -9,10 +9,10 @@
         <li routerLinkActive="active" class="nav-item">
           <a routerLink="votes/public" class="nav-link">Votes publics</a>
         </li>
-        <li routerLinkActive="active" class="nav-item">
+        <li routerLinkActive="active" class="nav-item" *ngIf="this.authService.isStillAuth()">
           <a routerLink="votes/private" class="nav-link">Votes privés</a>
         </li>
-        <li routerLinkActive="active" class="nav-item">
+        <li routerLinkActive="active" class="nav-item" *ngIf="this.authService.isStillAuth()">
           <a routerLink="votes/create" class="nav-link">Créer un vote</a>
         </li>
       </ul>
@@ -30,6 +30,7 @@
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUsername">
             <li><a routerLink="auth/signin" class="dropdown-item" (click)="onSignOut()" href="#">Déconnexion</a></li>
             <li><hr class="dropdown-divider"></li>
+            <li><a routerLink="votes/history" class="dropdown-item">Historique</a></li>
             <li><a class="dropdown-item">Paramètres</a></li>
           </ul>
         </li>

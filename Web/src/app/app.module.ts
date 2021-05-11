@@ -22,7 +22,8 @@ import {PrivateComponent} from './votes/private/private.component';
 import {PublicComponent} from './votes/public/public.component';
 import {VoteComponent} from './votes/vote/vote.component';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import { ErrorPopupComponent } from './error-popup/error-popup.component';
+import {ErrorPopupComponent} from './error-popup/error-popup.component';
+import {HistoryComponent} from './votes/history/history.component';
 
 
 @NgModule({
@@ -35,7 +36,8 @@ import { ErrorPopupComponent } from './error-popup/error-popup.component';
         PrivateComponent,
         PublicComponent,
         VoteComponent,
-        ErrorPopupComponent
+        ErrorPopupComponent,
+        HistoryComponent
     ],
     imports: [
         BrowserModule,
