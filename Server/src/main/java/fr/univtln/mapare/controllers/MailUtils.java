@@ -11,6 +11,8 @@ public abstract class MailUtils {
     static final String SERVER_EMAIL_ADDRESS = "maparevote@gmail.com";
     static final String SERVER_PASSWORD = "alfrni666";
 
+    private MailUtils() {}
+
     public static void sendConfirmationMail(User user) {
         int port = 465;
         Properties properties = new Properties();
@@ -49,5 +51,22 @@ public abstract class MailUtils {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+
+    public static class RunnableMailSending implements Runnable {
+        private final User user;
+
+        public RunnableMailSending(User user) {
+            this.user = user;
+        }
+
+        @Override
+        public void run() {
+            sendConfirmationMail(user);
+        }
+    }
+
+    public static RunnableMailSending runnableFor(User user) {
+        return new RunnableMailSending(user);
     }
 }

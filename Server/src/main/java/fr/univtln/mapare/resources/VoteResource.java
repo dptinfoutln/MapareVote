@@ -11,6 +11,7 @@ import fr.univtln.mapare.model.*;
 import fr.univtln.mapare.security.annotations.JWTAuth;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 
 import java.time.LocalDate;
@@ -22,17 +23,42 @@ import java.util.*;
 @Path("votes")
 public class VoteResource {
 
+//    @GET
+//    @Path("public")
+//    public List<Vote> getVotes(@QueryParam("page_num") int pagenum,
+//                               @QueryParam("page_size") int pagesize,
+//                               @QueryParam("name_like") String approxname,
+//                               @QueryParam("starts_with") String namestart,
+//                               @QueryParam("ends_with") String nameend,
+//                               @QueryParam("algo") String algoname,
+//                               @QueryParam("sort") String sortkey,
+//                               @QueryParam("order") String order,
+//                               @QueryParam("open") boolean open) throws ForbiddenException {
+//        if (pagenum == 0)
+//            pagenum = 1;
+//        if (pagesize == 0)
+//            pagesize = 20;
+//        if (algoname != null)
+//            algoname = algoname.replace("'", "%").replace("\"", "");
+//
+//        return VoteDAO.of(Controllers.getEntityManager())
+//                .findAllPublic(
+//                        new VoteQuery(
+//                                pagenum, pagesize, approxname, namestart, nameend, algoname, sortkey, order, open
+//                        ));
+//    }
+
     @GET
     @Path("public")
-    public List<Vote> getVotes(@QueryParam("page_num") int pagenum,
-                               @QueryParam("page_size") int pagesize,
-                               @QueryParam("name_like") String approxname,
-                               @QueryParam("starts_with") String namestart,
-                               @QueryParam("ends_with") String nameend,
-                               @QueryParam("algo") String algoname,
-                               @QueryParam("sort") String sortkey,
-                               @QueryParam("order") String order,
-                               @QueryParam("open") boolean open) throws ForbiddenException {
+    public Response getVotes(@QueryParam("page_num") int pagenum,
+                             @QueryParam("page_size") int pagesize,
+                             @QueryParam("name_like") String approxname,
+                             @QueryParam("starts_with") String namestart,
+                             @QueryParam("ends_with") String nameend,
+                             @QueryParam("algo") String algoname,
+                             @QueryParam("sort") String sortkey,
+                             @QueryParam("order") String order,
+                             @QueryParam("open") boolean open) throws ForbiddenException {
         if (pagenum == 0)
             pagenum = 1;
         if (pagesize == 0)
@@ -40,11 +66,17 @@ public class VoteResource {
         if (algoname != null)
             algoname = algoname.replace("'", "%").replace("\"", "");
 
-        return VoteDAO.of(Controllers.getEntityManager())
-                .findAllPublic(
+        VoteDAO voteDAO = VoteDAO.of(Controllers.getEntityManager());
+
+        Response.ResponseBuilder rb = Response.ok(
+                voteDAO.findAllPublic(
                         new VoteQuery(
-                                pagenum, pagesize, approxname, namestart, nameend, algoname, sortkey, order, open
-                        ));
+                                pagenum, pagesize, approxname, namestart, nameend, algoname, sortkey, order,
+                                open
+                        )
+                )
+        );
+        return rb.header("votecount", "" + voteDAO.findAllPublic().size()).build();
     }
 
     @GET

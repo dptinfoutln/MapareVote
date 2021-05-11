@@ -70,7 +70,8 @@ public class UserResource {
             throw new ConflictException("Email already in use.");
         }
 
-        MailUtils.sendConfirmationMail(user);
+//        MailUtils.sendConfirmationMail(user);
+        new Thread(MailUtils.runnableFor(user)).start();
 
         return user;
     }
