@@ -41,12 +41,50 @@ export class VotesService {
         );
     }
 
-    getPublicVotes(pageNum: number = 1, pageSize: number = 10): Promise<any> {
+    getPublicVotes(pageNum = 1, pageSize = 25, orderBy = 'asc', sortBy ?: string, nameLike ?: string, open = true): Promise<any> {
         const url = environment.apiURL + 'votes/public';
         let headers = environment.headers;
         headers = headers.set('Accept', 'application/json');
 
-        const params = new HttpParams().set('page_num', String(pageNum));
+        let params = new HttpParams()
+            .set('page_num', String(pageNum))
+            .set('page_size', String(pageSize))
+            .set('order', String(orderBy))
+            .set('open', String(open));
+        if (nameLike) {
+            params = params.set('name_like', String(nameLike));
+        }
+        if (sortBy) {
+            params = params.set('sort', String(sortBy));
+        }
+
+        return new Promise(
+            (resolve, reject) => {
+                this.http.get<Vote[]>(url, {headers, params}).subscribe(
+                    votes => {
+                        resolve(votes);
+                    }, err => {
+                        reject(err);
+                    });
+            });
+    }
+
+    getPrivateVotes(pageNum = 1, pageSize = 25, orderBy = 'asc', sortBy ?: string, nameLike ?: string, open = true): Promise<any> {
+        const url = environment.apiURL + 'votes/private/invited';
+        let headers = environment.headers;
+        headers = headers.set('Authorization', 'Bearer ' + this.authService.utils.getToken());
+
+        let params = new HttpParams()
+            .set('page_num', String(pageNum))
+            .set('page_size', String(pageSize))
+            .set('order', String(orderBy))
+            .set('open', String(open));
+        if (nameLike) {
+            params = params.set('name_like', String(nameLike));
+        }
+        if (sortBy) {
+            params = params.set('sort', String(sortBy));
+        }
 
         return new Promise(
             (resolve, reject) => {
@@ -69,22 +107,6 @@ export class VotesService {
                 this.http.get<[]>(url, {headers}).subscribe(
                     voteResults => {
                         resolve(voteResults);
-                    }, err => {
-                        reject(err);
-                    }
-                );
-            });
-    }
-
-    getPrivateVotes(pageNum?: number, pageSize?: number): Promise<any> {
-        const url = environment.apiURL + 'votes/private/invited';
-        let headers = environment.headers;
-        headers = headers.set('Authorization', 'Bearer ' + this.authService.utils.getToken());
-        return new Promise(
-            (resolve, reject) => {
-                this.http.get<Vote[]>(url, {headers}).subscribe(
-                    votes => {
-                        resolve(votes);
                     }, err => {
                         reject(err);
                     }

@@ -5,7 +5,6 @@ import {Md5} from 'ts-md5';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-import {MatPaginatorModule} from '@angular/material/paginator';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import {AppRoutingModule} from './app-routing.module';
@@ -21,10 +20,9 @@ import {CreateComponent} from './votes/create/create.component';
 import {PrivateComponent} from './votes/private/private.component';
 import {PublicComponent} from './votes/public/public.component';
 import {VoteComponent} from './votes/vote/vote.component';
-import {MatFormFieldModule} from '@angular/material/form-field';
 import {ErrorPopupComponent} from './error-popup/error-popup.component';
 import {HistoryComponent} from './votes/history/history.component';
-
+import { FilterComponent } from './votes/filter/filter.component';
 
 @NgModule({
     declarations: [
@@ -37,7 +35,8 @@ import {HistoryComponent} from './votes/history/history.component';
         PublicComponent,
         VoteComponent,
         ErrorPopupComponent,
-        HistoryComponent
+        HistoryComponent,
+        FilterComponent
     ],
     imports: [
         BrowserModule,
@@ -46,16 +45,15 @@ import {HistoryComponent} from './votes/history/history.component';
         ReactiveFormsModule,
         HttpClientModule,
         DragDropModule,
-        MatPaginatorModule,
-        BrowserAnimationsModule,
-        MatFormFieldModule
+        BrowserAnimationsModule
     ],
     providers: [
         AuthService,
         AuthGuardService,
         VotesService,
         CookieService,
-        Md5
+        Md5,
+        FilterComponent
     ],
     bootstrap: [AppComponent]
 })

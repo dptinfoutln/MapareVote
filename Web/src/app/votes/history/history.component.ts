@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import {AuthService} from '../../services/auth.service';
 import {VotesService} from '../../services/votes.service';
 import {AuthUtilsService} from '../../services/auth-utils.service';
 import {Vote} from '../../models/vote.model';
@@ -30,7 +29,11 @@ export class HistoryComponent implements OnInit {
   async getHistory(): Promise<Vote[]> {
     const votes = [];
     for (const votedVote of this.authUtilsService.getSelfUser().votedVotes) {
-      await this.votesService.getVote(votedVote.vote).then(vote => votes.push(vote));
+      if (votedVote.vote.id){
+        await this.votesService.getVote(votedVote.vote.id).then(vote => votes.push(vote));
+      } else {
+        await this.votesService.getVote(votedVote.vote).then(vote => votes.push(vote));
+      }
     }
     return votes;
   }

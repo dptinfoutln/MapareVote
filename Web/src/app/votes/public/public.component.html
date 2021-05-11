@@ -1,29 +1,51 @@
 <div class="container">
     <div class="row mb-5">
-        <div class="col-md-8 offset-md-2">
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-end">
-                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                </ul>
-            </nav>
+        <div class="col-md-10 offset-md-1">
+            <app-filter></app-filter>
+            <div *ngIf="!votes" class="alert alert-warning text-center" role="alert">
+                Aucun résultat disponibles
+            </div>
+            <table *ngIf="votes" class="table table-hover border">
+                <thead>
+                    <tr>
+                        <th scope="col"><span role="button" [routerLink]="[]"
+                                              [queryParams]="{page_num: 1, sort: 'NAME', order: getReversedOrder()}"
+                                              [queryParamsHandling]="'merge'">
+                            Vote <small class="fa"
+                                        [ngClass]="{'fa-caret-down': orderBy === 'asc' && sortBy === 'NAME',
+                                        'fa-caret-up': orderBy === 'desc' && sortBy === 'NAME'}">
+                        </small></span></th>
+                        <th scope="col" class="text-end"><span role="button" [routerLink]="[]"
+                                                               [queryParams]="{page_num: 1, sort: 'STARTDATE', order: getReversedOrder()}"
+                                                               [queryParamsHandling]="'merge'">
+                            Date d'ouverture <small class="fa"
+                                                    [ngClass]="{'fa-caret-down': orderBy === 'asc' && sortBy === 'STARTDATE',
+                                                    'fa-caret-up': orderBy === 'desc' && sortBy === 'STARTDATE'}">
+                        </small></span></th>
+                        <th scope="col" class="text-end">Date de fermeture</th>
+                        <th scope="col" class="text-end">Résultats intermédiaires</th>
+                        <th scope="col" class="text-end">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr routerLink="/votes/{{vote.id}}" *ngFor="let vote of votes; let index = index;">
+                        <td scope="row">{{vote.label}}</td>
+                        <td class="text-end">{{ vote.startDate | date : 'd MMMM y' :'' : 'fr-FR' }}</td>
+                        <td class="text-end" *ngIf="vote.endDate">{{ vote.endDate | date : 'd MMMM y' :'' : 'fr-FR' }}</td>
+                        <td class="text-end" *ngIf="!vote.endDate"><small class="badge alert-warning">Pas de date de fin</small></td>
+                        <td class="text-end">
+                            <small *ngIf="vote.intermediaryResult != 0" class="badge text-dark alert-success">Disponibles</small>
+                            <small *ngIf="vote.intermediaryResult == 0" class="badge text-dark alert-danger">Indisponibles</small>
+                        </td>
+                        <td class="text-end">
+                            <small *ngIf="isVotedVote(vote); else notVoted" class="badge text-dark alert-success">A Voté</small>
+                            <ng-template #notVoted><small class="badge text-dark alert-danger">Non voté</small></ng-template>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             <div class="align-items-center d-flex justify-content-center">
                 <span *ngIf="isLoading" class="spinner-grow" role="status" aria-hidden="true"></span>
-            </div>
-            <div class="list-group">
-                <a routerLink="/votes/{{vote.id}}" class="list-group-item list-group-item-action" *ngFor="let vote of votes; let index = index;">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">{{vote.label}}</h5>
-                        <small>Ouvert le {{ vote.startDate | date : 'd MMMM y' :'' : 'fr-FR' }}</small>
-                    </div>
-                    <div class="d-flex w-100 justify-content-between">
-                        <small>Créer par <span class="text-secondary">{{ getVotemakerName(vote.votemaker) }}</span></small>
-                        <small *ngIf="vote.intermediaryResult != 0" class="badge bg-light text-secondary">Résultats intermédiaires disponibles</small>
-                    </div>
-                </a>
             </div>
         </div>
     </div>
