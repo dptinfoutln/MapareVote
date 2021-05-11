@@ -79,20 +79,28 @@ public class VoteDAO extends GenericIdDAO<Vote> {
             voteStream = voteStream.filter(v -> v.getLabel().toUpperCase()
                     .endsWith(voteQuery.getSuffixmatch().toUpperCase()));
 
-        if (voteQuery.getSortkey() != null)
+        if (voteQuery.getSortkey() != null) {
+            Comparator<Vote> comparator = null;
             switch (voteQuery.getSortkey().toUpperCase()) {
                 case "NAME":
-                    voteStream = voteStream.sorted(Comparator.comparing(Vote::getLabel));
+                    comparator = Comparator.comparing(Vote::getLabel);
                     break;
                 case "VOTES":
-                    voteStream = voteStream.sorted(Comparator.comparingInt(vote -> vote.getBallots().size()));
+                    comparator = Comparator.comparingInt(vote -> vote.getBallots().size());
                     break;
                 case "STARTDATE":
-                    voteStream = voteStream.sorted(Comparator.comparing(Vote::getStartDate));
+                    comparator = Comparator.comparing(Vote::getStartDate);
                     break;
                 default:
                     break;
             }
+
+            if (comparator != null) {
+                if ("desc".equalsIgnoreCase(voteQuery.getOrder()))
+                    comparator = comparator.reversed();
+                voteStream = voteStream.sorted(comparator);
+            }
+        }
 
         voteStream = voteStream.skip((long) voteQuery.getPageSize() * (voteQuery.getPageIndex() - 1))
                 .limit(voteQuery.getPageSize());

@@ -17,5 +17,6 @@ public class VoteQuery {
     String suffixmatch;
     String algoname;
     String sortkey;
+    String order;
     boolean open;
 }

@@ -1,6 +1,7 @@
 package fr.univtln.mapare.resources;
 
 import fr.univtln.mapare.controllers.Controllers;
+import fr.univtln.mapare.controllers.MailUtils;
 import fr.univtln.mapare.dao.BallotDAO;
 import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.dao.VoteDAO;
@@ -69,7 +70,7 @@ public class UserResource {
             throw new ConflictException("Email already in use.");
         }
 
-        Controllers.sendConfirmationMail(user);
+        MailUtils.sendConfirmationMail(user);
 
         return user;
     }

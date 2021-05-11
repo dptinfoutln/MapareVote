@@ -31,6 +31,7 @@ public class VoteResource {
                                @QueryParam("ends_with") String nameend,
                                @QueryParam("algo") String algoname,
                                @QueryParam("sort") String sortkey,
+                               @QueryParam("order") String order,
                                @QueryParam("open") boolean open) throws ForbiddenException {
         if (pagenum == 0)
             pagenum = 1;
@@ -42,7 +43,7 @@ public class VoteResource {
         return VoteDAO.of(Controllers.getEntityManager())
                 .findAllPublic(
                         new VoteQuery(
-                                pagenum, pagesize, approxname, namestart, nameend, algoname, sortkey, open
+                                pagenum, pagesize, approxname, namestart, nameend, algoname, sortkey, order, open
                         ));
     }
 
