@@ -5,9 +5,15 @@ import fr.univtln.mapare.exceptions.BusinessException;
 import fr.univtln.mapare.exceptions.ConflictException;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.model.Vote;
+import fr.univtln.mapare.resources.VoteQuery;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class VoteDAO extends GenericIdDAO<Vote> {
 
@@ -24,14 +30,8 @@ public class VoteDAO extends GenericIdDAO<Vote> {
         return entityManager.createNamedQuery("Vote.findAll", Vote.class).getResultList();
     }
 
-    public List<Vote> findAll(int pageIndex, int pageSize, String labelCriterion) {
-        entityManager.setProperty("LABEL", labelCriterion);
-        List<Vote> voteList = entityManager.createNamedQuery("Vote.findAll", Vote.class)
-                .setMaxResults(pageSize)
-                .setFirstResult((pageIndex-1) * pageSize)
-                .getResultList();
-        entityManager.setProperty("LABEL", "%");
-        return voteList;
+    public List<Vote> findAll(VoteQuery voteQuery) {
+        return filterAndSortList("Vote.findAll", null, null , voteQuery);
 
     }
 
@@ -39,51 +39,64 @@ public class VoteDAO extends GenericIdDAO<Vote> {
         return entityManager.createNamedQuery("Vote.findByVotemaker", Vote.class).setParameter("votemaker", votemaker).getResultList();
     }
 
-    public List<Vote> findByVotemaker(User votemaker, int pageIndex, int pageSize, String labelCriterion) {
-        entityManager.setProperty("LABEL", labelCriterion);
-        List<Vote> voteList = entityManager.createNamedQuery("Vote.findByVotemaker", Vote.class)
-                .setParameter("votemaker", votemaker)
-                .setMaxResults(pageSize)
-                .setFirstResult((pageIndex-1) * pageSize)
-                .getResultList();
-        entityManager.setProperty("LABEL", "%");
-        return voteList;
+    public List<Vote> findByVotemaker(User votemaker, VoteQuery voteQuery) {
+        return filterAndSortList("Vote.findByVotemaker", votemaker, "votemaker", voteQuery);
     }
 
     public List<Vote> findAllPublic() {
         return entityManager.createNamedQuery("Vote.findPublic", Vote.class).getResultList();
     }
 
-    public List<Vote> findAllPublic(int pageIndex, int pageSize, String labelCriterion, String algoname) {
-        entityManager.setProperty("LABEL", labelCriterion);
-        entityManager.setProperty("ALGO", algoname);
-        List<Vote> voteList = entityManager.createNamedQuery("Vote.findPublic", Vote.class)
-                .setMaxResults(pageSize)
-                .setFirstResult((pageIndex-1) * pageSize)
-                .getResultList();
-        entityManager.setProperty("LABEL", "%");
-        entityManager.setProperty("ALGO", "%");
-        return voteList;
+    public List<Vote> findAllPublic(VoteQuery voteQuery) {
+        return filterAndSortList("Vote.findPublic", null, null, voteQuery);
     }
 
     public List<Vote> findPrivateByUser(User user) {
         return entityManager.createNamedQuery("Vote.findPrivateByUser", Vote.class).setParameter("user", user).getResultList();
     }
 
-    public List<Vote> findPrivateByUser(User user, int pageIndex, int pageSize, String labelCriterion) {
-        entityManager.setProperty("LABEL", labelCriterion);
-        List<Vote> voteList = entityManager.createNamedQuery("Vote.findPrivateByUser", Vote.class)
-                .setParameter("user", user)
-                .setMaxResults(pageSize)
-                .setFirstResult((pageIndex-1) * pageSize)
-                .getResultList();
-        entityManager.setProperty("LABEL", "%");
-        return voteList;
+    public List<Vote> findPrivateByUser(User user, VoteQuery voteQuery) {
+        return filterAndSortList("Vote.findPrivateByUser", user, "user", voteQuery);
     }
 
-    @Override
-    public Vote findById(int id) {
-        return super.findById(id);
+    private List<Vote> filterAndSortList(String namedQuery, User parameter, String role, VoteQuery voteQuery) {
+        TypedQuery<Vote> query = entityManager.createNamedQuery(namedQuery, Vote.class);
+        if (parameter != null)
+            query.setParameter(role, parameter);
+        Stream<Vote> voteStream = query.getResultStream();
+        if (voteQuery.getAlgoname() != null)
+            voteStream = voteStream.filter(v -> v.getAlgo().equalsIgnoreCase(voteQuery.getAlgoname()));
+        if (voteQuery.isOpen())
+            voteStream = voteStream.filter(v -> v.getStartDate().isBefore(LocalDate.now()) &&
+                    (v.getEndDate() == null || (v.getEndDate() != null && v.getEndDate().isAfter(LocalDate.now()))));
+        if (voteQuery.getExactmatch() != null)
+            voteStream = voteStream.filter(v -> v.getLabel().toUpperCase()
+                    .contains(voteQuery.getExactmatch().toUpperCase()));
+        if (voteQuery.getPrefixmatch() != null)
+            voteStream = voteStream.filter(v -> v.getLabel().toUpperCase()
+                    .startsWith(voteQuery.getPrefixmatch().toUpperCase()));
+        if (voteQuery.getSuffixmatch() != null)
+            voteStream = voteStream.filter(v -> v.getLabel().toUpperCase()
+                    .endsWith(voteQuery.getSuffixmatch().toUpperCase()));
+
+        if (voteQuery.getSortkey() != null)
+            switch (voteQuery.getSortkey().toUpperCase()) {
+                case "NAME":
+                    voteStream = voteStream.sorted(Comparator.comparing(Vote::getLabel));
+                    break;
+                case "VOTES":
+                    voteStream = voteStream.sorted(Comparator.comparingInt(vote -> vote.getBallots().size()));
+                    break;
+                case "STARTDATE":
+                    voteStream = voteStream.sorted(Comparator.comparing(Vote::getStartDate));
+                    break;
+                default:
+                    break;
+            }
+
+        voteStream = voteStream.skip((long) voteQuery.getPageSize() * (voteQuery.getPageIndex() - 1))
+                .limit(voteQuery.getPageSize());
+        return voteStream.collect(Collectors.toList());
     }
 
     @Override

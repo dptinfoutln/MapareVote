@@ -12,6 +12,8 @@ public class Controllers {
     private Controllers() {}
 
     public static EntityManager getEntityManager() {
+
+        entityManager.setProperty("LABEL", "%");
         return entityManager;
     }
 
@@ -27,14 +29,14 @@ public class Controllers {
     }
 
     public static void init() {
-        init("maparevotedb");
+        _init("maparevotedb");
     }
 
     public static void testinit() {
-        init("maparevotedev");
+        _init("maparevotedev");
     }
 
-    private static void init(String persistenceUnitName) {
+    private static void _init(String persistenceUnitName) {
         eMF = Persistence.createEntityManagerFactory(persistenceUnitName);
         if (entityManager == null)
             entityManager = eMF.createEntityManager();

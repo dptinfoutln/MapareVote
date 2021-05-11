@@ -4,9 +4,7 @@ import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.dao.BallotDAO;
 import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.dao.VoteDAO;
-import fr.univtln.mapare.exceptions.BusinessException;
-import fr.univtln.mapare.exceptions.NotFoundException;
-import fr.univtln.mapare.exceptions.ConflictException;
+import fr.univtln.mapare.exceptions.*;
 import fr.univtln.mapare.exceptions.ForbiddenException;
 import fr.univtln.mapare.exceptions.NotFoundException;
 import fr.univtln.mapare.model.Ballot;
@@ -32,6 +30,17 @@ public class UserResource {
         //Pagination
         //rentrer users dans liste
         List<User> check = UserDAO.of(Controllers.getEntityManager()).findAll();
+        for (User u : check) {
+            try {
+                System.out.println(u.getStartedVotes().size() + " " + u.getPrivateVoteList().size() + " " + u.getVotedVotes().size());
+            }
+            catch (Exception e) {
+                System.out.println("Koh lanta");
+                u.setPrivateVoteList(new ArrayList<>());
+                u.setStartedVotes(new ArrayList<>());
+                u.setVotedVotes(new ArrayList<>());
+            }
+        }
         if (check == null)
             throw new NotFoundException();
         else
@@ -77,16 +86,42 @@ public class UserResource {
         return user;
     }
 
+
     @DELETE
     @Path("{id}")
     public int deleteUser(@PathParam("id") int id) throws NotFoundException {
-        //TODO: test it with users who have ballots
         //TODO: add authentication before deleting
         UserDAO dao = UserDAO.of(Controllers.getEntityManager());
         if (dao.findById(id) != null) {
             dao.remove(id);
         } else
             throw new NotFoundException("Trying to delete user that doesn't exist.");
+        return 0;
+    }
+
+    @JWTAuth
+    @PATCH
+    @Path("{id}/ban")
+    public int banUser(@Context SecurityContext securityContext,
+                       @PathParam("id") int id) throws ForbiddenException, NotFoundException, UnauthorizedException {
+        User currUser = (User) securityContext.getUserPrincipal();
+
+        if (currUser == null)
+            throw new UnauthorizedException("Please authenticate yourself.");
+
+        if (!currUser.isAdmin())
+            throw new ForbiddenException("You do not have the rights for this.");
+
+        UserDAO dao = UserDAO.of(Controllers.getEntityManager());
+        User toBan = dao.findById(id);
+
+        if (toBan == null)
+            throw new NotFoundException("User not found.");
+
+        toBan.setBanned(true);
+
+        dao.update(toBan);
+
         return 0;
     }
 }

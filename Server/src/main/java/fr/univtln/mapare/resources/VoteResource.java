@@ -29,29 +29,21 @@ public class VoteResource {
                                @QueryParam("name_like") String approxname,
                                @QueryParam("starts_with") String namestart,
                                @QueryParam("ends_with") String nameend,
-                               @QueryParam("algo") String algoname) throws ForbiddenException {
-        String nameformat = "%";
-        if (namestart != null)
-            nameformat = namestart + nameformat;
-        if (approxname != null)
-            nameformat = nameformat + approxname + "%";
-        if (nameend != null)
-            nameformat = nameformat + nameend;
+                               @QueryParam("algo") String algoname,
+                               @QueryParam("sort") String sortkey,
+                               @QueryParam("open") boolean open) throws ForbiddenException {
         if (pagenum == 0)
             pagenum = 1;
         if (pagesize == 0)
             pagesize = 20;
-
-        // To prevent SQL injections
-        if (nameformat.contains("--") || (algoname != null && algoname.contains("--")))
-            throw new ForbiddenException("You may not have -- in your search.");
-        if (nameformat.contains(";") || (algoname != null && algoname.contains(";")))
-            throw new ForbiddenException("You may not have ; in your search.");
-        nameformat = nameformat.replace("'", "%").replace("\"", "");
         if (algoname != null)
             algoname = algoname.replace("'", "%").replace("\"", "");
 
-        return VoteDAO.of(Controllers.getEntityManager()).findAllPublic(pagenum, pagesize, nameformat, algoname);
+        return VoteDAO.of(Controllers.getEntityManager())
+                .findAllPublic(
+                        new VoteQuery(
+                                pagenum, pagesize, approxname, namestart, nameend, algoname, sortkey, open
+                        ));
     }
 
     @GET
@@ -184,11 +176,13 @@ public class VoteResource {
             throw new ForbiddenException("User is banned.");
         if (vote.isDeleted())
             throw new ForbiddenException("Vote deleted.");
+        if (voter.getVotedVotes().contains(vote))
+            throw new ForbiddenException("Already voted.");
         if (LocalDate.now().isBefore(vote.getStartDate()))
             throw new ForbiddenException("Too early.");
         if (vote.getEndDate() != null && LocalDate.now().isAfter(vote.getEndDate()))
             throw new ForbiddenException("Too late.");
-        if (ballot.getChoices().size() > vote.getMaxChoices())
+        if (!vote.getAlgo().equals("STV") && ballot.getChoices().size() > vote.getMaxChoices())
             throw new ForbiddenException("Too many choices.");
 //        for (BallotChoice bc : ballot.getChoices())
 //            if (!vote.getChoices().contains(bc.getChoice()))

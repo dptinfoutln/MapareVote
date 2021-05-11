@@ -75,6 +75,7 @@ public abstract class VoteUtils {
                             // IRV = 1 winner.
                             if (vote.getMaxChoices() == 1) {
                                 int minval;
+                                boolean endmenow = false;
                                 Map<Choice, Integer> voteCounting = new HashMap<>();
 
                                 while (true) {
@@ -89,10 +90,14 @@ public abstract class VoteUtils {
                                     for (Choice c : vote.getChoices()) {
                                         if (voteCounting.get(c) > vote.getBallots().size() / 2) {
                                             resultList.add(new VoteResult(c, candidatecount, vote));
+                                            for (Choice oc : vote.getChoices())
+                                                if (!c.equals(oc))
+                                                    resultList.add(new VoteResult(oc, -1, vote));
+                                            endmenow = true;
                                             break;
                                         }
                                     }
-                                    if (resultList.size() == 1)
+                                    if (endmenow)
                                         break;
 
                                     // Otherwise we search for the lowest ranked vote currently.

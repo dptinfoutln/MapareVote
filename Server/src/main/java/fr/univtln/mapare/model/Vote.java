@@ -15,7 +15,6 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-//@AdditionalCriteria("this.label LIKE :LABEL and this.algo LIKE :ALGO")
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class,property="id", scope=Vote.class)
 @Table(name = "\"VOTE\"")
 @NamedQueries({

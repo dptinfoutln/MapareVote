@@ -20,7 +20,7 @@ import java.io.Serializable;
 })
 public class VoteResult implements Serializable {
     @Id
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JsonIgnoreProperties({"vote"})
     @JoinColumn(name = "\"choice\"")
     private Choice choice;
