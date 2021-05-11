@@ -1,7 +1,6 @@
 package com.mapare.maparevoteapp.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -19,6 +18,7 @@ public class MultipleChoicesAdapter extends CustomAdapter<Choice> {
     private  Ballot ballot;
     private final int maxChoices;
     private int count = 0;
+    private Boolean anonymous;
 
     public MultipleChoicesAdapter(Context context, List<Choice> entityList, int maxChoices) {
         super(context, entityList);
@@ -28,7 +28,12 @@ public class MultipleChoicesAdapter extends CustomAdapter<Choice> {
     public MultipleChoicesAdapter(Context context, List<Choice> entityList, int maxChoices, Ballot ballot) {
         super(context, entityList);
         this.maxChoices = maxChoices;
-        this.ballot = ballot;
+        if (ballot == null)
+            this.anonymous = true;
+        else {
+            this.ballot = ballot;
+            anonymous = false;
+        }
 
     }
 
@@ -49,10 +54,10 @@ public class MultipleChoicesAdapter extends CustomAdapter<Choice> {
             holder = (ViewHolder) convertView.getTag();
         }
         holder.choiceField.setText(entityList.get(position).getNames().toString());
-        if (ballot == null) {
+        if (anonymous == null) { // If not voted
             holder.choiceField.setOnClickListener(v -> {
                 if (selected.contains(holder.choiceField)) {
-                    pickedIds.remove(selected.indexOf(holder.choiceField));
+                    pickedIds.remove((int)getItemId(position));
                     selected.remove(holder.choiceField);
                     holder.choiceField.setChecked(false);
                     count--;
@@ -61,11 +66,10 @@ public class MultipleChoicesAdapter extends CustomAdapter<Choice> {
                         count++;
                     } else {
                         selected.get(0).setChecked(false);
-                        pickedIds.remove(0);
+                        pickedIds.remove(pickedIds.keySet().toArray()[0]);
                         selected.remove(0);
                     }
-                    pickedIds.add((int) getItemId(position));
-                    Log.i("add", getItemId(position)+"");
+                    pickedIds.put((int) getItemId(position), 1);
                     selected.add(holder.choiceField);
                     holder.choiceField.setChecked(true);
                 }
@@ -73,12 +77,16 @@ public class MultipleChoicesAdapter extends CustomAdapter<Choice> {
         } else {
             if (position == 0) // bug ?
                 holder.choiceField.setChecked(false);
-            for (BallotChoice bc : ballot.getChoices()) {
-                if (bc.getChoice().getId() == getItemId(position)) {
-                    holder.choiceField.setChecked(true);
-                    break;
+
+            if (!anonymous) {
+                for (BallotChoice bc : ballot.getChoices()) {
+                    if (bc.getChoice().getId() == getItemId(position)) {
+                        holder.choiceField.setChecked(true);
+                        break;
+                    }
                 }
             }
+            //else if TODO : print the fact that the vote is anonymous
             holder.choiceField.setEnabled(false);
         }
 

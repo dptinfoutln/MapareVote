@@ -2,6 +2,7 @@ package com.mapare.maparevoteapp;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -9,19 +10,18 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mapare.maparevoteapp.adapter.CustomAdapter;
 import com.mapare.maparevoteapp.adapter.MultipleChoicesAdapter;
+import com.mapare.maparevoteapp.adapter.WeightedChoicesAdapter;
 import com.mapare.maparevoteapp.model.entity_to_reveive.Vote;
-import com.mapare.maparevoteapp.adapter.UniqueChoiceAdaptater;
+import com.mapare.maparevoteapp.adapter.UniqueChoiceAdapter;
 import com.mapare.maparevoteapp.model.entity_to_send.Ballot;
 import com.mapare.maparevoteapp.model.entity_to_send.BallotChoice;
 import com.mapare.maparevoteapp.model.entity_to_send.Choice;
@@ -58,25 +58,9 @@ public class VoteActivity extends AppCompatActivity {
         Vote vote = (Vote) getIntent().getSerializableExtra("vote");
         String ballotToken = (String) getIntent().getSerializableExtra("token");
 
-        // The layout depends on the algorithm related to the vote
-        switch (vote.getAlgo()) {
-            case "majority":
-                if (vote.getMaxChoices() == 1) {
-                    setContentView(R.layout.activity_vote_majority_unique);
-                    listView = findViewById(R.id.choice_list);
+        setContentView(R.layout.activity_vote);
+        listView = findViewById(R.id.choice_list);
 
-                } else {
-                    setContentView(R.layout.activity_vote_majority_multiple);
-                    listView = findViewById(R.id.choice_list);
-                }
-                break;
-            default:
-                // lancer layout classique
-                setContentView(R.layout.activity_vote);
-                break;
-        }
-
-        // Common fields across the layouts
         TextView labelField = findViewById(R.id.vote_labelField);
         labelField.setText(vote.getLabel());
 
@@ -89,10 +73,11 @@ public class VoteActivity extends AppCompatActivity {
             // if none, prompt something
             if (adapter.getPickedOnes().isEmpty()) {
                 Toast.makeText(this, "Vous n'avez pas fait de choix", Toast.LENGTH_SHORT).show();
-            }else {
+            } else {
                 // fetch the choices picked
-                for (int id : adapter.getPickedOnes())
-                    pickedChoices.add(new BallotChoice(new Choice(id), 1));
+                for (int id : adapter.getPickedOnes().keySet()) {
+                    pickedChoices.add(new BallotChoice(new Choice(id), adapter.getPickedOnes().get(id)));
+                }
                 // Makes the request to vote
                 voteRequest(vote.getId(), new Ballot(pickedChoices));
             }
@@ -102,33 +87,42 @@ public class VoteActivity extends AppCompatActivity {
         if (ballotToken != null) {
             // deactivate the button, if already voted
             voteButton.setEnabled(false);
-
+            // Wait the "callback" of the request to get the ballot
             LOADING_STATE_CODE = new MutableLiveData<>();
-            LOADING_STATE_CODE.observe(this, new Observer<String>() {
-                @Override
-                public void onChanged(String s) {
-                    switch (vote.getAlgo()) {
-                        case "majority":
-                            if (vote.getMaxChoices() == 1)
-                                adapter = new UniqueChoiceAdaptater(VoteActivity.this, vote.getChoices(), ballot);
-                            else
-                                adapter = new MultipleChoicesAdapter(VoteActivity.this, vote.getChoices(), vote.getMaxChoices(), ballot);
-                            break;
-                        default:
-                            break;
-                    }
-                    listView.setAdapter(adapter);
-
+            LOADING_STATE_CODE.observe(this, s -> {
+                switch (vote.getAlgo()) {
+                    case "majority":
+                        if (vote.getMaxChoices() == 1)
+                            adapter = new UniqueChoiceAdapter(VoteActivity.this, vote.getChoices(), ballot);
+                        else
+                            adapter = new MultipleChoicesAdapter(VoteActivity.this, vote.getChoices(), vote.getMaxChoices(), ballot);
+                        break;
+                    case "borda":
+                    case "STV":
+                        adapter = new WeightedChoicesAdapter(VoteActivity.this, vote.getChoices(), ballot);
+                        break;
+                    default:
+                        break;
                 }
+                listView.setAdapter(adapter);
+
+                // Let the user know that he has already voted for this vote
+                TextView votedInfo = findViewById(R.id.vote_votedField);
+                votedInfo.setVisibility(View.VISIBLE);
+
             });
             getBallotRequest(vote.getId());
         } else {
             switch (vote.getAlgo()) {
                 case "majority":
                     if (vote.getMaxChoices() == 1)
-                        adapter = new UniqueChoiceAdaptater(VoteActivity.this, vote.getChoices());
+                        adapter = new UniqueChoiceAdapter(VoteActivity.this, vote.getChoices());
                     else
                         adapter = new MultipleChoicesAdapter(VoteActivity.this, vote.getChoices(), vote.getMaxChoices());
+                    break;
+                case "borda":
+                case "STV":
+                    adapter = new WeightedChoicesAdapter(VoteActivity.this, vote.getChoices());
                     break;
                 default:
                     break;

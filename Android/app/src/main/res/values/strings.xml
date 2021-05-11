@@ -11,6 +11,7 @@
     <string name="name_text_view">Nom</string>
     <string name="firstname_text_view">Prénom</string>
     <string name="confirm_password_text_view">Confirmer Mot de passe</string>
+    <string name="already_voted">Vous avez déjà voté</string>
 
     <!-- Strings related to login & register-->
     <string name="incorrect_email">Email non valide</string>

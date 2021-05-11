@@ -1,7 +1,6 @@
 package com.mapare.maparevoteapp.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
@@ -11,20 +10,19 @@ import com.mapare.maparevoteapp.model.entity_to_reveive.Ballot;
 import com.mapare.maparevoteapp.model.entity_to_reveive.BallotChoice;
 import com.mapare.maparevoteapp.model.entity_to_reveive.Choice;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class UniqueChoiceAdaptater extends CustomAdapter<Choice> {
+public class UniqueChoiceAdapter extends CustomAdapter<Choice> {
     private RadioButton selected = null;
     private Ballot ballot;
     private Boolean anonymous;
 
-    public UniqueChoiceAdaptater(Context context, List<Choice> choiceList) {
+    public UniqueChoiceAdapter(Context context, List<Choice> choiceList) {
         super(context, choiceList);
     }
 
-    public UniqueChoiceAdaptater(Context context, List<Choice> choiceList, Ballot ballot) {
+    public UniqueChoiceAdapter(Context context, List<Choice> choiceList, Ballot ballot) {
         super(context, choiceList);
         if (ballot == null)
             this.anonymous = true;
@@ -51,14 +49,15 @@ public class UniqueChoiceAdaptater extends CustomAdapter<Choice> {
             holder = (ViewHolder) convertView.getTag();
         }
         holder.choiceField.setText(entityList.get(position).getNames().toString());
-        Log.i("anonymous", anonymous+"");
         if (anonymous == null) { // If not voted
             holder.choiceField.setOnClickListener(v -> {
-                if (selected != null)
+                if (selected != null) {
                     selected.setChecked(false);
+                    pickedIds.clear();
+                }
                 holder.choiceField.setChecked(true);
                 selected = holder.choiceField;
-                pickedIds = Collections.singletonList((int) getItemId(position));
+                pickedIds.put((int) getItemId(position), 1);
             });
         } else {
             if (position == 0) // bug ?
@@ -78,6 +77,4 @@ public class UniqueChoiceAdaptater extends CustomAdapter<Choice> {
 
         return convertView;
     }
-
-
 }
