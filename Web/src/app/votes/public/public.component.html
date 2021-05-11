@@ -24,7 +24,7 @@
                         </small></span></th>
                         <th scope="col" class="text-end">Date de fermeture</th>
                         <th scope="col" class="text-end">Résultats intermédiaires</th>
-                        <th scope="col" class="text-end">Status</th>
+                        <th *ngIf="authService.isStillAuth()" scope="col" class="text-end">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -37,7 +37,7 @@
                             <small *ngIf="vote.intermediaryResult != 0" class="badge text-dark alert-success">Disponibles</small>
                             <small *ngIf="vote.intermediaryResult == 0" class="badge text-dark alert-danger">Indisponibles</small>
                         </td>
-                        <td class="text-end">
+                        <td *ngIf="authService.isStillAuth()" class="text-end">
                             <small *ngIf="isVotedVote(vote); else notVoted" class="badge text-dark alert-success">A Voté</small>
                             <ng-template #notVoted><small class="badge text-dark alert-danger">Non voté</small></ng-template>
                         </td>

@@ -3,7 +3,7 @@ import {VotesService} from '../../services/votes.service';
 import {ActivatedRoute} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {Vote} from '../../models/vote.model';
-import {AuthUtilsService} from '../../services/auth-utils.service';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
     selector: 'app-public',
@@ -26,11 +26,13 @@ export class PublicComponent implements OnInit {
 
     constructor(private votesService: VotesService,
                 private route: ActivatedRoute,
-                private authUtils: AuthUtilsService) {
+                public authService: AuthService) {
     }
 
     ngOnInit(): void {
-        this.selfUser = this.authUtils.getSelfUser();
+        if (this.authService.isStillAuth()){
+            this.selfUser = this.authService.utils.getSelfUser();
+        }
         this.route.queryParams.subscribe(params => {
             if (params.page_num){
                 this.pageNum = Number(params.page_num);
