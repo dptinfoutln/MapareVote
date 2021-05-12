@@ -7,31 +7,31 @@
 
     <fragment
         android:id="@+id/nav_publicVotes"
-        android:name="com.mapare.maparevoteapp.ui.public_votes.PublicVotesFragment"
+        android:name="com.mapare.maparevoteapp.tab.votes.PublicVotesFragment"
         android:label="@string/menu_public_votes"
-        tools:layout="@layout/fragment_public_votes" />
+        tools:layout="@layout/fragment_votes" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.mapare.maparevoteapp.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_privateVotes"
+        android:name="com.mapare.maparevoteapp.tab.votes.PrivateVotesFragment"
+        android:label="@string/menu_private_votes"
+        tools:layout="@layout/fragment_votes" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.mapare.maparevoteapp.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_startedVotes"
+        android:name="com.mapare.maparevoteapp.tab.votes.StartedVotesFragment"
+        android:label="@string/menu_started_votes"
+        tools:layout="@layout/fragment_votes" />
 
     <fragment
         android:id="@+id/nav_login"
-        android:name="com.mapare.maparevoteapp.ui.login.LoginFragment"
+        android:name="com.mapare.maparevoteapp.tab.login.LoginFragment"
         android:label="@string/menu_login"
         tools:layout="@layout/fragment_login" />
 
     <fragment
         android:id="@+id/nav_signup"
-        android:name="com.mapare.maparevoteapp.ui.register.RegisterFragment"
+        android:name="com.mapare.maparevoteapp.tab.register.RegisterFragment"
         android:label="@string/menu_register"
         tools:layout="@layout/fragment_register" />
 </navigation>

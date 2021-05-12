@@ -1,4 +1,4 @@
-package com.mapare.maparevoteapp.ui.result;
+package com.mapare.maparevoteapp.tab.votes.result;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

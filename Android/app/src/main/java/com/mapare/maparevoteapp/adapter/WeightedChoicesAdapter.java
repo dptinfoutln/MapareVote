@@ -3,6 +3,7 @@ package com.mapare.maparevoteapp.adapter;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
@@ -47,6 +48,7 @@ public class WeightedChoicesAdapter extends CustomAdapter<Choice> {
             holder.weightField = convertView.findViewById(R.id.vote_weightPicker);
             holder.weightField.setMinValue(1);
             holder.weightField.setMaxValue(entityList.size());
+
             pickedIds.put((int)getItemId(position), holder.weightField.getMinValue()); // Because min value is the default value
             convertView.setTag(holder);
         } else {

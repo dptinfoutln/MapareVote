@@ -1,4 +1,4 @@
-package com.mapare.maparevoteapp.ui.login;
+package com.mapare.maparevoteapp.tab.login;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

@@ -1,4 +1,4 @@
-package com.mapare.maparevoteapp.ui.register;
+package com.mapare.maparevoteapp.tab.register;
 
 import android.content.Context;
 import android.content.SharedPreferences;

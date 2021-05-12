@@ -1,6 +1,5 @@
-package com.mapare.maparevoteapp.ui.public_votes;
+package com.mapare.maparevoteapp.tab.votes;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,7 +12,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 
@@ -35,7 +33,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class PublicVotesFragment extends Fragment {
     private List<Vote> voteList;
@@ -45,7 +42,7 @@ public class PublicVotesFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_public_votes, container, false);
+        return inflater.inflate(R.layout.fragment_votes, container, false);
     }
 
     @Override
@@ -96,13 +93,15 @@ public class PublicVotesFragment extends Fragment {
 
         });
         // Makes the request
-        publicVotesRequest(getContext());
+        publicVotesRequest(getContext(), 2, 2000);
+        // TODO: check pagination bc page_size doesn't seem to work properly
     }
 
-    private void publicVotesRequest(Context context) {
+    private void publicVotesRequest(Context context, int page, int page_size) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
-        String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.PUBLIC_VOTE_URL);
+        String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.PUBLIC_VOTE_URL) + "?"
+                + getResources().getString(R.string.PAGE_FILTER) + page + "&" + getResources().getString(R.string.PAGE_SIZE_FILTER) + page_size;
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.GET, url,

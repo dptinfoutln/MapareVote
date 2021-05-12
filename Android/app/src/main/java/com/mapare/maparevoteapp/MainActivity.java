@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_publicVotes, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_login, R.id.nav_signup, R.id.nav_logout)
+                R.id.nav_publicVotes, R.id.nav_privateVotes, R.id.nav_startedVotes, R.id.nav_login, R.id.nav_signup, R.id.nav_logout)
                 .setOpenableLayout(drawerLayout)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -99,6 +99,9 @@ public class MainActivity extends AppCompatActivity {
         nav_Menu.findItem(R.id.nav_signup).setVisible(token == null);
         nav_Menu.findItem(R.id.nav_logout).setVisible(token != null);
 
+        nav_Menu.findItem(R.id.nav_privateVotes).setVisible(token != null);
+        nav_Menu.findItem(R.id.nav_startedVotes).setVisible(token != null);
+
         listener = (prefs, key) -> {
             Log.i("key", key);
             String content = prefs.getString(key, null);
@@ -109,6 +112,9 @@ public class MainActivity extends AppCompatActivity {
                 nav_Menu.findItem(R.id.nav_login).setVisible(content == null);
                 nav_Menu.findItem(R.id.nav_signup).setVisible(content == null);
                 nav_Menu.findItem(R.id.nav_logout).setVisible(content != null);
+
+                nav_Menu.findItem(R.id.nav_privateVotes).setVisible(content != null);
+                nav_Menu.findItem(R.id.nav_startedVotes).setVisible(content != null);
 
                 // When disconnected or connected, navigate to the "home page"
                 navController.navigate(R.id.nav_publicVotes);

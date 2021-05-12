@@ -26,7 +26,10 @@
     <string name="API_URL">https://api.maparevote.siannos.fr</string>
     <string name="LOGIN_URL">/auth/signin</string>
     <string name="SIGNUP_URL">/users</string>
-    <string name="PUBLIC_VOTE_URL">/votes/public?page_size=200"</string>
+    <string name="PUBLIC_VOTE_URL">/votes/public"</string>
+    <string name="PRIVATE_VOTE_URL">/votes/private"</string>
+    <string name="PAGE_FILTER">page_num=</string>
+    <string name="PAGE_SIZE_FILTER">page_size</string>
     <string name="VOTE_URL">/votes/</string>
     <string name="BALLOT_URL">/ballots</string>
     <string name="ME_URL">/users/me</string>
@@ -35,8 +38,8 @@
     <!-- Strings related to navigation menu -->
     <string name="user">Utilisateur</string>
     <string name="menu_public_votes">Votes publiques</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_private_votes">Votes privés</string>
+    <string name="menu_started_votes">Mes votes</string>
     <string name="menu_login">Connexion</string>
     <string name="menu_logout">Déconnexion</string>
     <string name="menu_register">Créer un compte</string>
