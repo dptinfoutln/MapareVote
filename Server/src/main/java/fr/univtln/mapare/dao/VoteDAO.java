@@ -67,7 +67,8 @@ public class VoteDAO extends GenericIdDAO<Vote> {
         if (voteQuery.getAlgoname() != null)
             voteStream = voteStream.filter(v -> v.getAlgo().equalsIgnoreCase(voteQuery.getAlgoname()));
         if (voteQuery.isOpen())
-            voteStream = voteStream.filter(v -> v.getStartDate().isBefore(LocalDate.now()) &&
+            voteStream = voteStream.filter(v ->
+                    (v.getStartDate().isBefore(LocalDate.now()) || v.getStartDate().isEqual(LocalDate.now())) &&
                     (v.getEndDate() == null || (v.getEndDate() != null && v.getEndDate().isAfter(LocalDate.now()))));
         if (voteQuery.getExactmatch() != null)
             voteStream = voteStream.filter(v -> v.getLabel().toUpperCase()
