@@ -68,7 +68,7 @@ export class VoteComponent implements OnInit {
                     this.votesService.getVoteResults(+id).then(
                         resultList => {
                             this.results = resultList;
-                            if (this.results.length !== 0){
+                            if (this.results.length !== 0) {
                                 this.isResults = true;
                                 this.setResults();
                             }
@@ -102,7 +102,7 @@ export class VoteComponent implements OnInit {
     }
 
     setChoiceBtnType(): void {
-        if (this.vote.algo === Algo.MAJORITY){
+        if (this.vote.algo === Algo.MAJORITY) {
             if (this.vote.maxChoices === 1) {
                 this.btnType = 'radio';
             } else {
@@ -144,9 +144,9 @@ export class VoteComponent implements OnInit {
         this.submitBtn.nativeElement.disabled = true;
         const tmpChoices = [];
 
-        if (this.vote.algo === Algo.MAJORITY){
-            for (const choice of this.choicesElem){
-                if (choice.nativeElement.checked){
+        if (this.vote.algo === Algo.MAJORITY) {
+            for (const choice of this.choicesElem) {
+                if (choice.nativeElement.checked) {
                     tmpChoices.push({choice: {id: choice.nativeElement.value}, weight: 1});
                 }
             }

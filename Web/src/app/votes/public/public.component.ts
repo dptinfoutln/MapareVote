@@ -30,21 +30,21 @@ export class PublicComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        if (this.authService.isStillAuth()){
+        if (this.authService.isStillAuth()) {
             this.selfUser = this.authService.utils.getSelfUser();
         }
         this.route.queryParams.subscribe(params => {
-            if (params.page_num){
+            if (params.page_num) {
                 this.pageNum = Number(params.page_num);
             } else {
                 this.pageNum = 1;
             }
-            if (params.page_size){
+            if (params.page_size) {
                 this.pageSize = Number(params.page_size);
             } else {
                 this.pageSize = environment.defaultPageSize;
             }
-            if (params.order){
+            if (params.order) {
                 this.orderBy = params.order;
             } else {
                 this.orderBy = 'asc';
@@ -79,7 +79,7 @@ export class PublicComponent implements OnInit {
 
     getReversedOrder(): string {
         let order;
-        if (this.orderBy === 'asc'){
+        if (this.orderBy === 'asc') {
             order = 'desc';
         } else {
             order = 'asc';
@@ -89,15 +89,15 @@ export class PublicComponent implements OnInit {
 
     getVotemakerName(votemaker: any): string {
         let name = '';
-        if (votemaker.id){
+        if (votemaker.id) {
             this.votemakers.forEach(vm => {
-                if (vm.id === votemaker.id){
+                if (vm.id === votemaker.id) {
                     name = vm.firstname + ' ' + vm.lastname;
                 }
             });
         } else {
             this.votemakers.forEach(vm => {
-                if (vm.id === votemaker){
+                if (vm.id === votemaker) {
                     name = vm.firstname + ' ' + vm.lastname;
                 }
             });

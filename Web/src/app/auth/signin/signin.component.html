@@ -1,24 +1,27 @@
 <div class="container">
-  <div class="row">
-    <div class="col-sm-8 col-md-6 offset-sm-2 offset-md-3">
-      <h1 class="bd-title mb-5">Connexion</h1>
-      <form [formGroup]="signInForm" (ngSubmit)="onSubmit()">
-        <div class="mb-3 form-floating">
-          <input type="text" id="email" #emailInput class="form-control" placeholder="Adresse mail" (focusout)="onMailFocusOut()" formControlName="email">
-          <label for="email">Adresse mail</label>
-        </div>
-        <div class="mb-3 form-floating">
-          <input type="password" id="password" #passwordInput class="form-control" placeholder="Mot de passe" (focusout)="onPasswordFocusOut()" formControlName="password">
-          <label for="password">Mot de passe</label>
-        </div>
+    <div class="row">
+        <div class="col-sm-8 col-md-6 offset-sm-2 offset-md-3">
+            <h1 class="bd-title mb-5">Connexion</h1>
+            <form [formGroup]="signInForm" (ngSubmit)="onSubmit()">
+                <div class="mb-3 form-floating">
+                    <input type="text" id="email" #emailInput class="form-control" placeholder="Adresse mail"
+                           (focusout)="onMailFocusOut()" formControlName="email">
+                    <label for="email">Adresse mail</label>
+                </div>
+                <div class="mb-3 form-floating">
+                    <input type="password" id="password" #passwordInput class="form-control" placeholder="Mot de passe"
+                           (focusout)="onPasswordFocusOut()" formControlName="password">
+                    <label for="password">Mot de passe</label>
+                </div>
 
-        <button class="btn btn-primary" #submitBtn type="submit">
-          <span *ngIf="isPending" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-          Connexion
-        </button>
+                <button class="btn btn-primary" #submitBtn type="submit">
+                    <span *ngIf="isPending" class="spinner-border spinner-border-sm" role="status"
+                          aria-hidden="true"></span>
+                    Connexion
+                </button>
 
-      </form>
-      <p class="text-danger">{{ errorMessage }}</p>
+            </form>
+            <p class="text-danger">{{ errorMessage }}</p>
+        </div>
     </div>
-  </div>
 </div>

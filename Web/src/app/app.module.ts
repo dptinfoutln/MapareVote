@@ -22,7 +22,7 @@ import {PublicComponent} from './votes/public/public.component';
 import {VoteComponent} from './votes/vote/vote.component';
 import {ErrorPopupComponent} from './error-popup/error-popup.component';
 import {HistoryComponent} from './votes/history/history.component';
-import { FilterComponent } from './votes/filter/filter.component';
+import {FilterComponent} from './votes/filter/filter.component';
 
 @NgModule({
     declarations: [

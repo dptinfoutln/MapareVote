@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {VotesService} from '../../services/votes.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
@@ -6,9 +6,9 @@ import {Vote} from '../../models/vote.model';
 import {AuthUtilsService} from '../../services/auth-utils.service';
 
 @Component({
-  selector: 'app-private',
-  templateUrl: './private.component.html',
-  styleUrls: ['./private.component.scss']
+    selector: 'app-private',
+    templateUrl: './private.component.html',
+    styleUrls: ['./private.component.scss']
 })
 export class PrivateComponent implements OnInit {
     votes = [];
@@ -27,22 +27,23 @@ export class PrivateComponent implements OnInit {
     constructor(private votesService: VotesService,
                 private route: ActivatedRoute,
                 private router: Router,
-                private authUtils: AuthUtilsService) { }
+                private authUtils: AuthUtilsService) {
+    }
 
     ngOnInit(): void {
         this.selfUser = this.authUtils.getSelfUser();
         this.route.queryParams.subscribe(params => {
-            if (params.page_num){
+            if (params.page_num) {
                 this.pageNum = Number(params.page_num);
             } else {
                 this.pageNum = 1;
             }
-            if (params.page_size){
+            if (params.page_size) {
                 this.pageSize = Number(params.page_size);
             } else {
                 this.pageSize = environment.defaultPageSize;
             }
-            if (params.order){
+            if (params.order) {
                 this.orderBy = params.order;
             } else {
                 this.orderBy = 'asc';
@@ -79,7 +80,7 @@ export class PrivateComponent implements OnInit {
 
     getReversedOrder(): string {
         let order;
-        if (this.orderBy === 'asc'){
+        if (this.orderBy === 'asc') {
             order = 'desc';
         } else {
             order = 'asc';
