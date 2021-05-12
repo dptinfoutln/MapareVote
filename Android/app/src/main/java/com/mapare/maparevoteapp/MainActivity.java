@@ -7,11 +7,19 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
+import com.mapare.maparevoteapp.model.entity_to_reveive.User;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
@@ -22,6 +30,10 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
@@ -81,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Toast.makeText(getBaseContext(), "Déconnecté", Toast.LENGTH_SHORT).show();
                 getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("token", null).apply();
+                getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("name", "##erased##").apply();
             } else {
                 // This is for closing the drawer after acting on it, doesn't want this feature when menu_logout button is clicked on
                 drawerLayout.closeDrawer(GravityCompat.START);
@@ -93,46 +106,92 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
         // Defines the visibility of the items by default
-        String token = getSharedPreferences("Login", MODE_PRIVATE).getString("token", null);
+        SharedPreferences sharedPreferences = getSharedPreferences("Login", MODE_PRIVATE);
+        String token = sharedPreferences.getString("token", null);
+
         Menu nav_Menu = navigationView.getMenu();
         nav_Menu.findItem(R.id.nav_login).setVisible(token == null);
         nav_Menu.findItem(R.id.nav_signup).setVisible(token == null);
         nav_Menu.findItem(R.id.nav_logout).setVisible(token != null);
-
         nav_Menu.findItem(R.id.nav_privateVotes).setVisible(token != null);
         nav_Menu.findItem(R.id.nav_startedVotes).setVisible(token != null);
+
+        // Header
+        View headerView = navigationView.getHeaderView(0);
+        TextView nameHeader = headerView.findViewById(R.id.name);
+        TextView emailHeader = headerView.findViewById(R.id.email);
+
+        if (token != null) {
+            String name = sharedPreferences.getString("name", null);
+            String email = sharedPreferences.getString("email", null);
+            nameHeader.setText(name);
+            emailHeader.setText(email);
+        } else {
+            nameHeader.setText(R.string.app_name);
+            emailHeader.setText(R.string.welcome);
+        }
+
 
         listener = (prefs, key) -> {
             Log.i("key", key);
             String content = prefs.getString(key, null);
             // To know when the user switch between login and logout
-            if (key.equals("token")) {
+            switch (key) {
+                case "token":
+                    // Fetch user infos
+                    if (content != null) {
+                        getMeRequest();
+                    }
 
-                // Add items if it depends on the user who should be logged in or not
-                nav_Menu.findItem(R.id.nav_login).setVisible(content == null);
-                nav_Menu.findItem(R.id.nav_signup).setVisible(content == null);
-                nav_Menu.findItem(R.id.nav_logout).setVisible(content != null);
+                    // Add items if it depends on the user who should be logged in or not
+                    nav_Menu.findItem(R.id.nav_login).setVisible(content == null);
+                    nav_Menu.findItem(R.id.nav_signup).setVisible(content == null);
+                    nav_Menu.findItem(R.id.nav_logout).setVisible(content != null);
+                    nav_Menu.findItem(R.id.nav_privateVotes).setVisible(content != null);
+                    nav_Menu.findItem(R.id.nav_startedVotes).setVisible(content != null);
 
-                nav_Menu.findItem(R.id.nav_privateVotes).setVisible(content != null);
-                nav_Menu.findItem(R.id.nav_startedVotes).setVisible(content != null);
+                    // When disconnected or connected, navigate to the "home page"
+                    navController.navigate(R.id.nav_publicVotes);
+                    drawerLayout.openDrawer(GravityCompat.START);
+                    break;
+                case "name":
+                    // Header
+                    if (content.equals("##erased##")) {
+                        nameHeader.setText(R.string.app_name);
+                        emailHeader.setText(R.string.welcome);
 
-                // When disconnected or connected, navigate to the "home page"
-                navController.navigate(R.id.nav_publicVotes);
-                drawerLayout.openDrawer(GravityCompat.START);
-            }
-            // If navigation is needed
-            else if (key.equals("go_to")) {
-                Log.i("listener", content+"");
-                switch (content) {
-                    case "login page":
-                        navController.navigate(R.id.nav_login);
-                        break;
-                    // Add other destinations
-                }
-                prefs.edit().putString("go_to", "nowhere").apply();
+                    } else {
+                        String name = prefs.getString("name", null);
+                        String email = prefs.getString("email", null);
+                        nameHeader.setText(name);
+                        emailHeader.setText(email);
+                    }
+                    // If navigation is needed
+                    break;
+                case "go_to":
+                    Log.i("listener", content + "");
+                    switch (content) {
+                        case "login page":
+                            navController.navigate(R.id.nav_login);
+                            break;
+                        case "relogin":
+                            // Clears cache
+                            getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("name", "##erased##").apply();
+
+                            navController.navigate(R.id.nav_login);
+                            break;
+                        // Add other destinations
+                    }
+                    prefs.edit().putString("go_to", "nowhere").apply();
+                    break;
             }
         };
         getSharedPreferences("Login", MODE_PRIVATE).registerOnSharedPreferenceChangeListener(listener);
+
+        // Check if token is the session is still active
+        if (token != null) {
+            getMeRequest();
+        }
 
         // Start the app with the drawer opened
         drawerLayout.openDrawer(GravityCompat.START);
@@ -163,5 +222,47 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    private void getMeRequest() {
+        SharedPreferences prefs = getSharedPreferences("Login", MODE_PRIVATE);
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.ME_URL);
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.GET, url,
+                response -> {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+                    try {
+                        User user = objectMapper.readValue(response, User.class);
+                        prefs.edit().putString("name", user.getFirstname() + "\t" + user.getName()).apply();
+                        Log.i("getMe", response);
+                    } catch (IOException e) { // shouldn't happen
+                        e.printStackTrace();
+                    }
+
+                }, error -> {
+            // TODO: manage different types of errors
+            if (error instanceof AuthFailureError) {
+                prefs.edit().putString("go_to", "relogin").apply();
+                Toast.makeText(this, "Session expirée", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<>();
+
+                String token = getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null);
+                params.put("Accept", "application/json");
+                params.put("Authorization", "Bearer " + token);
+                return params;
+            }
+        };
+
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
     }
 }

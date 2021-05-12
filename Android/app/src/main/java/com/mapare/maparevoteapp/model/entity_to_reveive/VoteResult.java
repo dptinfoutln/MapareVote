@@ -1,10 +1,12 @@
 package com.mapare.maparevoteapp.model.entity_to_reveive;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import java.io.Serializable;
 
-
+@JsonIdentityInfo(scope=User.class, generator= ObjectIdGenerators.PropertyGenerator.class, property="choice")
 public class VoteResult implements Serializable {
 
     @JsonProperty("choice")
@@ -12,9 +14,6 @@ public class VoteResult implements Serializable {
 
     @JsonProperty("value")
     private int value;
-
-    @JsonProperty("vote")
-    private Vote vote;
 
     public Choice getChoice() {
         return choice;
@@ -32,20 +31,11 @@ public class VoteResult implements Serializable {
         this.value = value;
     }
 
-    public Vote getVote() {
-        return vote;
-    }
-
-    public void setVote(Vote vote) {
-        this.vote = vote;
-    }
-
     @Override
     public String toString() {
         return "VoteResult{" +
                 "choiceId=" + choice.getId() +
                 ", value=" + value +
-                ", voteId=" + vote.getId() +
                 '}';
     }
 }

@@ -12,6 +12,7 @@
     <string name="firstname_text_view">Prénom</string>
     <string name="confirm_password_text_view">Confirmer Mot de passe</string>
     <string name="already_voted">Vous avez déjà voté</string>
+    <string name="show_results">"Afficher résultats"</string>
 
     <!-- Strings related to login & register-->
     <string name="incorrect_email">Email non valide</string>
@@ -27,13 +28,14 @@
     <string name="LOGIN_URL">/auth/signin</string>
     <string name="SIGNUP_URL">/users</string>
     <string name="PUBLIC_VOTE_URL">/votes/public"</string>
-    <string name="PRIVATE_VOTE_URL">/votes/private"</string>
+    <string name="PRIVATE_VOTE_URL">/votes/private/invited""</string>
     <string name="PAGE_FILTER">page_num=</string>
-    <string name="PAGE_SIZE_FILTER">page_size</string>
+    <string name="PAGE_SIZE_FILTER">page_size=</string>
     <string name="VOTE_URL">/votes/</string>
     <string name="BALLOT_URL">/ballots</string>
     <string name="ME_URL">/users/me</string>
     <string name="MYBALLOT_URL">/myballot</string>
+    <string name="RESULT_URL">/results</string>
 
     <!-- Strings related to navigation menu -->
     <string name="user">Utilisateur</string>
@@ -43,6 +45,7 @@
     <string name="menu_login">Connexion</string>
     <string name="menu_logout">Déconnexion</string>
     <string name="menu_register">Créer un compte</string>
+    <string name="welcome">Bienvenue !</string>
 
     <!-- Strings related to (To determinate) -->
     <string name="title_activity_main">MainActivity</string>

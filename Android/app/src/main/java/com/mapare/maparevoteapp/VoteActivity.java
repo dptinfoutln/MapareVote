@@ -4,7 +4,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,18 +15,22 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mapare.maparevoteapp.adapter.CustomAdapter;
 import com.mapare.maparevoteapp.adapter.MultipleChoicesAdapter;
+import com.mapare.maparevoteapp.adapter.ResultAdapter;
 import com.mapare.maparevoteapp.adapter.WeightedChoicesAdapter;
 import com.mapare.maparevoteapp.model.entity_to_reveive.Vote;
 import com.mapare.maparevoteapp.adapter.UniqueChoiceAdapter;
+import com.mapare.maparevoteapp.model.entity_to_reveive.VoteResult;
 import com.mapare.maparevoteapp.model.entity_to_send.Ballot;
 import com.mapare.maparevoteapp.model.entity_to_send.BallotChoice;
 import com.mapare.maparevoteapp.model.entity_to_send.Choice;
@@ -43,16 +50,15 @@ public class VoteActivity extends AppCompatActivity {
 
     private MutableLiveData<String> BALLOT_STATE_CODE;
     private MutableLiveData<String> LOADING_STATE_CODE;
-
-    private ConstraintLayout parentLayout;
+    private MutableLiveData<String> RESULT_STATE_CODE;
 
     private com.mapare.maparevoteapp.model.entity_to_reveive.Ballot ballot;
+    private List<VoteResult> resultList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vote);
-        parentLayout = findViewById(R.id.voteLayout);
 
         BALLOT_STATE_CODE = new MutableLiveData<>();
         BALLOT_STATE_CODE.observe(this, s -> {
@@ -88,9 +94,6 @@ public class VoteActivity extends AppCompatActivity {
             }
         });
 
-        Button resultButton = findViewById(R.id.vote_resultButton);
-        resultButton.setVisibility(View.GONE);
-
 
 
         if (ballotToken != null) {
@@ -114,31 +117,38 @@ public class VoteActivity extends AppCompatActivity {
                         break;
                 }
                 listView.setAdapter(adapter);
-                resultButton.setVisibility(View.VISIBLE);
+
                 // Let the user know that he has already voted for this vote
                 TextView votedInfo = findViewById(R.id.vote_votedField);
                 votedInfo.setVisibility(View.VISIBLE);
-                // If results are available, give the button to display them
-                if (vote.isIntermediaryResult()){
 
-                    LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
-                    final View view = inflater.inflate(R.layout.acivity_vote_inflated_with_results, parentLayout, false);
-                    parentLayout.addView(view);
-                    view.setVisibility(View.GONE);
-                    AtomicBoolean clicked = new AtomicBoolean(false);
-                    resultButton.setOnClickListener(v -> {
-                        if (clicked.get()) {
-                            view.setVisibility(View.GONE);
-                        } else {
-                            view.setVisibility(View.VISIBLE);
-                            // TODO: fill data into fields of result
-
+                // Results
+                if (vote.isIntermediaryResult()) {
+                    RESULT_STATE_CODE = new MutableLiveData<>();
+                    RESULT_STATE_CODE.observe(this, new Observer<String>() {
+                        @Override
+                        public void onChanged(String s) {
+                            // Showing Results feature
+                            ExpandableListView resultView = findViewById(R.id.vote_resultView);
+                            ResultAdapter resultAdapter = new ResultAdapter(VoteActivity.this, resultList);
+                            resultView.setAdapter(resultAdapter);
                         }
-                        clicked.set(!clicked.get());
                     });
+                    getResultRequest(vote.getId());
 
+//                    AtomicBoolean clicked = new AtomicBoolean(false);
+//                    resultView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                        @Override
+//                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                            if (!clicked.get()) {
+//                                getResultRequest(vote.getId());
+//                            }
+//                            clicked.set(!clicked.get());
+//                        }
+//                    });
                 }
             });
+
             getBallotRequest(vote.getId());
         } else {
             switch (vote.getAlgo()) {
@@ -228,6 +238,46 @@ public class VoteActivity extends AppCompatActivity {
                 }, error -> {
             // TODO: manage different types of errors
             Log.i("ballot_request", "requête non réussi: " + error.toString());
+
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<>();
+
+                String token = getSharedPreferences("Login", MODE_PRIVATE).getString("token", null);
+                params.put("Accept", "application/json");
+                params.put("Authorization", "Bearer " + token);
+                return params;
+            }
+        };
+
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
+
+    private void getResultRequest(int id) {
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.VOTE_URL) + id + getResources().getString(R.string.RESULT_URL);
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.GET, url,
+                response -> {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+                    try {
+                        resultList = objectMapper.readValue(response, new TypeReference<List<VoteResult>>() {
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    RESULT_STATE_CODE.setValue("fetching results successful");
+                    Log.i("results_response", response);
+
+                }, error -> {
+            // TODO: manage different types of errors
+            Log.i("result_request", "requête non réussi: " + error.toString());
 
         }) {
             @Override

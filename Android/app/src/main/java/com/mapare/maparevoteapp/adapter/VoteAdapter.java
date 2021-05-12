@@ -12,6 +12,7 @@ import com.mapare.maparevoteapp.model.entity_to_reveive.Vote;
 import java.util.List;
 
 public class VoteAdapter extends CustomAdapter<Vote> {
+
     public VoteAdapter(Context context, List<Vote> voteList) {
         super(context, voteList);
     }
