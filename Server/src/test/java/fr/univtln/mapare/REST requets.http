@@ -1,0 +1,26 @@
+GET http://localhost:5431/auth/signin
+Content-Type: application/json
+Accept: text/plain
+Authorization: Basic amFzb25AY2l0cm9uLmNvbTptZHA=
+
+> {%
+    client.global.set("auth_token", response.body);
+%}
+
+###
+GET http://localhost:5431/users/me
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+###
+POST http://localhost:5431/votes/public
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{"label":"Test {{last_id}} ?","startDate":"2021-05-12T00:00:00.000Z","endDate":null,"algo":"majority","anonymous":false,"intermediaryResult":true,"choices":[{"names":["choix 1"]},{"names":["choix 2"]}],"maxChoices":"1"}
+
+> {%
+    client.global.set("last_id", response.body.id);
+%}
