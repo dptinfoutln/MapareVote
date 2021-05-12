@@ -130,6 +130,17 @@ public class RestIT {
         User carlorff2 = UserDAO.of(Controllers.getEntityManager()).findById(carlorff.getId());
         assertTrue(carlorff2.checkPassword("ofortuna"));
 
+        response = webTarget.path("auth/signin")
+                .request()
+                .accept(MediaType.TEXT_PLAIN)
+                .header("Authorization",  "Basic " + java.util.Base64.getEncoder()
+                        .encodeToString(("carlorff@hotmail.fr:ofortuna").getBytes()))
+                .get();
+
+        assertEquals(403, response.getStatus());
+
+        webTarget.path("users/" + carlorff.getId() + "/validate/" + carlorff2.getEmailToken()).request().get();
+
         String token = webTarget.path("auth/signin")
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
@@ -161,6 +172,10 @@ public class RestIT {
                         MediaType.APPLICATION_JSON));
 
         User carlorff = response.readEntity(User.class);
+
+        User carlorff2 = UserDAO.of(Controllers.getEntityManager()).findById(carlorff.getId());
+
+        webTarget.path("users/" + carlorff.getId() + "/validate/" + carlorff2.getEmailToken()).request().get();
 
         String token;
 
@@ -314,6 +329,10 @@ public class RestIT {
 
         User carlorff = response.readEntity(User.class);
 
+        User carlorff2 = UserDAO.of(Controllers.getEntityManager()).findById(carlorff.getId());
+
+        webTarget.path("users/" + carlorff.getId() + "/validate/" + carlorff2.getEmailToken()).request().get();
+
         String token;
 
         response = webTarget.path("auth/signin")
@@ -373,7 +392,7 @@ public class RestIT {
 
         System.out.println(vote);
 
-        int delay = 250;
+//        int delay = 250;
 
 //        Thread.sleep(delay);
 
@@ -411,6 +430,10 @@ public class RestIT {
 
         User tchaikovsky = response.readEntity(User.class);
 
+        User tchaikovsky2 = UserDAO.of(Controllers.getEntityManager()).findById(tchaikovsky.getId());
+
+        webTarget.path("users/" + tchaikovsky.getId() + "/validate/" + tchaikovsky2.getEmailToken()).request().get();
+
         webTarget.path("users/me")
                 .request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -423,6 +446,8 @@ public class RestIT {
                 .header("Authorization",  "Basic " + java.util.Base64.getEncoder()
                         .encodeToString(("tchaikovsky@hotmail.fr:1812").getBytes()))
                 .get(String.class);
+
+
 
         webTarget.path("votes/" + vote.getId() + "/results")
                 .request(MediaType.APPLICATION_JSON)

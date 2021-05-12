@@ -11,10 +11,7 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 @EqualsAndHashCode(of = "email")
@@ -139,5 +136,13 @@ public class User implements Serializable, Principal {
                 ", lastname='" + lastname + '\'' +
                 ", firstname='" + firstname + '\'' +
                 '}';
+    }
+    @JsonIgnore
+    public List<Vote> getVotesOnWhichTheUserHasVoted() {
+        List<Vote> tempList = new ArrayList<>();
+        for (VotedVote vv : votedVotes)
+            if (!tempList.contains(vv.getVote()))
+                tempList.add(vv.getVote());
+        return tempList;
     }
 }

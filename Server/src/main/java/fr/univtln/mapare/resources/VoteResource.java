@@ -11,6 +11,7 @@ import fr.univtln.mapare.model.*;
 import fr.univtln.mapare.security.annotations.JWTAuth;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 
 import java.time.LocalDate;
@@ -18,32 +19,62 @@ import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Path("votes")
 public class VoteResource {
 
+//    @GET
+//    @Path("public")
+//    public List<Vote> getVotes(@QueryParam("page_num") int pagenum,
+//                               @QueryParam("page_size") int pagesize,
+//                               @QueryParam("name_like") String approxname,
+//                               @QueryParam("starts_with") String namestart,
+//                               @QueryParam("ends_with") String nameend,
+//                               @QueryParam("algo") String algoname,
+//                               @QueryParam("sort") String sortkey,
+//                               @QueryParam("order") String order,
+//                               @QueryParam("open") boolean open) throws ForbiddenException {
+//        if (pagenum == 0)
+//            pagenum = 1;
+//        if (pagesize == 0)
+//            pagesize = 20;
+//        if (algoname != null)
+//            algoname = algoname.replace("'", "%").replace("\"", "");
+//
+//        return VoteDAO.of(Controllers.getEntityManager())
+//                .findAllPublic(
+//                        new VoteQuery(
+//                                pagenum, pagesize, approxname, namestart, nameend, algoname, sortkey, order, open
+//                        ));
+//    }
+
     @GET
     @Path("public")
-    public List<Vote> getVotes(@QueryParam("page_num") int pagenum,
-                               @QueryParam("page_size") int pagesize,
-                               @QueryParam("name_like") String approxname,
-                               @QueryParam("starts_with") String namestart,
-                               @QueryParam("ends_with") String nameend,
-                               @QueryParam("algo") String algoname,
-                               @QueryParam("sort") String sortkey,
-                               @QueryParam("open") boolean open) throws ForbiddenException {
-        if (pagenum == 0)
+    public Response getVotes(@QueryParam("page_num") int pagenum,
+                             @QueryParam("page_size") int pagesize,
+                             @QueryParam("name_like") String approxname,
+                             @QueryParam("starts_with") String namestart,
+                             @QueryParam("ends_with") String nameend,
+                             @QueryParam("algo") String algoname,
+                             @QueryParam("sort") String sortkey,
+                             @QueryParam("order") String order,
+                             @QueryParam("open") boolean open) {
+        if (pagenum <= 0)
             pagenum = 1;
-        if (pagesize == 0)
+        if (pagesize <= 0)
             pagesize = 20;
-        if (algoname != null)
-            algoname = algoname.replace("'", "%").replace("\"", "");
 
-        return VoteDAO.of(Controllers.getEntityManager())
-                .findAllPublic(
-                        new VoteQuery(
-                                pagenum, pagesize, approxname, namestart, nameend, algoname, sortkey, open
-                        ));
+        List<Vote> voteList = VoteDAO.of(Controllers.getEntityManager()).findAllPublic(
+                new VoteQuery(approxname, namestart, nameend, algoname, sortkey, order, open)
+        );
+
+        int size = voteList.size();
+
+        voteList = voteList.stream().skip((pagenum - 1) * (long) pagesize).limit(pagesize).collect(Collectors.toList());
+
+        Response.ResponseBuilder rb = Response.ok(voteList);
+        return rb.header("votecount", "" + size).build();
     }
 
     @GET
@@ -55,8 +86,13 @@ public class VoteResource {
         if (vote == null)
             throw new NotFoundException();
 
+        User user = (User) securityContext.getUserPrincipal();
+
+        if (!user.isConfirmed())
+            throw new ForbiddenException("You need to confirm your email first.");
+
 //        Thread thread;
-        if (vote.isPublic() || vote.getMembers().contains((User) securityContext.getUserPrincipal())) {
+        if (vote.isPublic() || vote.getMembers().contains(user)) {
             if (vote.getEndDate() != null && (
                     (!vote.hasResults() || vote.isIntermediaryResult()) && LocalDate.now().isAfter(vote.getEndDate()))
             ) {
@@ -90,10 +126,15 @@ public class VoteResource {
         if (vote == null)
             throw new NotFoundException();
 
+        User user = (User) securityContext.getUserPrincipal();
+
+        if (!user.isConfirmed())
+            throw new ForbiddenException("You need to confirm your email first.");
+
         if(vote.isPendingResult())
             throw new TooEarlyException();
 
-        if (vote.isPublic() || vote.getMembers().contains((User) securityContext.getUserPrincipal())) {
+        if (vote.isPublic() || vote.getMembers().contains(user)) {
             return vote.getResultList();
         }
         else
@@ -106,7 +147,12 @@ public class VoteResource {
     public Vote addPublicVote(@Context SecurityContext securityContext, Vote vote) throws BusinessException {
         vote.setMembers(null);
 
-        vote.setVotemaker(((User) securityContext.getUserPrincipal()));
+        User user = (User) securityContext.getUserPrincipal();
+
+        if (!user.isConfirmed())
+            throw new ForbiddenException("You need to confirm your email first.");
+
+        vote.setVotemaker(user);
 
         return addVote(vote);
     }
@@ -116,6 +162,10 @@ public class VoteResource {
     @Path("private")
     public Vote addPrivateVote(@Context SecurityContext securityContext, Vote vote) throws BusinessException {
         User voteMaker = (User) securityContext.getUserPrincipal();
+
+        if (!voteMaker.isConfirmed())
+            throw new ForbiddenException("You need to confirm your email first.");
+
         vote.setVotemaker(voteMaker);
         vote.setMembers(Arrays.asList(voteMaker));
         return addVote(vote);
@@ -174,9 +224,11 @@ public class VoteResource {
             throw new NotFoundException("Vote does not exist.");
         if (voter.isBanned())
             throw new ForbiddenException("User is banned.");
+        if (!voter.isConfirmed())
+            throw new ForbiddenException("You need to confirm your email first.");
         if (vote.isDeleted())
             throw new ForbiddenException("Vote deleted.");
-        if (voter.getVotedVotes().contains(vote))
+        if (voter.getVotesOnWhichTheUserHasVoted().contains(vote))
             throw new ForbiddenException("Already voted.");
         if (LocalDate.now().isBefore(vote.getStartDate()))
             throw new ForbiddenException("Too early.");
@@ -239,19 +291,50 @@ public class VoteResource {
     @GET
     @JWTAuth
     @Path("private/invited")
-    public List<Vote> getPrivateVotesForUser(@Context SecurityContext securityContext) {
-        int userid = ((User) securityContext.getUserPrincipal()).getId();
-        return VoteDAO.of(Controllers.getEntityManager()).findPrivateByUser(
-                UserDAO.of(Controllers.getEntityManager()).findById(userid));
+    public Response getPrivateVotesForUser(@Context SecurityContext securityContext,
+                                             @QueryParam("page_num") int pagenum,
+                                             @QueryParam("page_size") int pagesize,
+                                             @QueryParam("name_like") String approxname,
+                                             @QueryParam("starts_with") String namestart,
+                                             @QueryParam("ends_with") String nameend,
+                                             @QueryParam("algo") String algoname,
+                                             @QueryParam("sort") String sortkey,
+                                             @QueryParam("order") String order,
+                                             @QueryParam("open") boolean open) throws ForbiddenException {
+        User user = (User) securityContext.getUserPrincipal();
+
+        if (!user.isConfirmed())
+            throw new ForbiddenException("You need to confirm your email first.");
+
+
+        if (pagenum <= 0)
+            pagenum = 1;
+        if (pagesize <= 0)
+            pagesize = 20;
+
+        List<Vote> voteList = VoteDAO.of(Controllers.getEntityManager()).findPrivateByUser(
+                UserDAO.of(Controllers.getEntityManager()).findById(user.getId()),
+                new VoteQuery(approxname, namestart, nameend, algoname, sortkey, order, open));
+
+        int size = voteList.size();
+
+        voteList = voteList.stream().skip((pagenum - 1) * (long) pagesize).limit(pagesize).collect(Collectors.toList());
+
+        Response.ResponseBuilder rb = Response.ok(voteList);
+        return rb.header("votecount", "" + size).build();
     }
 
     @GET
     @JWTAuth
     @Path("{id}/myballot")
     public Ballot getSpecificBallotforUser(@Context SecurityContext securityContext,
-                                           @PathParam("id") int id) {
+                                           @PathParam("id") int id) throws ForbiddenException {
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
         User voter = (User) securityContext.getUserPrincipal();
+
+        if (!voter.isConfirmed())
+            throw new ForbiddenException("You need to confirm your email first.");
+
         if (!vote.isAnonymous()) {
             return BallotDAO.of(Controllers.getEntityManager()).findByVoteByVoter(vote, voter);
         }

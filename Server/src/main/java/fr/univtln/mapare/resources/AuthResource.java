@@ -1,5 +1,6 @@
 package fr.univtln.mapare.resources;
 
+import fr.univtln.mapare.exceptions.ForbiddenException;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.security.LoginModule;
 import fr.univtln.mapare.security.annotations.BasicAuth;
@@ -130,9 +131,13 @@ public class AuthResource {
     @RolesAllowed({"USER", "ADMIN"})
     @BasicAuth
     @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
-    public String login(@Context SecurityContext securityContext) {
+    public String login(@Context SecurityContext securityContext) throws ForbiddenException {
         if (securityContext.isSecure() && securityContext.getUserPrincipal() instanceof User) {
             User user = (User) securityContext.getUserPrincipal();
+
+            if (!user.isConfirmed())
+                throw new ForbiddenException("You need to validate your email first.");
+
             return Jwts.builder()
                     .setIssuer("MapareVote")
                     .setIssuedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))

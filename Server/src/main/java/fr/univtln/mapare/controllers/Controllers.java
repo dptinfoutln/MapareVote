@@ -1,8 +1,17 @@
 package fr.univtln.mapare.controllers;
 
+import fr.univtln.mapare.model.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+
+import javax.mail.*;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.Properties;
 
 
 public class Controllers {

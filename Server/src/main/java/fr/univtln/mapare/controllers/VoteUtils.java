@@ -13,7 +13,7 @@ public abstract class VoteUtils {
     }
 
     public static class VoteResults implements Runnable {
-        private Vote vote;
+        private final Vote vote;
 
         public VoteResults(Vote vote) {
             this.vote = vote;
