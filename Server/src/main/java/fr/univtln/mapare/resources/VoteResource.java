@@ -65,9 +65,7 @@ public class VoteResource {
         if (pagesize <= 0)
             pagesize = 20;
 
-        VoteDAO voteDAO = VoteDAO.of(Controllers.getEntityManager());
-
-        List<Vote> voteList = voteDAO.findAllPublic(
+        List<Vote> voteList = VoteDAO.of(Controllers.getEntityManager()).findAllPublic(
                 new VoteQuery(approxname, namestart, nameend, algoname, sortkey, order, open)
         );
 
@@ -293,14 +291,37 @@ public class VoteResource {
     @GET
     @JWTAuth
     @Path("private/invited")
-    public List<Vote> getPrivateVotesForUser(@Context SecurityContext securityContext) throws ForbiddenException {
+    public Response getPrivateVotesForUser(@Context SecurityContext securityContext,
+                                             @QueryParam("page_num") int pagenum,
+                                             @QueryParam("page_size") int pagesize,
+                                             @QueryParam("name_like") String approxname,
+                                             @QueryParam("starts_with") String namestart,
+                                             @QueryParam("ends_with") String nameend,
+                                             @QueryParam("algo") String algoname,
+                                             @QueryParam("sort") String sortkey,
+                                             @QueryParam("order") String order,
+                                             @QueryParam("open") boolean open) throws ForbiddenException {
         User user = (User) securityContext.getUserPrincipal();
 
         if (!user.isConfirmed())
             throw new ForbiddenException("You need to confirm your email first.");
 
-        return VoteDAO.of(Controllers.getEntityManager()).findPrivateByUser(
-                UserDAO.of(Controllers.getEntityManager()).findById(user.getId()));
+
+        if (pagenum <= 0)
+            pagenum = 1;
+        if (pagesize <= 0)
+            pagesize = 20;
+
+        List<Vote> voteList = VoteDAO.of(Controllers.getEntityManager()).findPrivateByUser(
+                UserDAO.of(Controllers.getEntityManager()).findById(user.getId()),
+                new VoteQuery(approxname, namestart, nameend, algoname, sortkey, order, open));
+
+        int size = voteList.size();
+
+        voteList = voteList.stream().skip((pagenum - 1) * (long) pagesize).limit(pagesize).collect(Collectors.toList());
+
+        Response.ResponseBuilder rb = Response.ok(voteList);
+        return rb.header("votecount", "" + size).build();
     }
 
     @GET

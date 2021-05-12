@@ -10,19 +10,21 @@ import fr.univtln.mapare.exceptions.ForbiddenException;
 import fr.univtln.mapare.exceptions.NotFoundException;
 import fr.univtln.mapare.model.Ballot;
 import fr.univtln.mapare.model.User;
+import fr.univtln.mapare.model.Vote;
 import fr.univtln.mapare.security.annotations.JWTAuth;
 import jakarta.persistence.RollbackException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("users")
 public class UserResource {
-
     @GET
     public List<User> getUsers(@DefaultValue("1") @QueryParam("page_num") int pagenum,
                          @DefaultValue("20") @QueryParam("page_size") int pagesize) throws NotFoundException {
@@ -88,6 +90,30 @@ public class UserResource {
             throw new NotFoundException("Trying to delete user that doesn't exist.");
         return 0;
     }
+
+//    @DELETE
+//    @JWTAuth
+//    @Path("{id}")
+//    public int deleteUser(@Context SecurityContext securityContext,
+//                          @PathParam("id") int id) throws NotFoundException, UnauthorizedException, ForbiddenException {
+//        User currUser = (User) securityContext.getUserPrincipal();
+//
+//        if (currUser == null)
+//            throw new UnauthorizedException("Please login.");
+//
+//        if (!currUser.isConfirmed())
+//            throw new ForbiddenException("You need to confirm your email first.");
+//
+//        if (currUser.getId() != id && !currUser.isAdmin())
+//            throw new ForbiddenException("You do not have the rights to do this.");
+//
+//        UserDAO dao = UserDAO.of(Controllers.getEntityManager());
+//        if (dao.findById(id) != null) {
+//            dao.remove(id);
+//        } else
+//            throw new NotFoundException("Trying to delete user that doesn't exist.");
+//        return 0;
+//    }
 
     @JWTAuth
     @PATCH
