@@ -10,8 +10,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VoteQuery {
-    int pageIndex;
-    int pageSize;
     String exactmatch;
     String prefixmatch;
     String suffixmatch;

@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Path("votes")
 public class VoteResource {
@@ -58,25 +59,24 @@ public class VoteResource {
                              @QueryParam("algo") String algoname,
                              @QueryParam("sort") String sortkey,
                              @QueryParam("order") String order,
-                             @QueryParam("open") boolean open) throws ForbiddenException {
-        if (pagenum == 0)
+                             @QueryParam("open") boolean open) {
+        if (pagenum <= 0)
             pagenum = 1;
-        if (pagesize == 0)
+        if (pagesize <= 0)
             pagesize = 20;
-        if (algoname != null)
-            algoname = algoname.replace("'", "%").replace("\"", "");
 
         VoteDAO voteDAO = VoteDAO.of(Controllers.getEntityManager());
 
-        Response.ResponseBuilder rb = Response.ok(
-                voteDAO.findAllPublic(
-                        new VoteQuery(
-                                pagenum, pagesize, approxname, namestart, nameend, algoname, sortkey, order,
-                                open
-                        )
-                )
+        List<Vote> voteList = voteDAO.findAllPublic(
+                new VoteQuery(approxname, namestart, nameend, algoname, sortkey, order, open)
         );
-        return rb.header("votecount", "" + voteDAO.findAllPublic().size()).build();
+
+        int size = voteList.size();
+
+        voteList = voteList.stream().skip((pagenum - 1) * (long) pagesize).limit(pagesize).collect(Collectors.toList());
+
+        Response.ResponseBuilder rb = Response.ok(voteList);
+        return rb.header("votecount", "" + size).build();
     }
 
     @GET

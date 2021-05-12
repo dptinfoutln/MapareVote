@@ -101,9 +101,6 @@ public class VoteDAO extends GenericIdDAO<Vote> {
                 voteStream = voteStream.sorted(comparator);
             }
         }
-
-        voteStream = voteStream.skip((long) voteQuery.getPageSize() * (voteQuery.getPageIndex() - 1))
-                .limit(voteQuery.getPageSize());
         return voteStream.collect(Collectors.toList());
     }
 
