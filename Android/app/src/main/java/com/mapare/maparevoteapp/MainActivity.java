@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
-import com.mapare.maparevoteapp.model.entity_to_reveive.User;
+import com.mapare.maparevoteapp.model.entity_to_receive.User;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;

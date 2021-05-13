@@ -26,9 +26,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mapare.maparevoteapp.R;
 import com.mapare.maparevoteapp.VoteActivity;
 import com.mapare.maparevoteapp.adapter.VoteAdapter;
-import com.mapare.maparevoteapp.model.entity_to_reveive.User;
-import com.mapare.maparevoteapp.model.entity_to_reveive.Vote;
-import com.mapare.maparevoteapp.model.entity_to_reveive.VotedVote;
+import com.mapare.maparevoteapp.model.entity_to_receive.User;
+import com.mapare.maparevoteapp.model.entity_to_receive.Vote;
+import com.mapare.maparevoteapp.model.entity_to_receive.VotedVote;
 
 import java.io.IOException;
 import java.util.HashMap;

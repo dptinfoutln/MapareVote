@@ -1,13 +1,12 @@
 package com.mapare.maparevoteapp.adapter;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.mapare.maparevoteapp.R;
-import com.mapare.maparevoteapp.model.entity_to_reveive.Vote;
+import com.mapare.maparevoteapp.model.entity_to_receive.Vote;
 
 import java.util.List;
 

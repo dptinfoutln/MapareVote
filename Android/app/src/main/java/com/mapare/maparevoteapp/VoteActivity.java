@@ -1,11 +1,9 @@
 package com.mapare.maparevoteapp;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Adapter;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
@@ -13,7 +11,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
@@ -28,19 +25,19 @@ import com.mapare.maparevoteapp.adapter.CustomAdapter;
 import com.mapare.maparevoteapp.adapter.MultipleChoicesAdapter;
 import com.mapare.maparevoteapp.adapter.ResultAdapter;
 import com.mapare.maparevoteapp.adapter.WeightedChoicesAdapter;
-import com.mapare.maparevoteapp.model.entity_to_reveive.Vote;
+import com.mapare.maparevoteapp.model.entity_to_receive.Vote;
 import com.mapare.maparevoteapp.adapter.UniqueChoiceAdapter;
-import com.mapare.maparevoteapp.model.entity_to_reveive.VoteResult;
+import com.mapare.maparevoteapp.model.entity_to_receive.VoteResult;
 import com.mapare.maparevoteapp.model.entity_to_send.Ballot;
 import com.mapare.maparevoteapp.model.entity_to_send.BallotChoice;
 import com.mapare.maparevoteapp.model.entity_to_send.Choice;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VoteActivity extends AppCompatActivity {
     private final List<BallotChoice> pickedChoices = new ArrayList<>();
@@ -52,9 +49,10 @@ public class VoteActivity extends AppCompatActivity {
     private MutableLiveData<String> LOADING_STATE_CODE;
     private MutableLiveData<String> RESULT_STATE_CODE;
 
-    private com.mapare.maparevoteapp.model.entity_to_reveive.Ballot ballot;
+    private com.mapare.maparevoteapp.model.entity_to_receive.Ballot ballot;
     private List<VoteResult> resultList;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,10 +71,13 @@ public class VoteActivity extends AppCompatActivity {
         listView = findViewById(R.id.choice_list);
 
         TextView labelField = findViewById(R.id.vote_labelField);
-        labelField.setText(vote.getLabel());
+        labelField.setText("   " + vote.getLabel());
 
         TextView infofield = findViewById(R.id.vote_infoField);
-        String info = "Créé par " + vote.getVotemaker().getFirstname() +" "+ vote.getVotemaker().getName() + ", ouvert depuis le " + vote.getStartDate().toString();
+        String dateString = vote.getStartDate().toString().replace("[", "").replace("]", "");
+        List<String> dateList = Arrays.asList(dateString.split(","));
+        dateString = dateList.get(2) + "/" + dateList.get(1) + "/" + dateList.get(0);
+        String info = "Créé par " + vote.getVotemaker().getFirstname() +" "+ vote.getVotemaker().getName() + ", ouvert depuis le " + dateString;
         infofield.setText(info);
 
         Button voteButton = findViewById(R.id.voteButton);
@@ -230,7 +231,7 @@ public class VoteActivity extends AppCompatActivity {
                     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
                     try {
-                        ballot = objectMapper.readValue(response, com.mapare.maparevoteapp.model.entity_to_reveive.Ballot.class);
+                        ballot = objectMapper.readValue(response, com.mapare.maparevoteapp.model.entity_to_receive.Ballot.class);
                     } catch (IOException e) { // happens because the ballot is null is the vote is anonymous
                     }
                     LOADING_STATE_CODE.setValue("fetching myBallot successful");

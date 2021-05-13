@@ -1,4 +1,4 @@
-package com.mapare.maparevoteapp.model.entity_to_reveive;
+package com.mapare.maparevoteapp.model.entity_to_receive;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -6,9 +6,9 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 
 import com.mapare.maparevoteapp.R;
-import com.mapare.maparevoteapp.model.entity_to_reveive.Ballot;
-import com.mapare.maparevoteapp.model.entity_to_reveive.BallotChoice;
-import com.mapare.maparevoteapp.model.entity_to_reveive.Choice;
+import com.mapare.maparevoteapp.model.entity_to_receive.Ballot;
+import com.mapare.maparevoteapp.model.entity_to_receive.BallotChoice;
+import com.mapare.maparevoteapp.model.entity_to_receive.Choice;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +53,7 @@ public class MultipleChoicesAdapter extends CustomAdapter<Choice> {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.choiceField.setText(entityList.get(position).getNames().toString());
+        holder.choiceField.setText(entityList.get(position).getNames().toString().replace("[", "").replace("]", ""));
         if (anonymous == null) { // If not voted
             holder.choiceField.setOnClickListener(v -> {
                 if (selected.contains(holder.choiceField)) {
