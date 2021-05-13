@@ -59,20 +59,8 @@ export class VotesService {
         return params;
     }
 
-    getVotes(url: string, headers: HttpHeaders, params: HttpParams): Promise<any> {
-        return new Promise(
-            (resolve, reject) => {
-                this.http.get<Vote[]>(url, {headers, params}).subscribe(
-                    votes => {
-                        console.log(votes);
-                        resolve(votes);
-                    }, err => {
-                        reject(err);
-                    });
-            });
-    }
 
-    getVotesTest(url: string, headers: HttpHeaders, params: HttpParams): Promise<Vote[]> {
+    getVotes(url: string, headers: HttpHeaders, params: HttpParams): Promise<Vote[]> {
         return new Promise(
             (resolve, reject) => {
                 this.http
@@ -94,7 +82,7 @@ export class VotesService {
         headers = headers.set('Accept', 'application/json');
         const params = this.setHttpParams(pageNum, pageSize, orderBy, open, sortBy, nameLike);
 
-        return this.getVotesTest(url, headers, params);
+        return this.getVotes(url, headers, params);
     }
 
     getPrivateVotes(pageNum = 1, pageSize = 25, orderBy = 'asc', sortBy ?: string, nameLike ?: string, open = true): Promise<any> {

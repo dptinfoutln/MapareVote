@@ -1,73 +1,75 @@
-<nav aria-label="Page navigation">
-    <ul class="pagination justify-content-end">
-        <li *ngIf="pageNumbers[0] !== 1" class="page-item">
-            <a class="page-link text-dark" style="box-shadow: none"
-               [routerLink]="[]"
-               [queryParams]="{page_num : 1}"
-               [queryParamsHandling]="'merge'">
-                <fa-icon [icon]="['fas', 'angle-double-left']"></fa-icon> Première
-            </a>
-        </li>
-        <li *ngIf="pageNum !== 1" class="page-item">
-            <a class="page-link text-dark" style="box-shadow: none"
-               [routerLink]="[]"
-               [queryParams]="{page_num : pageNum - 1}"
-               [queryParamsHandling]="'merge'">
-                <fa-icon [icon]="['fas', 'angle-left']"></fa-icon> Précédent
-            </a>
-        </li>
-        <li class="page-item" *ngFor="let index of pageNumbers">
-            <a class="page-link" style="box-shadow: none"
-               [ngClass]="{'bg-secondary text-white': pageNum === index, 'text-dark': pageNum !== index}"
-               [routerLink]="[]"
-               [queryParams]="{page_num : index}"
-               [queryParamsHandling]="'merge'">
-                {{ index }}
-            </a>
-        </li>
-        <li *ngIf="pageNum <= pageCount - 1" class="page-item">
-            <a class="page-link text-dark" style="box-shadow: none"
-               [routerLink]="[]"
-               [queryParams]="{page_num : pageNum + 1}"
-               [queryParamsHandling]="'merge'">
-                Suivant <fa-icon [icon]="['fas', 'angle-right']"></fa-icon>
-            </a>
-        </li>
-        <li *ngIf="pageNumbers[pageNumbers.length - 1] !== pageCount" class="page-item">
-            <a class="page-link text-dark" style="box-shadow: none"
-               [routerLink]="[]"
-               [queryParams]="{page_num : pageCount}"
-               [queryParamsHandling]="'merge'">
-                Dernière <fa-icon [icon]="['fas', 'angle-double-right']"></fa-icon>
-            </a>
-        </li>
-    </ul>
-</nav>
-<div class="container">
-    <div class="col-sm-10 offset-sm-1 mb-3">
-        <form class="input-group">
-            <input class="btn btn-outline-secondary" type="submit" (click)="onSearch()" value="Rechercher">
-            <input type="text" class="form-control border-secondary" id="searchInput" placeholder="...">
-            <a class="btn btn-outline-secondary rounded-end border-secondary" type="button"
-               data-bs-toggle="dropdown"><fa-icon [icon]="['fas', 'filter']"></fa-icon></a>
-            <ul class="dropdown-menu dropdown-menu-end">
+<div *ngIf="pageNumbers.length > 0">
+    <nav aria-label="Page navigation" *ngIf="pageNumbers.length > 1">
+        <ul class="pagination justify-content-end">
+            <li *ngIf="pageNumbers[0] !== 1" class="page-item">
+                <a class="page-link text-dark" style="box-shadow: none"
+                   [routerLink]="[]"
+                   [queryParams]="{page_num : 1}"
+                   [queryParamsHandling]="'merge'">
+                    <fa-icon [icon]="['fas', 'angle-double-left']"></fa-icon> Première
+                </a>
+            </li>
+            <li *ngIf="pageNum !== 1" class="page-item">
+                <a class="page-link text-dark" style="box-shadow: none"
+                   [routerLink]="[]"
+                   [queryParams]="{page_num : pageNum - 1}"
+                   [queryParamsHandling]="'merge'">
+                    <fa-icon [icon]="['fas', 'angle-left']"></fa-icon> Précédent
+                </a>
+            </li>
+            <li class="page-item" *ngFor="let index of pageNumbers">
+                <a class="page-link" style="box-shadow: none"
+                   [ngClass]="{'bg-secondary text-white': pageNum === index, 'text-dark': pageNum !== index}"
+                   [routerLink]="[]"
+                   [queryParams]="{page_num : index}"
+                   [queryParamsHandling]="'merge'">
+                    {{ index }}
+                </a>
+            </li>
+            <li *ngIf="pageNum <= pageCount - 1" class="page-item">
+                <a class="page-link text-dark" style="box-shadow: none"
+                   [routerLink]="[]"
+                   [queryParams]="{page_num : pageNum + 1}"
+                   [queryParamsHandling]="'merge'">
+                    Suivant <fa-icon [icon]="['fas', 'angle-right']"></fa-icon>
+                </a>
+            </li>
+            <li *ngIf="pageNumbers[pageNumbers.length - 1] !== pageCount" class="page-item">
+                <a class="page-link text-dark" style="box-shadow: none"
+                   [routerLink]="[]"
+                   [queryParams]="{page_num : pageCount}"
+                   [queryParamsHandling]="'merge'">
+                    Dernière <fa-icon [icon]="['fas', 'angle-double-right']"></fa-icon>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="col-sm-10 offset-sm-1 mb-3">
+            <form class="input-group">
+                <input class="btn btn-outline-secondary" type="submit" (click)="onSearch()" value="Rechercher">
+                <input type="text" class="form-control border-secondary" id="searchInput" placeholder="...">
+                <a class="btn btn-outline-secondary rounded-end border-secondary" type="button"
+                   data-bs-toggle="dropdown"><fa-icon [icon]="['fas', 'filter']"></fa-icon></a>
+                <ul class="dropdown-menu dropdown-menu-end">
 
-                <li class="form-check form-switch ms-2 me-2" (click)="onOpenFilter()">
-                    <div class="container">
-                        <input class="form-check-input me-3" type="checkbox" id="onlyOpenToggle">
-                        <label class="form-check-label" for="onlyOpenToggle">Afficher que les votes ouverts</label>
-                    </div>
-                </li>
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
-                <li class="ms-2 me-2">
-                    <label for="pageSizeRange" class="form-label">Nombre de votes par pages : <span
-                            class="text-primary">{{ pageSize }}</span></label>
-                    <input type="range" class="form-range" (input)="onPageSize()" value="{{ pageSize }}"
-                           step="{{ defaultPageSize }}" min="{{ defaultPageSize }}" max="100" id="pageSizeRange">
-                </li>
-            </ul>
-        </form>
+                    <li class="form-check form-switch ms-2 me-2" (click)="onOpenFilter()">
+                        <div class="container">
+                            <input class="form-check-input me-3" type="checkbox" id="onlyOpenToggle">
+                            <label class="form-check-label" for="onlyOpenToggle">Afficher que les votes ouverts</label>
+                        </div>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li class="ms-2 me-2">
+                        <label for="pageSizeRange" class="form-label">Nombre de votes par pages : <span
+                                class="text-primary">{{ pageSize }}</span></label>
+                        <input type="range" class="form-range" (input)="onPageSize()" value="{{ pageSize }}"
+                               step="{{ defaultPageSize }}" min="{{ defaultPageSize }}" max="100" id="pageSizeRange">
+                    </li>
+                </ul>
+            </form>
+        </div>
     </div>
 </div>
