@@ -7,7 +7,7 @@ import jakarta.persistence.EntityManager;
 import java.util.*;
 
 public abstract class VoteUtils {
-
+    //TODO: put loss order in STV
     public static VoteResults voteResultsOf(Vote vote) {
         return new VoteResults(vote);
     }

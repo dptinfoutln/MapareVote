@@ -1,6 +1,7 @@
 package fr.univtln.mapare.resources;
 
 import fr.univtln.mapare.controllers.Controllers;
+import fr.univtln.mapare.controllers.MailUtils;
 import fr.univtln.mapare.controllers.VoteUtils;
 import fr.univtln.mapare.dao.*;
 import fr.univtln.mapare.exceptions.BusinessException;
@@ -22,8 +23,6 @@ import java.util.stream.Collectors;
 
 @Path("votes")
 public class VoteResource {
-    //TODO: factorize user checking (confirmed, banned)
-
     @GET
     @Path("public")
     public Response getVotes(@QueryParam("page_num") int pagenum,
@@ -51,10 +50,7 @@ public class VoteResource {
 
         User user = (User) securityContext.getUserPrincipal();
 
-        if (!user.isConfirmed())
-            throw new ForbiddenException("You need to confirm your email first.");
-        if (user.isBanned())
-            throw new ForbiddenException("User is banned.");
+        Controllers.checkUser(user);
 
 //        Thread thread;
         if (vote.isPublic() || vote.getMembers().contains(user)) {
@@ -93,10 +89,7 @@ public class VoteResource {
 
         User user = (User) securityContext.getUserPrincipal();
 
-        if (!user.isConfirmed())
-            throw new ForbiddenException("You need to confirm your email first.");
-        if (user.isBanned())
-            throw new ForbiddenException("User is banned.");
+        Controllers.checkUser(user);
 
         if(vote.isPendingResult())
             throw new TooEarlyException();
@@ -116,10 +109,7 @@ public class VoteResource {
 
         User user = (User) securityContext.getUserPrincipal();
 
-        if (!user.isConfirmed())
-            throw new ForbiddenException("You need to confirm your email first.");
-        if (user.isBanned())
-            throw new ForbiddenException("User is banned.");
+        Controllers.checkUser(user);
 
         vote.setVotemaker(user);
 
@@ -132,10 +122,7 @@ public class VoteResource {
     public Vote addPrivateVote(@Context SecurityContext securityContext, Vote vote) throws BusinessException {
         User voteMaker = (User) securityContext.getUserPrincipal();
 
-        if (!voteMaker.isConfirmed())
-            throw new ForbiddenException("You need to confirm your email first.");
-        if (voteMaker.isBanned())
-            throw new ForbiddenException("User is banned.");
+        Controllers.checkUser(voteMaker);
 
         vote.setVotemaker(voteMaker);
         vote.setMembers(Arrays.asList(voteMaker));
@@ -149,7 +136,7 @@ public class VoteResource {
             throw new ForbiddenException("Invalid algorithm");
         if (vote.getMaxChoices() < 1)
             throw new ForbiddenException("Please enter a proper value for your maxChoices count.");
-        if (vote.getChoices().size() <= vote.getMaxChoices())
+        if (vote.getChoices().size() < vote.getMaxChoices())
             throw new ForbiddenException("Please enter enough choices to reach your maxChoices count or lower your maxChoices count.");
         if (vote.getStartDate() == null)
             throw new ForbiddenException("Invalid start date.");
@@ -173,13 +160,34 @@ public class VoteResource {
             e.printStackTrace();
             throw e;
         }
+
+        //TODO: limit number of thread if large amount of invited users
+        for (User u : vote.getMembers())
+            if (!u.equals(vote.getVotemaker()))
+                new Thread(MailUtils.sendInvitationTo(u)).start();
         return vote;
     }
 
     @DELETE
-    @Path("{id}") // TODO: for testing purposes only, remove in prod
-    public int deleteVote(@PathParam("id") int id) {
-        VoteDAO.of(Controllers.getEntityManager()).remove(id);
+    @JWTAuth
+    @Path("{id}")
+    public int deleteVote(@Context SecurityContext securityContext,
+                          @PathParam("id") int id) throws NotFoundException, ForbiddenException {
+        VoteDAO dao = VoteDAO.of(Controllers.getEntityManager());
+        Vote vote = dao.findById(id);
+
+        if (vote == null)
+            throw new NotFoundException("No such vote");
+
+        User user = (User) securityContext.getUserPrincipal();
+
+        Controllers.checkUser(user);
+
+        if (!(user.isAdmin() || user.equals(vote.getVotemaker())))
+            throw new ForbiddenException("You do not have the rights");
+
+        vote.setDeleted(true);
+        dao.update(vote);
         return 0;
     }
 
@@ -193,10 +201,7 @@ public class VoteResource {
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
         if (vote == null)
             throw new NotFoundException("Vote does not exist.");
-        if (voter.isBanned())
-            throw new ForbiddenException("User is banned.");
-        if (!voter.isConfirmed())
-            throw new ForbiddenException("You need to confirm your email first.");
+        Controllers.checkUser(voter);
         if (vote.isDeleted())
             throw new ForbiddenException("Vote deleted.");
         if (voter.getVotesOnWhichTheUserHasVoted().contains(vote))
@@ -207,9 +212,8 @@ public class VoteResource {
             throw new ForbiddenException("Too late.");
         if (!vote.getAlgo().equals("STV") && ballot.getChoices().size() > vote.getMaxChoices())
             throw new ForbiddenException("Too many choices.");
-//        for (BallotChoice bc : ballot.getChoices())
-//            if (!vote.getChoices().contains(bc.getChoice()))
-//                throw new ForbiddenException("Bad choice(s).");
+        if (ballot.getChoices().isEmpty())
+            throw new ForbiddenException("No choice(s).");
         ballot.setDate(LocalDateTime.now());
         ballot.setVote(vote);
         switch (vote.getAlgo()) {
@@ -274,27 +278,11 @@ public class VoteResource {
                                              @QueryParam("open") boolean open) throws ForbiddenException {
         User user = (User) securityContext.getUserPrincipal();
 
-        if (!user.isConfirmed())
-            throw new ForbiddenException("You need to confirm your email first.");
-        if (user.isBanned())
-            throw new ForbiddenException("User is banned.");
+        Controllers.checkUser(user);
 
-
-        if (pagenum <= 0)
-            pagenum = 1;
-        if (pagesize <= 0)
-            pagesize = 20;
-
-        List<Vote> voteList = VoteDAO.of(Controllers.getEntityManager()).findPrivateByUser(
+        return constructReponseAndPaginate(pagenum, pagesize, VoteDAO.of(Controllers.getEntityManager()).findPrivateByUser(
                 UserDAO.of(Controllers.getEntityManager()).findById(user.getId()),
-                new VoteQuery(approxname, namestart, nameend, algoname, sortkey, order, open));
-
-        int size = voteList.size();
-
-        voteList = voteList.stream().skip((pagenum - 1) * (long) pagesize).limit(pagesize).collect(Collectors.toList());
-
-        Response.ResponseBuilder rb = Response.ok(voteList);
-        return rb.header("votecount", "" + size).build();
+                new VoteQuery(approxname, namestart, nameend, algoname, sortkey, order, open)));
     }
 
     @GET
@@ -305,10 +293,7 @@ public class VoteResource {
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
         User voter = (User) securityContext.getUserPrincipal();
 
-        if (!voter.isConfirmed())
-            throw new ForbiddenException("You need to confirm your email first.");
-        if (voter.isBanned())
-            throw new ForbiddenException("User is banned.");
+        Controllers.checkUser(voter);
 
         if (!vote.isAnonymous()) {
             return BallotDAO.of(Controllers.getEntityManager()).findByVoteByVoter(vote, voter);
@@ -331,10 +316,7 @@ public class VoteResource {
                                     @QueryParam("open") boolean open) throws ForbiddenException {
         User user = (User) securityContext.getUserPrincipal();
 
-        if (!user.isConfirmed())
-            throw new ForbiddenException("You need to confirm your email first.");
-        if (user.isBanned())
-            throw new ForbiddenException("User is banned.");
+        Controllers.checkUser(user);
 
         return constructReponseAndPaginate(pagenum, pagesize, VoteDAO.of(Controllers.getEntityManager())
                 .findByVotemaker(user,
@@ -357,10 +339,7 @@ public class VoteResource {
                                     @QueryParam("open") boolean open) throws ForbiddenException {
         User user = (User) securityContext.getUserPrincipal();
 
-        if (!user.isConfirmed())
-            throw new ForbiddenException("You need to confirm your email first.");
-        if (user.isBanned())
-            throw new ForbiddenException("User is banned.");
+        Controllers.checkUser(user);
 
         return constructReponseAndPaginate(pagenum, pagesize, VoteDAO.of(Controllers.getEntityManager())
                 .findByVoter(user,
@@ -380,6 +359,8 @@ public class VoteResource {
         voteList = voteList.stream().skip((pagenum - 1) * (long) pagesize).limit(pagesize).collect(Collectors.toList());
 
         Response.ResponseBuilder rb = Response.ok(voteList);
-        return rb.header("votecount", "" + size).build();
+        return rb.header("votecount", "" + size)
+                .header("pagecount", "" + (1 + size / pagesize))
+                .build();
     }
 }

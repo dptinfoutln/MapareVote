@@ -1,5 +1,6 @@
 package fr.univtln.mapare.controllers;
 
+import fr.univtln.mapare.exceptions.ForbiddenException;
 import fr.univtln.mapare.model.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -56,5 +57,12 @@ public class Controllers {
     public static void close() {
         entityManager.close();
         entityManager = null;
+    }
+
+    public static void checkUser(User user) throws ForbiddenException {
+        if (!user.isConfirmed())
+            throw new ForbiddenException("You need to confirm your email first.");
+        if (user.isBanned())
+            throw new ForbiddenException("User is banned.");
     }
 }
