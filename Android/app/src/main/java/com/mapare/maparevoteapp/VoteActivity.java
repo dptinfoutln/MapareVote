@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -77,7 +79,7 @@ public class VoteActivity extends AppCompatActivity {
         String dateString = vote.getStartDate().toString().replace("[", "").replace("]", "");
         List<String> dateList = Arrays.asList(dateString.split(","));
         dateString = dateList.get(2) + "/" + dateList.get(1) + "/" + dateList.get(0);
-        String info = "Créé par " + vote.getVotemaker().getFirstname() +" "+ vote.getVotemaker().getName() + ", ouvert depuis le " + dateString;
+        String info = "Créé par " + vote.getVotemaker().getFirstname() + " " + vote.getVotemaker().getName() + ", ouvert depuis le " + dateString;
         infofield.setText(info);
 
         Button voteButton = findViewById(R.id.voteButton);
@@ -94,7 +96,6 @@ public class VoteActivity extends AppCompatActivity {
                 voteRequest(vote.getId(), new Ballot(pickedChoices));
             }
         });
-
 
 
         if (ballotToken != null) {
@@ -136,17 +137,6 @@ public class VoteActivity extends AppCompatActivity {
                         }
                     });
                     getResultRequest(vote.getId());
-
-//                    AtomicBoolean clicked = new AtomicBoolean(false);
-//                    resultView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                        @Override
-//                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                            if (!clicked.get()) {
-//                                getResultRequest(vote.getId());
-//                            }
-//                            clicked.set(!clicked.get());
-//                        }
-//                    });
                 }
             });
 
@@ -184,11 +174,10 @@ public class VoteActivity extends AppCompatActivity {
                 }, error -> {
             // TODO: manage different types of errors
             Log.i("ballot_request", "requête non réussi: " + error);
-        })
-        {
+        }) {
             @Override
             public Map<String, String> getHeaders() {
-                Map<String, String>  params = new HashMap<>();
+                Map<String, String> params = new HashMap<>();
 
                 String token = getSharedPreferences("Login", MODE_PRIVATE).getString("token", null);
                 params.put("Accept", "application/json");

@@ -74,8 +74,8 @@ public class PublicVotesFragment extends VotesFragment {
             protected Response<String> parseNetworkResponse(NetworkResponse response) {
                 String totalVotes = response.headers.get("votecount");
                 Log.i("header_totalVotes", totalVotes);
-//                String totalPages = response.headers.get("pagecount");
-//                Log.i("header_totalPages", totalPages);
+                String totalPages = response.headers.get("pagecount");
+                Log.i("header_totalPages", totalPages);
                 return super.parseNetworkResponse(response);
             }
         };
