@@ -7,10 +7,11 @@ import jakarta.persistence.EntityManager;
 import java.util.*;
 
 public abstract class VoteUtils {
-
     public static VoteResults voteResultsOf(Vote vote) {
         return new VoteResults(vote);
     }
+
+    private VoteUtils() {}
 
     public static class VoteResults implements Runnable {
         private final Vote vote;
@@ -48,6 +49,7 @@ public abstract class VoteUtils {
                         break;
                     case "STV":
                         resultList = new ArrayList<>();
+                        int kickedout = 1;
 
                         // Here we construct a list of ordered choices for each BallotChoice list depending on weight.
                         // Low weight = earlier choice, higher placement on list.
@@ -68,7 +70,7 @@ public abstract class VoteUtils {
 
                         if (vote.getBallots().isEmpty()) {
                             for (Choice c : vote.getChoices()) {
-                                resultList.add(new VoteResult(c, -1, vote));
+                                resultList.add(new VoteResult(c, 0, vote));
                             }
                         }
                         else {
@@ -91,8 +93,8 @@ public abstract class VoteUtils {
                                         if (voteCounting.get(c) > vote.getBallots().size() / 2) {
                                             resultList.add(new VoteResult(c, candidatecount, vote));
                                             for (Choice oc : vote.getChoices())
-                                                if (!c.equals(oc))
-                                                    resultList.add(new VoteResult(oc, -1, vote));
+                                                if (resultList.stream().noneMatch(vr -> vr.getChoice().equals(oc)))
+                                                    resultList.add(new VoteResult(oc, 0, vote));
                                             endmenow = true;
                                             break;
                                         }
@@ -111,6 +113,9 @@ public abstract class VoteUtils {
                                         for (List<Choice> lc : collated) {
                                             lc.remove(minchoice);
                                         }
+                                        // We also add it to the list and give the number at which it was kicked out
+                                        resultList.add(new VoteResult(minchoice, -kickedout, vote));
+                                        kickedout++;
                                     }
                                 }
                             }
@@ -154,6 +159,11 @@ public abstract class VoteUtils {
                                                 minchoice = c;
                                             }
                                         }
+
+                                        // We register the order in which we kicked it out of the running
+                                        resultList.add(new VoteResult(minchoice, -kickedout, vote));
+                                        kickedout++;
+
                                         // Once found we redistribute the votes and remove it from the pool.
                                         votingforthis = 0;
 
@@ -170,6 +180,10 @@ public abstract class VoteUtils {
                                         redistribute(collated, minchoice, countMap, ratio);
                                     }
                                 }
+
+                                for (Choice oc : vote.getChoices())
+                                    if (resultList.stream().noneMatch(vr -> vr.getChoice().equals(oc)))
+                                        resultList.add(new VoteResult(oc, 0, vote));
                             }
                         }
                         vote.setResultList(resultList);

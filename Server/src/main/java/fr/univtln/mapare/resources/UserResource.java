@@ -63,7 +63,7 @@ public class UserResource {
         }
 
 //        MailUtils.sendConfirmationMail(user);
-        new Thread(MailUtils.runnableFor(user)).start();
+        new Thread(MailUtils.sendConfirmationTo(user)).start();
 
         return user;
     }
