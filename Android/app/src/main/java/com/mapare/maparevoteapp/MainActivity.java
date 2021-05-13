@@ -174,12 +174,6 @@ public class MainActivity extends AppCompatActivity {
                         case "login page":
                             navController.navigate(R.id.nav_login);
                             break;
-                        case "relogin":
-                            // Clears cache
-                            getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("name", "##erased##").apply();
-
-                            navController.navigate(R.id.nav_login);
-                            break;
                         // Add other destinations
                     }
                     prefs.edit().putString("go_to", "nowhere").apply();
@@ -247,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
                 }, error -> {
             // TODO: manage different types of errors
             if (error instanceof AuthFailureError) {
-                prefs.edit().putString("go_to", "relogin").apply();
+                prefs.edit().putString("go_to", "login page").apply();
                 Toast.makeText(this, "Session expirée", Toast.LENGTH_SHORT).show();
             }
         }) {

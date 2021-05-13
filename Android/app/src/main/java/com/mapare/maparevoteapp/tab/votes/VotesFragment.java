@@ -93,7 +93,7 @@ public class VotesFragment extends Fragment {
                 case "session expired":
                     Toast.makeText(getContext(), "Session expirée", Toast.LENGTH_SHORT).show();
                     // Navigate to login page because access is denied
-                    requireContext().getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("go_to", "relogin").apply();
+                    requireContext().getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("go_to", "login page").apply();
                     break;
             }
         });

@@ -8,6 +8,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -58,6 +59,9 @@ public class PrivateVotesFragment extends VotesFragment {
                 }, error -> {
             // TODO: manage different types of errors
             Log.i("votesPrivate_request", "requête non réussi: " + error.toString());
+            if (error instanceof AuthFailureError) {
+                LOADING_STATE_CODE.setValue("session expired");
+            }
 
         }) {
             @Override
