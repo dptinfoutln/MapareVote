@@ -21,6 +21,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.StrictMath.ceil;
+
 @Path("votes")
 public class VoteResource {
     @GET
@@ -360,7 +362,7 @@ public class VoteResource {
 
         Response.ResponseBuilder rb = Response.ok(voteList);
         return rb.header("votecount", "" + size)
-                .header("pagecount", "" + (1 + size / pagesize))
+                .header("pagecount", "" + ceil((double) size / pagesize))
                 .build();
     }
 }
