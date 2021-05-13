@@ -10,6 +10,7 @@ import java.util.Properties;
 public abstract class MailUtils {
     static final String SERVER_EMAIL_ADDRESS = "maparevote@gmail.com";
     static final String SERVER_PASSWORD = "alfrni666";
+    static final String AUTH_LINK = "https://maparevote.siannos.fr/validate/";
 
     private MailUtils() {}
 
@@ -38,10 +39,14 @@ public abstract class MailUtils {
 
         MimeMessage msg = new MimeMessage(session);
         try {
-            msg.setSubject("Confirmation code");
+            msg.setSubject("Code de confirmation");
             msg.setFrom(new InternetAddress(SERVER_EMAIL_ADDRESS));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(user.getEmail()));
-            msg.setText(user.getEmailToken());
+            msg.setText("Bonjour " + user.getFirstname() + " " + user.getLastname() + "!\n\nVous vous êtes " +
+                    "inscrit à MapareVote dans le but de faire connaître votre opinion et d'interroger celle " +
+                    "des autres sur des sujets divers et variés.\n\n\n" +
+                    "Pour valider votre compte il suffit de cliquer sur le lien suivant: " + AUTH_LINK + user.getId() +
+                    "/" + user.getEmailToken() + "\n\n\nSi ce n'est pas le cas, merci d'ignorer ce mail.");
 
             Transport transport = session.getTransport("smtps");
             transport.connect("smtp.gmail.com", port, SERVER_EMAIL_ADDRESS, SERVER_PASSWORD);
