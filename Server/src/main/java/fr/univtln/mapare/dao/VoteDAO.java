@@ -43,6 +43,10 @@ public class VoteDAO extends GenericIdDAO<Vote> {
         return filterAndSortList("Vote.findByVotemaker", votemaker, "votemaker", voteQuery);
     }
 
+    public List<Vote> findByVoter(User voter, VoteQuery voteQuery) {
+        return filterAndSortList("Vote.findByVoter", voter, "voter", voteQuery);
+    }
+
     public List<Vote> findAllPublic() {
         return entityManager.createNamedQuery("Vote.findPublic", Vote.class).getResultList();
     }

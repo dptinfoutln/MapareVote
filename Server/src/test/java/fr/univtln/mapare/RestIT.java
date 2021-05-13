@@ -154,7 +154,9 @@ public class RestIT {
                 .header( "Authorization",  "Bearer " + token)
                 .get();
 
-        webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
+//        webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
+        UserDAO.of(Controllers.getEntityManager()).remove(carlorff.getId());
+
 
         response = webTarget.path("users").request(MediaType.APPLICATION_JSON).get();
 
@@ -310,7 +312,8 @@ public class RestIT {
                 .header( "Authorization",  "Bearer " + token)
                 .get();
 
-        webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
+//        webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
+        UserDAO.of(Controllers.getEntityManager()).remove(carlorff.getId());
 
         response = webTarget.path("votes/public").request(MediaType.APPLICATION_JSON).get();
 
@@ -454,9 +457,11 @@ public class RestIT {
                 .header( "Authorization",  "Bearer " + token)
                 .get();
 
-        webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
+//        webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
+        UserDAO.of(Controllers.getEntityManager()).remove(carlorff.getId());
 
-        webTarget.path("users/" + tchaikovsky.getId()).request(MediaType.APPLICATION_JSON).delete();
+//        webTarget.path("users/" + tchaikovsky.getId()).request(MediaType.APPLICATION_JSON).delete();
+        UserDAO.of(Controllers.getEntityManager()).remove(tchaikovsky.getId());
     }
 
     //Note: We can't test patch verbs for some reason.

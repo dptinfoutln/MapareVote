@@ -74,9 +74,4 @@ public abstract class MailUtils {
     public static RunnableMailSending runnableFor(User user) {
         return new RunnableMailSending(user);
     }
-
-    public static void main(String[] args) {
-        User temp = new User("francois-palma@etud.univ-tln.fr", "Palma", "François", "");
-        sendConfirmationMail(temp);
-    }
 }
