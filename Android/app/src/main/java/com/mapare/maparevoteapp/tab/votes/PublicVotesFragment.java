@@ -8,7 +8,9 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -50,7 +52,6 @@ public class PublicVotesFragment extends VotesFragment {
                         });
                         LOADING_STATE_CODE.setValue("fetching all votes successful");
                         Log.i("public", url);
-                        Log.i("public", voteList.size()+"");
                     } catch (IOException e) { // shouldn't happen
                         e.printStackTrace();
                     }
@@ -68,7 +69,18 @@ public class PublicVotesFragment extends VotesFragment {
                 params.put("Accept", "application/json");
                 return params;
             }
+
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                String totalVotes = response.headers.get("votecount");
+                Log.i("header_totalVotes", totalVotes);
+//                String totalPages = response.headers.get("pagecount");
+//                Log.i("header_totalPages", totalPages);
+                return super.parseNetworkResponse(response);
+            }
         };
+
+
 
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
