@@ -127,6 +127,7 @@ public class UserResource {
             throws NotFoundException, ConflictException {
         UserDAO dao = UserDAO.of(Controllers.getEntityManager());
         User user = dao.findById(id);
+        System.out.println(user);
         if (user == null)
             throw new NotFoundException("User not found.");
         if (!user.isConfirmed()) {
@@ -134,7 +135,9 @@ public class UserResource {
                 throw new ConflictException("Token does not match.");
             user.setConfirmed(true);
             dao.update(user);
+            return "Ok";
+        } else {
+            throw new ConflictException("User is already confirmed");
         }
-        return "Ok";
     }
 }

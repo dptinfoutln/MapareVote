@@ -128,6 +128,15 @@ public class User implements Serializable, Principal {
         return lastname + ", " + firstname+" <"+email+">";
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", firstname='" + firstname + '\'' +
+                '}';
+    }
     @JsonIgnore
     public List<Vote> getVotesOnWhichTheUserHasVoted() {
         List<Vote> tempList = new ArrayList<>();

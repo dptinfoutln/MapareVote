@@ -3,32 +3,11 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "Web": {
+    "MapareVote": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss",
-          "skipTests": true
-        },
-        "@schematics/angular:class": {
-          "skipTests": true
-        },
-        "@schematics/angular:directive": {
-          "skipTests": true
-        },
-        "@schematics/angular:guard": {
-          "skipTests": true
-        },
-        "@schematics/angular:interceptor": {
-          "skipTests": true
-        },
-        "@schematics/angular:module": {
-          "skipTests": true
-        },
-        "@schematics/angular:pipe": {
-          "skipTests": true
-        },
-        "@schematics/angular:service": {
           "skipTests": true
         }
       },
@@ -39,7 +18,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/Web",
+            "outputPath": "dist/MapareVote",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -53,7 +32,10 @@
               "node_modules/bootstrap/dist/css/bootstrap.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/jquery/dist/jquery.js",
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -88,18 +70,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "Web:build"
+            "browserTarget": "MapareVote:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "Web:build:production"
+              "browserTarget": "MapareVote:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "Web:build"
+            "browserTarget": "MapareVote:build"
           }
         },
         "test": {
@@ -136,16 +118,16 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "Web:serve"
+            "devServerTarget": "MapareVote:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "Web:serve:production"
+              "devServerTarget": "MapareVote:serve:production"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "Web"
+  "defaultProject": "MapareVote"
 }

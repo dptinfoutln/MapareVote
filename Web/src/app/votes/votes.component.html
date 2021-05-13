@@ -1,0 +1,62 @@
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-md-10 offset-md-1">
+            <app-filter></app-filter>
+            <div *ngIf="!votes" class="alert alert-warning text-center" role="alert">
+                Aucun résultat disponible
+            </div>
+            <table *ngIf="!isLoading" class="table table-hover border">
+                <thead>
+                <tr>
+                    <th scope="col">
+                        <span role="button" [routerLink]="[]"
+                              [queryParams]="{page_num: 1, sort: 'NAME', order: getReversedOrder()}"
+                              [queryParamsHandling]="'merge'">
+                            Vote
+                            <fa-icon *ngIf="orderBy === 'asc' && sortBy === 'NAME'" [icon]="['fas', 'caret-down']"></fa-icon>
+                            <fa-icon *ngIf="orderBy === 'desc' && sortBy === 'NAME'" [icon]="['fas', 'caret-up']"></fa-icon>
+                        </span>
+                    </th>
+                    <th scope="col" class="text-end">
+                        <span role="button" [routerLink]="[]"
+                              [queryParams]="{page_num: 1, sort: 'STARTDATE', order: getReversedOrder()}"
+                              [queryParamsHandling]="'merge'">
+                            Date d'ouverture
+                            <fa-icon *ngIf="orderBy === 'asc' && sortBy === 'STARTDATE'" [icon]="['fas', 'caret-down']"></fa-icon>
+                            <fa-icon *ngIf="orderBy === 'desc' && sortBy === 'STARTDATE'" [icon]="['fas', 'caret-up']"></fa-icon>
+                        </span>
+                    </th>
+                    <th scope="col" class="text-end">Date de fermeture</th>
+                    <th scope="col" class="text-end">Résultats intermédiaires</th>
+                    <th *ngIf="authService.isStillAuth()" scope="col" class="text-end">Status</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr routerLink="/votes/{{vote.id}}" *ngFor="let vote of votes; let index = index;">
+                    <td>{{vote.label}}</td>
+                    <td class="text-end">{{ vote.startDate | date : 'd MMMM y' :'' : 'fr-FR' }}</td>
+                    <td class="text-end" *ngIf="vote.endDate">{{ vote.endDate | date : 'd MMMM y' :'' : 'fr-FR' }}</td>
+                    <td class="text-end" *ngIf="!vote.endDate"><small class="badge alert-warning">Pas de date de
+                        fin</small></td>
+                    <td class="text-end">
+                        <small *ngIf="vote.intermediaryResult != 0"
+                               class="badge text-dark alert-success">Disponibles</small>
+                        <small *ngIf="vote.intermediaryResult == 0"
+                               class="badge text-dark alert-danger">Indisponibles</small>
+                    </td>
+                    <td *ngIf="authService.isStillAuth()" class="text-end">
+                        <small *ngIf="isVotedVote(vote); else notVoted" class="badge text-dark alert-success">A
+                            Voté</small>
+                        <ng-template #notVoted><small class="badge text-dark alert-danger">Non voté</small>
+                        </ng-template>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="align-items-center d-flex justify-content-center">
+                <span *ngIf="isLoading" class="spinner-grow" role="status" aria-hidden="true"></span>
+            </div>
+        </div>
+    </div>
+</div>

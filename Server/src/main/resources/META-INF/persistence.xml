@@ -43,6 +43,7 @@
 
             <!-- Les options de générations des tables -->
             <property name="jakarta.persistence.schema-generation.database.action" value="create" />
+<!--            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create" />-->
 
             <!-- Specific to eclipselink -->
             <property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.PostgreSQLPlatform"/>
@@ -61,7 +62,7 @@
             <!-- property name="jakarta.persistence.target-database" value="postgresql" /-->
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver" />
 <!--            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:6667/maparevotedev"/>-->
-                        <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://siannos.fr:5432/maparevotedev"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://siannos.fr:5432/maparevotedev"/>
             <property name="jakarta.persistence.jdbc.user" value="mapare" />
             <property name="jakarta.persistence.jdbc.password" value="alfrni666" />
 

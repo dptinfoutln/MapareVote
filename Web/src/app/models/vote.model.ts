@@ -1,17 +1,22 @@
-import { User } from './user.model';
-import { Choice } from './choice.model';
+import {User} from './user.model';
+import {Choice} from './choice.model';
+import {Result} from './result.model';
 
 export class Vote {
-  choices: Choice[] = [];
-  results;
+    algo: string;
+    anonymous: boolean;
+    choices: Choice[];
+    endDate: Date;
+    id: number;
+    intermediaryResult: true;
+    label: string;
+    maxChoices: number;
+    members;
+    resultList: Result[];
+    startDate: Date;
+    votemaker: User;
 
-  constructor(
-    public id: number,
-    public label: string,
-    public startDate: Date,
-    public endDate: Date,
-    public algo: string,
-    public anonymous: boolean,
-    public votemaker: User) {
-  }
+
+    constructor() {
+    }
 }
