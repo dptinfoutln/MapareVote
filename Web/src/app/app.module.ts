@@ -6,9 +6,12 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {fas} from '@fortawesome/free-solid-svg-icons';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
-import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
+import {AppRoutingModule} from './app-routing.module';
 import {HeaderComponent} from './header/header.component';
 import {AuthService} from './services/auth.service';
 import {AuthGuardService} from './services/auth-guard.service';
@@ -16,6 +19,7 @@ import {VotesService} from './services/votes.service';
 
 import {SigninComponent} from './auth/signin/signin.component';
 import {SignupComponent} from './auth/signup/signup.component';
+import {VotesComponent} from './votes/votes.component';
 import {CreateComponent} from './votes/create/create.component';
 import {PrivateComponent} from './votes/private/private.component';
 import {PublicComponent} from './votes/public/public.component';
@@ -23,6 +27,7 @@ import {VoteComponent} from './votes/vote/vote.component';
 import {ErrorPopupComponent} from './error-popup/error-popup.component';
 import {HistoryComponent} from './votes/history/history.component';
 import {FilterComponent} from './votes/filter/filter.component';
+import { ValidateComponent } from './auth/validate/validate.component';
 
 @NgModule({
     declarations: [
@@ -30,13 +35,15 @@ import {FilterComponent} from './votes/filter/filter.component';
         HeaderComponent,
         SigninComponent,
         SignupComponent,
+        VotesComponent,
         CreateComponent,
         PrivateComponent,
         PublicComponent,
         VoteComponent,
         ErrorPopupComponent,
         HistoryComponent,
-        FilterComponent
+        FilterComponent,
+        ValidateComponent
     ],
     imports: [
         BrowserModule,
@@ -45,7 +52,9 @@ import {FilterComponent} from './votes/filter/filter.component';
         ReactiveFormsModule,
         HttpClientModule,
         DragDropModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
+        FontAwesomeModule,
+        NgbModule
     ],
     providers: [
         AuthService,
@@ -58,4 +67,7 @@ import {FilterComponent} from './votes/filter/filter.component';
     bootstrap: [AppComponent]
 })
 export class AppModule {
+    constructor(private library: FaIconLibrary) {
+        library.addIconPacks(fas);
+    }
 }

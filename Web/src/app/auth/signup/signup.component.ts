@@ -1,6 +1,8 @@
 import {Component, ElementRef, OnInit, Renderer2, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../../services/auth.service';
+import {ErrorPopupComponent} from '../../error-popup/error-popup.component';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'app-signup',
@@ -23,7 +25,8 @@ export class SignupComponent implements OnInit {
 
     constructor(private fromBuilder: FormBuilder,
                 private authService: AuthService,
-                private renderer: Renderer2) {
+                private renderer: Renderer2,
+                private router: Router) {
     }
 
     ngOnInit(): void {
@@ -101,15 +104,16 @@ export class SignupComponent implements OnInit {
             this.isPending = true;
             this.authService.signUp(firstname, lastname, email, password).then(
                 () => {
-                    this.isPending = false;
-                    this.errorMessageType = 'text-success';
-                    this.errorMessage = 'La création du compte à bien été prise en compte. Veuillez vous connecter';
+                    ErrorPopupComponent.setTitle('Création du compte en cours...');
+                    ErrorPopupComponent.setBody('Un email de confirmation vous à été envoyé, veuillez suivre les indications qui vous ont été transmises');
+                    ErrorPopupComponent.setSuccess();
+                    ErrorPopupComponent.showModal();
+                    this.authService.utils.signOutUser();
+                    this.router.navigate(['/auth/signin']);
                 },
-                (error) => {
-                    this.submitBtn.nativeElement.disabled = false;
+                () => {
                     this.isPending = false;
-                    this.errorMessageType = 'text-danger';
-                    this.errorMessage = error;
+                    this.submitBtn.nativeElement.disabled = false;
                 });
         }
     }

@@ -3,6 +3,7 @@ import {AuthService} from '../../services/auth.service';
 import {Router} from '@angular/router';
 import {VotesService} from '../../services/votes.service';
 import {Algo} from '../algo';
+import {ErrorsService} from '../../services/errors.service';
 
 @Component({
     selector: 'app-create',
@@ -55,7 +56,8 @@ export class CreateComponent implements OnInit, AfterViewInit {
     constructor(private authService: AuthService,
                 private votesService: VotesService,
                 private router: Router,
-                private renderer: Renderer2) {
+                private renderer: Renderer2,
+                private errorsService: ErrorsService) {
         this.today.setTime(this.today.getTime() + this.today.getTimezoneOffset() * 60 * 1000);
         this.today.setHours(0, 0, 0, 0);
     }
@@ -137,7 +139,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
                 newVote => {
                     this.router.navigate(['/', 'votes', newVote.id]).then();
                 }, err => {
-                    console.log(err);
+                    this.errorsService.manageError(err);
                     this.submitBtn.nativeElement.disabled = false;
                     this.isPending = false;
                 }

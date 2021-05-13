@@ -8,6 +8,7 @@ declare var $: any;
     styleUrls: ['./error-popup.component.scss']
 })
 export class ErrorPopupComponent implements OnInit {
+    private static isError = true;
 
     constructor() {
     }
@@ -25,7 +26,12 @@ export class ErrorPopupComponent implements OnInit {
 
     static setFourOhOne(): void {
         $('.modal-title').text('Erreur 401');
-        $('.modal-body').text('Un problème d\'authentification est survenue, veuillez vous connecter');
+        $('.modal-body').text('Vous n\'etes pas autorisé à accéder à ce contenu, veuillez vous connecter');
+    }
+
+    static setExpiredSession(): void {
+        $('.modal-title').text('Erreur 401');
+        $('.modal-body').text('Votre session à expiré, veuillez vous connecter');
     }
 
     static setFiveOhOh(): void {
@@ -39,6 +45,19 @@ export class ErrorPopupComponent implements OnInit {
 
     static setBody(body: string): void {
         $('.modal-body').text(body);
+    }
+
+    static setDanger(): void {
+        this.isError = true;
+    }
+
+    static setSuccess(): void {
+        this.isError = false;
+        console.log('test');
+    }
+
+    isError(): boolean {
+        return ErrorPopupComponent.isError;
     }
 
     ngOnInit(): void {

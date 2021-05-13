@@ -10,8 +10,10 @@ import {AuthService} from '../../services/auth.service';
 import {Choice} from '../../models/choice.model';
 import {Algo} from '../algo';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import {ErrorsService} from '../../services/errors.service';
 
 registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
+declare var $: any;
 
 @Component({
     selector: 'app-vote',
@@ -44,7 +46,8 @@ export class VoteComponent implements OnInit {
                 private location: Location,
                 private router: Router,
                 private authService: AuthService,
-                private renderer: Renderer2) {
+                private renderer: Renderer2,
+                private errorsService: ErrorsService) {
     }
 
     ngOnInit(): void {
@@ -75,8 +78,7 @@ export class VoteComponent implements OnInit {
                         });
                 }
             }, err => {
-                console.error(err);
-                this.router.navigate(['/']);
+                this.errorsService.manageError(err);
             }
         );
     }
@@ -159,7 +161,6 @@ export class VoteComponent implements OnInit {
 
         this.votesService.sendBallot(this.vote.id, {choices: tmpChoices}).then(
             ballot => {
-                console.log(ballot);
                 this.authService.importSelf().then(
                     () => {
                         this.ngOnInit();

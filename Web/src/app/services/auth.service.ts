@@ -45,6 +45,7 @@ export class AuthService {
         let headers = environment.headers;
         headers = headers.set('Accept', 'text/plain');
         headers = headers.set('Authorization', 'Basic ' + btoa(email + ':' + password));
+
         return new Promise(
             (resolve, reject) => {
                 this.http.get(url, {headers, responseType: 'text'}).subscribe(
@@ -54,6 +55,25 @@ export class AuthService {
                             resolve();
                         });
                     }, err => {
+                        this.errorsService.manageError(err);
+                        reject();
+                    }
+                );
+            }
+        );
+    }
+
+    validateUser(userId: number, validationToken: string): Promise<void> {
+        const url = environment.apiURL + 'users/' + String(userId) + '/validate/' + String(validationToken);
+        const headers = environment.headers;
+
+        return new Promise(
+            (resolve, reject) => {
+                this.http.get(url, {headers, responseType: 'text'}).subscribe(
+                    () => {
+                        resolve();
+                    }, err => {
+                        console.log(err);
                         this.errorsService.manageError(err);
                         reject();
                     }

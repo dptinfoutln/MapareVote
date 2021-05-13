@@ -8,6 +8,7 @@ import {HistoryComponent} from './votes/history/history.component';
 import {PublicComponent} from './votes/public/public.component';
 import {PrivateComponent} from './votes/private/private.component';
 import {VoteComponent} from './votes/vote/vote.component';
+import {ValidateComponent} from './auth/validate/validate.component';
 
 const routes: Routes = [
     {path: 'auth/signup', component: SignupComponent},
@@ -17,6 +18,7 @@ const routes: Routes = [
     {path: 'votes/private', canActivate: [AuthGuardService], component: PrivateComponent},
     {path: 'votes/public', component: PublicComponent},
     {path: 'votes/:id', canActivate: [AuthGuardService], component: VoteComponent},
+    {path: 'validate/:id/:token', component: ValidateComponent},
     {path: '', redirectTo: 'votes/public', pathMatch: 'full'},
     {path: '**', redirectTo: 'votes/public'},
 ];

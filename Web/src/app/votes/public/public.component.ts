@@ -1,59 +1,23 @@
 import {Component, OnInit} from '@angular/core';
 import {VotesService} from '../../services/votes.service';
 import {ActivatedRoute} from '@angular/router';
-import {environment} from '../../../environments/environment';
-import {Vote} from '../../models/vote.model';
 import {AuthService} from '../../services/auth.service';
+import {VotesComponent} from '../votes.component';
+import {ErrorsService} from '../../services/errors.service';
+import {HttpResponse} from '@angular/common/http';
 
 @Component({
     selector: 'app-public',
-    templateUrl: './public.component.html',
+    templateUrl: '../votes.component.html',
     styleUrls: ['./public.component.scss']
 })
-export class PublicComponent implements OnInit {
+export class PublicComponent extends VotesComponent implements OnInit {
 
-    votes = [];
-    isLoading;
-    votemakers = [];
-    selfUser;
-
-    pageNum = 1;
-    pageSize = environment.defaultPageSize;
-    orderBy = 'asc';
-    sortBy;
-    nameLike;
-    open: boolean;
-
-    constructor(private votesService: VotesService,
-                private route: ActivatedRoute,
-                public authService: AuthService) {
-    }
-
-    ngOnInit(): void {
-        if (this.authService.isStillAuth()) {
-            this.selfUser = this.authService.utils.getSelfUser();
-        }
-        this.route.queryParams.subscribe(params => {
-            if (params.page_num) {
-                this.pageNum = Number(params.page_num);
-            } else {
-                this.pageNum = 1;
-            }
-            if (params.page_size) {
-                this.pageSize = Number(params.page_size);
-            } else {
-                this.pageSize = environment.defaultPageSize;
-            }
-            if (params.order) {
-                this.orderBy = params.order;
-            } else {
-                this.orderBy = 'asc';
-            }
-            this.open = params.open;
-            this.sortBy = params.sort;
-            this.nameLike = params.name;
-            this.loadVotes();
-        });
+    constructor(votesService: VotesService,
+                route: ActivatedRoute,
+                authService: AuthService,
+                errorsService: ErrorsService) {
+        super (votesService, route, authService, errorsService);
     }
 
     loadVotes(): void {
@@ -72,47 +36,8 @@ export class PublicComponent implements OnInit {
                     }
                 });
             },
-            error => {
-                console.log(error);
+            err => {
+                this.errorsService.manageError(err);
             });
-    }
-
-    getReversedOrder(): string {
-        let order;
-        if (this.orderBy === 'asc') {
-            order = 'desc';
-        } else {
-            order = 'asc';
-        }
-        return order;
-    }
-
-    getVotemakerName(votemaker: any): string {
-        let name = '';
-        if (votemaker.id) {
-            this.votemakers.forEach(vm => {
-                if (vm.id === votemaker.id) {
-                    name = vm.firstname + ' ' + vm.lastname;
-                }
-            });
-        } else {
-            this.votemakers.forEach(vm => {
-                if (vm.id === votemaker) {
-                    name = vm.firstname + ' ' + vm.lastname;
-                }
-            });
-        }
-        return name;
-    }
-
-    isVotedVote(vote: Vote): boolean {
-        let isVoted = false;
-        for (const votedVote of this.selfUser.votedVotes) {
-            if (vote.id === votedVote.vote || vote.id === votedVote.vote.id) {
-                isVoted = true;
-                break;
-            }
-        }
-        return isVoted;
     }
 }

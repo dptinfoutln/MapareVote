@@ -17,24 +17,30 @@ export class ErrorsService {
     manageError(error: HttpErrorResponse): void {
         switch (error.status) {
             case 401:
-                ErrorPopupComponent.setFourOhOne();
+                if (this.authUtilsService.getToken()){
+                    ErrorPopupComponent.setExpiredSession();
+                } else {
+                    ErrorPopupComponent.setTitle('Erreur ' + error.status);
+                    ErrorPopupComponent.setBody(error.error);
+                }
                 this.authUtilsService.signOutUser();
                 this.router.navigate(['/auth/signin']);
-                ErrorPopupComponent.showModal();
                 break;
             case 404:
                 ErrorPopupComponent.setFourOhFour();
-                ErrorPopupComponent.showModal();
                 break;
-            case 0 || 500:
+            case 0:
                 ErrorPopupComponent.setFiveOhOh();
-                ErrorPopupComponent.showModal();
+                break;
+            case 500:
+                ErrorPopupComponent.setFiveOhOh();
                 break;
             default:
                 ErrorPopupComponent.setTitle('Erreur ' + error.status);
                 ErrorPopupComponent.setBody(error.error);
-                ErrorPopupComponent.showModal();
                 break;
         }
+        ErrorPopupComponent.setDanger();
+        ErrorPopupComponent.showModal();
     }
 }
