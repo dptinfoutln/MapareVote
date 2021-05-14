@@ -81,6 +81,9 @@ public class VoteActivity extends AppCompatActivity {
         String dateString = vote.getStartDate().toString().replace("[", "").replace("]", "");
         List<String> dateList = Arrays.asList(dateString.split(","));
         dateString = dateList.get(2) + "/" + dateList.get(1) + "/" + dateList.get(0);
+
+        dateString = dateString.replace(" ", "");
+
         String info = "Créé par " + vote.getVotemaker().getFirstname() + " " + vote.getVotemaker().getName() + ", ouvert depuis le " + dateString;
         infofield.setText(info);
 
@@ -203,8 +206,8 @@ public class VoteActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<>();
 
                 String token = getSharedPreferences("Login", MODE_PRIVATE).getString("token", null);
-                params.put("Accept", "application/json; charset=utf8");
-                params.put("Content-Type", "application/json");
+                params.put("Accept", "application/json; charset=utf-8");
+                params.put("Content-Type", "application/json; charset=utf-8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
             }
@@ -258,7 +261,7 @@ public class VoteActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<>();
 
                 String token = getSharedPreferences("Login", MODE_PRIVATE).getString("token", null);
-                params.put("Accept", "application/json; charset=utf8");
+                params.put("Accept", "application/json; charset=utf-8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
             }
@@ -298,7 +301,7 @@ public class VoteActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<>();
 
                 String token = getSharedPreferences("Login", MODE_PRIVATE).getString("token", null);
-                params.put("Accept", "application/json; charset=utf8");
+                params.put("Accept", "application/json; charset=utf-8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
             }
