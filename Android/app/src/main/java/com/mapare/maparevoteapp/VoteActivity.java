@@ -3,15 +3,11 @@ package com.mapare.maparevoteapp;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,16 +42,20 @@ import java.util.Map;
 
 public class VoteActivity extends AppCompatActivity {
     private final List<BallotChoice> pickedChoices = new ArrayList<>();
-
     private CustomAdapter<?> adapter;
     private ListView listView;
+    private List<VoteResult> resultList;
+
+    private com.mapare.maparevoteapp.model.entity_to_receive.Ballot ballot;
 
     private MutableLiveData<String> BALLOT_STATE_CODE;
     private MutableLiveData<String> LOADING_STATE_CODE;
     private MutableLiveData<String> RESULT_STATE_CODE;
 
-    private com.mapare.maparevoteapp.model.entity_to_receive.Ballot ballot;
-    private List<VoteResult> resultList;
+    // Needed for resizing the layout when show result is clicked
+    Boolean clicked = false;
+    int height;
+
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -123,6 +123,10 @@ public class VoteActivity extends AppCompatActivity {
                 }
                 listView.setAdapter(adapter);
 
+                LinearLayout layout_choice = findViewById(R.id.listView_linearLayout);
+                layout_choice.getLayoutParams().height = calculateHeight(listView);
+                layout_choice.requestLayout();
+
                 // Let the user know that he has already voted for this vote
                 TextView votedInfo = findViewById(R.id.vote_votedField);
                 votedInfo.setVisibility(View.VISIBLE);
@@ -137,7 +141,24 @@ public class VoteActivity extends AppCompatActivity {
                             ExpandableListView resultView = findViewById(R.id.vote_resultView);
                             ResultAdapter resultAdapter = new ResultAdapter(VoteActivity.this, resultList);
                             resultView.setAdapter(resultAdapter);
-                            adapter.notifyDataSetChanged();
+
+                            LinearLayout layout_result = findViewById(R.id.expandableView_linearLayout);
+
+                            resultView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+                                @Override
+                                public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+                                    if (!clicked) {
+                                        height = calculateHeight(resultView);
+                                    } else {
+                                        height = 0;
+                                    }
+                                    layout_result.getLayoutParams().height = height;
+                                    layout_result.requestLayout();
+                                    clicked = !clicked;
+
+                                    return false;
+                                }
+                            });
                         }
                     });
                     getResultRequest(vote.getId());
@@ -161,15 +182,12 @@ public class VoteActivity extends AppCompatActivity {
                     break;
             }
             listView.setAdapter(adapter);
+
+            LinearLayout layout_choice = findViewById(R.id.listView_linearLayout);
+            layout_choice.getLayoutParams().height = calculateHeight(listView);
+            layout_choice.requestLayout();
+
         }
-//        LinearLayout layout_choice = findViewById(R.id.listView_linearLayout);
-//        layout_choice.getLayoutParams().height = 1000;
-//        layout_choice.requestLayout();
-
-        LinearLayout layout_result = findViewById(R.id.expandableView_linearLayout);
-        layout_result.getLayoutParams().height = 755;
-        layout_result.requestLayout();
-
     }
 
     private void voteRequest(int id, Ballot ballot) {
@@ -295,5 +313,35 @@ public class VoteActivity extends AppCompatActivity {
 
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
+    }
+
+    private int calculateHeight(ListView list) {
+
+        int height = 0;
+
+
+        if (list instanceof ExpandableListView) {
+            for (int j = 0; j < list.getCount(); j++) {
+                int childCount = ((ExpandableListView) list).getExpandableListAdapter().getChildrenCount(j);
+                for (int i = 0; i < childCount; i++) {
+                    View childView = ((ExpandableListView) list).getExpandableListAdapter().getChildView(j, i, false, null, list);
+                    childView.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+                    height += childView.getMeasuredHeight();
+                }
+                //dividers height
+                height += list.getDividerHeight() * childCount;
+            }
+        }
+
+
+        for (int i = 0; i < list.getCount(); i++) {
+            View childView = list.getAdapter().getView(i, null, list);
+            childView.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            height += childView.getMeasuredHeight();
+        }
+        //dividers height
+        height += list.getDividerHeight() * list.getCount();
+
+        return height;
     }
 }
