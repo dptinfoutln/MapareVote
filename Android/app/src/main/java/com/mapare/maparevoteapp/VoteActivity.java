@@ -3,12 +3,15 @@ package com.mapare.maparevoteapp;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -134,6 +137,7 @@ public class VoteActivity extends AppCompatActivity {
                             ExpandableListView resultView = findViewById(R.id.vote_resultView);
                             ResultAdapter resultAdapter = new ResultAdapter(VoteActivity.this, resultList);
                             resultView.setAdapter(resultAdapter);
+                            adapter.notifyDataSetChanged();
                         }
                     });
                     getResultRequest(vote.getId());
@@ -158,6 +162,14 @@ public class VoteActivity extends AppCompatActivity {
             }
             listView.setAdapter(adapter);
         }
+//        LinearLayout layout_choice = findViewById(R.id.listView_linearLayout);
+//        layout_choice.getLayoutParams().height = 1000;
+//        layout_choice.requestLayout();
+
+        LinearLayout layout_result = findViewById(R.id.expandableView_linearLayout);
+        layout_result.getLayoutParams().height = 755;
+        layout_result.requestLayout();
+
     }
 
     private void voteRequest(int id, Ballot ballot) {

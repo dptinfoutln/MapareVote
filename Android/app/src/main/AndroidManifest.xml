@@ -13,7 +13,8 @@
         android:theme="@style/Theme.MapareVoteApp">
         <activity
             android:name=".VoteActivity"
-            android:label="@string/title_activity_vote" />
+            android:label="@string/title_activity_vote"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
