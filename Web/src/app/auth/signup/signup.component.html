@@ -1,0 +1,42 @@
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8 col-md-6 offset-sm-2 offset-md-3">
+            <h1 class="bd-title mb-5">Créer un compte</h1>
+            <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
+                <div class="mb-3 form-floating">
+                    <input type="text" id="firstname" #firstnameInput class="form-control" placeholder="Prénom"
+                           (focusout)="onFirstnameFocusOut()" formControlName="firstname">
+                    <label for="firstname">Prénom</label>
+                </div>
+                <div class="mb-3 form-floating">
+                    <input type="text" id="lastname" #lastnameInput class="form-control" placeholder="Nom"
+                           (focusout)="onLastnameFocusOut()" formControlName="lastname">
+                    <label for="email">Nom</label>
+                </div>
+                <div class="mb-3 form-floating">
+                    <input type="text" id="email" #emailInput class="form-control" placeholder="Adresse mail"
+                           (focusout)="onMailFocusOut()" formControlName="email">
+                    <label for="email">Adresse mail</label>
+                </div>
+                <div class="mb-3 form-floating">
+                    <input type="password" id="password" #passwordInput class="form-control" placeholder="Mot de passe"
+                           (focusout)="onPasswordFocusOut()" formControlName="password">
+                    <label for="password">Mot de passe</label>
+                </div>
+                <div class="mb-3 form-floating">
+                    <input type="password" id="confirmPassword" #confirmPasswordInput class="form-control"
+                           placeholder="Confirmerez le mot de passe" (focusout)="confirmPasswordFocusOut()"
+                           formControlName="confirmPassword">
+                    <label for="password">Confirmez le mot de passe</label>
+                </div>
+                <button class="btn btn-primary" #submitBtn type="submit">
+                    <span *ngIf="isPending" class="spinner-border spinner-border-sm" role="status"
+                          aria-hidden="true"></span>
+                    Créer un compte
+                </button>
+            </form>
+            <p class="{{ errorMessageType }}">{{ errorMessage }}</p>
+        </div>
+    </div>
+
+</div>
