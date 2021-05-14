@@ -11,7 +11,8 @@ public abstract class VoteUtils {
         return new VoteResults(vote);
     }
 
-    private VoteUtils() {}
+    private VoteUtils() {
+    }
 
     public static class VoteResults implements Runnable {
         private final Vote vote;
@@ -72,8 +73,7 @@ public abstract class VoteUtils {
                             for (Choice c : vote.getChoices()) {
                                 resultList.add(new VoteResult(c, 0, vote));
                             }
-                        }
-                        else {
+                        } else {
                             // IRV = 1 winner.
                             if (vote.getMaxChoices() == 1) {
                                 int minval;
@@ -206,11 +206,19 @@ public abstract class VoteUtils {
                 if (lc.get(0).equals(choice)) {
                     lc.remove(0);
                     countMap.put(lc.get(0), countMap.get(lc.get(0)) + ratio);
-                }
-                else
+                } else
                     lc.remove(choice);
             }
             countMap.remove(choice);
         }
+    }
+
+
+    public static void main(String[] args) {
+        Controllers.init();
+        Vote problem = VoteDAO.of(Controllers.getEntityManager()).findById(42);
+        VoteResults vr = new VoteResults(problem);
+
+        vr.calculateResults();
     }
 }

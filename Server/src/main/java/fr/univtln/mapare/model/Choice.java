@@ -11,7 +11,7 @@ import java.util.List;
 
 
 @Data
-@EqualsAndHashCode(of = {"vote", "names"})
+@EqualsAndHashCode(of = {"id", "vote", "names"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
