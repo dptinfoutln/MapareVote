@@ -20,8 +20,7 @@ export class ErrorsService {
                 if (this.authUtilsService.getToken()){
                     ErrorPopupComponent.setExpiredSession();
                 } else {
-                    ErrorPopupComponent.setTitle('Erreur ' + error.status);
-                    ErrorPopupComponent.setBody(error.error);
+                    ErrorPopupComponent.setFourOhOne();
                 }
                 this.authUtilsService.signOutUser();
                 this.router.navigate(['/auth/signin']);

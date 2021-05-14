@@ -60,12 +60,18 @@ export class VoteComponent implements OnInit {
                     this.router.navigate(['/']);
                 } else {
                     this.vote = vote;
-                    this.choices = vote.choices;
                     this.isLoaded = true;
                     this.checkIfUserVoted();
                     // console.log('vote anonyme ? ', this.vote.anonymous);
                     if (this.isVoted && !this.vote.anonymous) {
-                        this.setCheckedChoices(+id);
+                        if (vote.algo !== Algo.MAJORITY) {
+                            this.setChoicesOrder(+id);
+                        } else {
+                            this.choices = this.vote.choices;
+                            this.setCheckedChoices(+id);
+                        }
+                    } else {
+                        this.choices = this.vote.choices;
                     }
                     this.setChoiceBtnType();
                     this.votesService.getVoteResults(+id).then(
@@ -111,6 +117,19 @@ export class VoteComponent implements OnInit {
                 this.btnType = 'checkbox';
             }
         }
+    }
+
+    setChoicesOrder(voteId): void {
+        this.votesService.getMyBallot(voteId).then(
+            myBallot => {
+                this.myBallot = myBallot;
+                this.vote.choices.sort((a, b) => {
+                    return this.myBallot.choices.find(choice => choice.choice.id === b.id).weight
+                        - this.myBallot.choices.find(choice => choice.choice.id === a.id).weight;
+                });
+                this.choices = this.vote.choices;
+            }
+        );
     }
 
     setCheckedChoices(voteId): void {

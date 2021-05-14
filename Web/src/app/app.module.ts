@@ -25,9 +25,11 @@ import {PrivateComponent} from './votes/private/private.component';
 import {PublicComponent} from './votes/public/public.component';
 import {VoteComponent} from './votes/vote/vote.component';
 import {ErrorPopupComponent} from './error-popup/error-popup.component';
-import {HistoryComponent} from './votes/history/history.component';
+import {HistoryVotedComponent} from './votes/history/voted/history-voted.component';
+import { HistoryStartedComponent } from './votes/history/started/history-started.component';
 import {FilterComponent} from './votes/filter/filter.component';
 import { ValidateComponent } from './auth/validate/validate.component';
+
 
 @NgModule({
     declarations: [
@@ -41,9 +43,10 @@ import { ValidateComponent } from './auth/validate/validate.component';
         PublicComponent,
         VoteComponent,
         ErrorPopupComponent,
-        HistoryComponent,
+        HistoryVotedComponent,
         FilterComponent,
-        ValidateComponent
+        ValidateComponent,
+        HistoryStartedComponent
     ],
     imports: [
         BrowserModule,

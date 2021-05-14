@@ -30,6 +30,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
     isIntermediaryResults = true;
     isMaxChoice = true;
     errorMessage: string;
+    selectedAlgoType = Algo.MAJORITY;
     algoOptions = [
         {
             value: Algo.MAJORITY,
@@ -67,7 +68,6 @@ export class CreateComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-        this.algoTypeSelector.nativeElement.value = this.algoOptions[0].value;
         this.algoTypeSelector.nativeElement.value = this.algoOptions[0].value;
         this.endDatePicker.nativeElement.disabled = true;
         this.intermediaryResultsToggle.nativeElement.checked = true;
@@ -120,7 +120,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
             });
             const startDate = new Date(this.startDatePicker.nativeElement.value);
             const endDate = new Date(this.endDatePicker.nativeElement.value);
-            endDate.setHours(0, 0, 0, 0);
+            endDate.setHours(2, 0, 0, 0);
             let maxChoice = 1;
             if (this.maxChoice) {
                 maxChoice = this.maxChoice.nativeElement.value;
@@ -134,7 +134,6 @@ export class CreateComponent implements OnInit, AfterViewInit {
                 this.isIntermediaryResults,
                 choices,
                 maxChoice);
-
             this.votesService.sendVote(vote, !this.isPrivate).then(
                 newVote => {
                     this.router.navigate(['/', 'votes', newVote.id]).then();
@@ -158,7 +157,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
     }
 
     private setMaxChoiceMaxInput(): void {
-        if (this.algoTypeSelector.nativeElement.value === Algo.MAJORITY) {
+        if (this.algoTypeSelector.nativeElement.value !== Algo.BORDA) {
             this.renderer.setProperty(this.maxChoice.nativeElement, 'max', this.choices.length);
         }
     }
@@ -253,9 +252,8 @@ export class CreateComponent implements OnInit, AfterViewInit {
     }
 
     onAlgoTypeSelectorInput(): void {
-        if (this.algoTypeSelector.nativeElement.value !== Algo.MAJORITY) {
-            this.isMaxChoice = false;
-        }
+        this.selectedAlgoType = this.algoTypeSelector.nativeElement.value;
+        this.isMaxChoice = this.algoTypeSelector.nativeElement.value !== Algo.BORDA;
         if (this.algoTypeSelector.nativeElement.value === Algo.STV) {
             this.isIntermediaryResults = false;
             this.intermediaryResultsToggle.nativeElement.checked = false;
@@ -265,9 +263,6 @@ export class CreateComponent implements OnInit, AfterViewInit {
             this.endDateToggle.nativeElement.disabled = true;
             this.endDatePicker.nativeElement.disabled = false;
         } else {
-            if (this.algoTypeSelector.nativeElement.value === Algo.MAJORITY) {
-                this.isMaxChoice = true;
-            }
             this.endDateToggle.nativeElement.disabled = false;
             this.intermediaryResultsToggle.nativeElement.disabled = false;
         }

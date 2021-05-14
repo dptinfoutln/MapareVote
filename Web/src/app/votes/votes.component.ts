@@ -5,6 +5,7 @@ import {environment} from '../../environments/environment';
 import {Vote} from '../models/vote.model';
 import {AuthService} from '../services/auth.service';
 import {ErrorsService} from '../services/errors.service';
+import {User} from '../models/user.model';
 
 @Component({
     selector: 'app-public',
@@ -31,9 +32,6 @@ export class VotesComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        if (this.authService.isStillAuth()) {
-            this.selfUser = this.authService.utils.getSelfUser();
-        }
         this.route.queryParams.subscribe(params => {
             if (params.page_num) {
                 this.pageNum = Number(params.page_num);
@@ -59,6 +57,20 @@ export class VotesComponent implements OnInit {
 
     loadVotes(): void {
         this.isLoading = true;
+    }
+
+    manageVotes(votes): void {
+        if (votes.length > 0) {
+            this.votes = votes;
+        } else {
+            this.votes = null;
+        }
+        votes.forEach(vote => {
+            if (vote.votemaker.id) {
+                this.votemakers.push(vote.votemaker);
+            }
+        });
+        this.isLoading = false;
     }
 
     getReversedOrder(): string {

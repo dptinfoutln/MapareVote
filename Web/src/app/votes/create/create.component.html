@@ -96,7 +96,8 @@
                             <input type="number" id="test" value="1" min="1" max="2" #maxChoice class="form-control"
                                    (input)="onMaxChoiceInput()">
                         </div>
-                        <label class="col" for="test">Nombre maximum de choix acceptés par personne</label>
+                        <label *ngIf="selectedAlgoType === 'majority'" class="col" for="test">Nombre maximum de choix acceptés par personne</label>
+                        <label *ngIf="selectedAlgoType === 'STV'" class="col" for="test">Nombre maximum de choix gagnant</label>
                     </div>
                 </div>
                 <div *ngIf="isPrivate" class="p-1 p-sm-2 p-md-3 mb-3 border rounded">

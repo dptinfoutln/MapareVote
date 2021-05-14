@@ -13,7 +13,7 @@ import {AuthUtilsService} from './auth-utils.service';
 })
 export class AuthService {
 
-    selfUserSubject = new Subject<User>();
+    public selfUserSubject = new Subject<User>();
 
     constructor(private http: HttpClient,
                 public utils: AuthUtilsService,

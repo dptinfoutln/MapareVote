@@ -23,23 +23,19 @@ export class PrivateComponent extends VotesComponent implements OnInit {
 
     loadVotes(): void {
         this.isLoading = true;
-        this.votesService.getPrivateVotes(this.pageNum, this.pageSize, this.orderBy, this.sortBy, this.nameLike, this.open).then(
-            votes => {
-                this.isLoading = false;
-                if (votes.length > 0) {
-                    this.votes = votes;
-                    votes.forEach(vote => {
-                        if (vote.votemaker.id) {
-                            this.votemakers.push(vote.votemaker);
-                        }
+        this.authService.importSelf().then(user => {
+                this.selfUser = user;
+                this.votesService.getPrivateVotes(this.pageNum, this.pageSize, this.orderBy, this.sortBy, this.nameLike, this.open).then(
+                    votes => {
+                        this.manageVotes(votes);
+                    },
+                    err => {
+                        this.errorsService.manageError(err);
                     });
-                } else {
-                    this.votes = null;
-                }
             },
             err => {
                 this.errorsService.manageError(err);
-            });
+            }
+        );
     }
-
 }
