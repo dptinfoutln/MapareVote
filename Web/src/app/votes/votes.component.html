@@ -5,7 +5,7 @@
             <div *ngIf="!votes" class="alert alert-warning text-center" role="alert">
                 Aucun résultat disponible
             </div>
-            <table *ngIf="!isLoading" class="table table-hover border">
+            <table *ngIf="!isLoading && votes" class="table table-hover border">
                 <thead>
                 <tr>
                     <th scope="col">

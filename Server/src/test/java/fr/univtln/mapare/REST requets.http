@@ -1,7 +1,7 @@
 GET http://localhost:5431/auth/signin
 Content-Type: application/json
 Accept: text/plain
-Authorization: Basic amFzb25AY2l0cm9uLmNvbTptZHA=
+Authorization: Basic dGVzdEBtYWlsLmNvbTptZHA=
 
 > {%
     client.global.set("auth_token", response.body);
