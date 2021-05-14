@@ -10,6 +10,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -83,6 +84,8 @@ public class VoteDAO extends GenericIdDAO<Vote> {
         if (voteQuery.getSuffixmatch() != null)
             voteStream = voteStream.filter(v -> v.getLabel().toUpperCase()
                     .endsWith(voteQuery.getSuffixmatch().toUpperCase()));
+
+        voteStream = voteStream.sorted(Collections.reverseOrder());
 
         if (voteQuery.getSortkey() != null) {
             Comparator<Vote> comparator = null;
