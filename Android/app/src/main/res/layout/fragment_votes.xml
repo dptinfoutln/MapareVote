@@ -6,33 +6,49 @@
     android:layout_height="match_parent"
     tools:context=".tab.votes.PublicVotesFragment">
 
-    <HorizontalScrollView
-        android:id="@+id/horizontalScrollView"
-        android:layout_width="match_parent"
+
+    <LinearLayout
+        android:id="@+id/vote_btnLay"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/btnLay"
-            android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/vote_firstButton"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:paddingStart="0dp"
+            android:text="First" />
 
-            <Button
-                android:id="@+id/prev"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Prev" />
+        <Button
+            android:id="@+id/vote_prevButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:text="Prev" />
 
-            <Button
-                android:id="@+id/next"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Next" />
-        </LinearLayout>
-    </HorizontalScrollView>
+        <Button
+            android:id="@+id/vote_nextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Next" />
+
+        <Button
+            android:id="@+id/vote_lastButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Last" />
+
+    </LinearLayout>
+
 
     <TextView
         android:id="@+id/vote_availability"
@@ -40,7 +56,7 @@
         android:layout_height="wrap_content"
         android:text="Aucun vote disponible"
         android:textSize="22sp"
-        android:visibility="gone"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -53,7 +69,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="48dp"
         android:visibility="visible"
-        app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView"
+        app:layout_constraintTop_toBottomOf="@+id/vote_btnLay"
         tools:layout_editor_absoluteX="0dp">
 
     </ListView>

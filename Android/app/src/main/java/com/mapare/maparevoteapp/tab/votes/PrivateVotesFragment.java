@@ -31,10 +31,12 @@ public class PrivateVotesFragment extends VotesFragment {
 
 
         // Makes the request
-        privateVotesRequest(getContext(), page, page_size);
+        voteRequest(getContext(), page, page_size);
     }
 
-    private void privateVotesRequest(Context context, int page, int page_size) {
+    // PrivateVotes request
+    @Override
+    protected void voteRequest(Context context, int page, int page_size) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
         String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.PRIVATE_VOTE_URL) + "?"
@@ -69,7 +71,7 @@ public class PrivateVotesFragment extends VotesFragment {
                 Map<String, String> params = new HashMap<>();
 
                 String token = context.getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null);
-                params.put("Accept", "application/json");
+                params.put("Accept", "application/json; charset=utf8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
             }

@@ -32,10 +32,12 @@ public class PublicVotesFragment extends VotesFragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Makes the request
-        publicVotesRequest(getContext(), page, page_size);
+        voteRequest(getContext(), page, page_size);
     }
 
-    private void publicVotesRequest(Context context, int page, int page_size) {
+    // PublicVotes request
+    @Override
+    protected void voteRequest(Context context, int page, int page_size) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
         String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.PUBLIC_VOTE_URL) + "?"
@@ -66,15 +68,14 @@ public class PublicVotesFragment extends VotesFragment {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<>();
-                params.put("Accept", "application/json");
+                params.put("Accept", "application/json; charset=utf8");
                 return params;
             }
 
             @Override
             protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                String totalVotes = response.headers.get("votecount");
-                Log.i("header_totalVotes", totalVotes);
                 String totalPages = response.headers.get("pagecount");
+                getContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).edit().putString("total_pages", totalPages).apply();
                 Log.i("header_totalPages", totalPages);
                 return super.parseNetworkResponse(response);
             }

@@ -31,10 +31,12 @@ public class StartedVotesFragment extends VotesFragment {
 
 
         // Makes the request
-        startedVotesRequest(getContext(), page, page_size);
+        voteRequest(getContext(), page, page_size);
     }
 
-    private void startedVotesRequest(Context context, int page, int page_size) {
+    // StartedVotes request
+    @Override
+    protected void voteRequest(Context context, int page, int page_size) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
         String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.MY_VOTES_URL) + "?"
@@ -69,7 +71,7 @@ public class StartedVotesFragment extends VotesFragment {
                 Map<String, String> params = new HashMap<>();
 
                 String token = context.getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null);
-                params.put("Accept", "application/json");
+                params.put("Accept", "application/json; charset=utf8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
             }

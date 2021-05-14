@@ -203,7 +203,7 @@ public class VoteActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<>();
 
                 String token = getSharedPreferences("Login", MODE_PRIVATE).getString("token", null);
-                params.put("Accept", "application/json");
+                params.put("Accept", "application/json; charset=utf8");
                 params.put("Content-Type", "application/json");
                 params.put("Authorization", "Bearer " + token);
                 return params;
@@ -258,7 +258,7 @@ public class VoteActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<>();
 
                 String token = getSharedPreferences("Login", MODE_PRIVATE).getString("token", null);
-                params.put("Accept", "application/json");
+                params.put("Accept", "application/json; charset=utf8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
             }
@@ -298,7 +298,7 @@ public class VoteActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<>();
 
                 String token = getSharedPreferences("Login", MODE_PRIVATE).getString("token", null);
-                params.put("Accept", "application/json");
+                params.put("Accept", "application/json; charset=utf8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
             }

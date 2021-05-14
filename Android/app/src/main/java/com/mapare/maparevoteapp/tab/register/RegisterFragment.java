@@ -152,7 +152,7 @@ public class RegisterFragment extends Fragment {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String>  params = new HashMap<>();
-                params.put("Accept", "application/json");
+                params.put("Accept", "application/json; charset=utf8");
                 params.put("Content-Type", "application/json");
                 return params;
             }
