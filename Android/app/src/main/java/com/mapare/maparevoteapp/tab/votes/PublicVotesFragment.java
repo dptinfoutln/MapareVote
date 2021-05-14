@@ -66,7 +66,7 @@ public class PublicVotesFragment extends VotesFragment {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<>();
-                params.put("Accept", "application/json");
+                params.put("Accept", "application/json; charset=utf-8");
                 return params;
             }
 

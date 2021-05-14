@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<>();
 
                 String token = getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null);
-                params.put("Accept", "application/json");
+                params.put("Accept", "application/json; charset=utf-8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
             }

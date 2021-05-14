@@ -69,7 +69,7 @@ public class PrivateVotesFragment extends VotesFragment {
                 Map<String, String> params = new HashMap<>();
 
                 String token = context.getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null);
-                params.put("Accept", "application/json");
+                params.put("Accept", "application/json; charset=utf-8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
             }

@@ -125,7 +125,7 @@ public class LoginFragment extends Fragment {
             public Map<String, String> getHeaders() {
                 Map<String, String>  params = new HashMap<>();
                 params.put("Accept", "text/plain");
-                params.put("Content-Type", "application/json");
+                params.put("Content-Type", "application/json; charset=utf-8");
                 params.put("Authorization", "Basic " + java.util.Base64.getEncoder().encodeToString((email + ":" + password).getBytes()));
                 return params;
             }
