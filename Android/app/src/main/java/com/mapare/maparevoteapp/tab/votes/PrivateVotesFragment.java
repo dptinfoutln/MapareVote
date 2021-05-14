@@ -1,15 +1,12 @@
 package com.mapare.maparevoteapp.tab.votes;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -24,15 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 public class PrivateVotesFragment extends VotesFragment {
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-
-        // Makes the request
-        voteRequest(getContext(), page, page_size);
-    }
 
     // PrivateVotes request
     @Override
@@ -74,6 +62,15 @@ public class PrivateVotesFragment extends VotesFragment {
                 params.put("Accept", "application/json; charset=utf8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
+            }
+
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                int totalPages = (int) Float.parseFloat(response.headers.get("pagecount"));
+                totalPages = totalPages == 0 ? 1 : totalPages;
+                context.getSharedPreferences("Filter", Context.MODE_PRIVATE).edit().putInt("total_pages", totalPages).apply();
+                Log.i("priv_header_totalPages", totalPages+"");
+                return super.parseNetworkResponse(response);
             }
         };
 

@@ -1,12 +1,16 @@
 package com.mapare.maparevoteapp;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +26,8 @@ import com.google.android.material.navigation.NavigationView;
 import com.mapare.maparevoteapp.model.entity_to_receive.User;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -31,6 +37,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,19 +47,80 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private AppBarConfiguration mAppBarConfiguration;
 
+    private static Context AppContext;
+
     // Needs to be here (don't listen to IDE)
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
+
+    int progressValueOfPageSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        AppContext = this;
+
+        // Clear filter cache
+        getSharedPreferences("Filter", MODE_PRIVATE).edit().remove("page_size").apply();
+
         setContentView(R.layout.activity_main);
+
+        // Popup for choosing page size
+        AlertDialog.Builder pageSizeBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View appBarView = inflater.inflate(R.layout.dialog_page_size, null);
+        pageSizeBuilder.setView(appBarView);
+        SeekBar seekBar = appBarView.findViewById(R.id.dialog_seekBar);
+        seekBar.setMin(10);
+        seekBar.setMax(150);
+        seekBar.setKeyProgressIncrement(10);
+        int value = getSharedPreferences("Filter", MODE_PRIVATE).getInt("page_size", 20);
+        seekBar.setProgress(value);
+
+        TextView seekText = appBarView.findViewById(R.id.dialog_seekText);
+        String progressText = "Nombre de votes par page : " + value;
+        seekText.setText(progressText);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            String progressText;
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                progressValueOfPageSize = progress/10*10;
+                progressText = "Nombre de votes par page : " + progressValueOfPageSize;
+                seekText.setText(progressText);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                seekText.setText(progressText);
+            }
+        });
+        pageSizeBuilder.setPositiveButton("OK", (dialog, which) -> getSharedPreferences("Filter", MODE_PRIVATE).edit().putInt("page_size", progressValueOfPageSize).apply());
+        pageSizeBuilder.setNegativeButton("Annuler", (dialog, which) -> {});
+
+        AlertDialog pageSizeDialog = pageSizeBuilder.create();
+
+
+        // Toolbar setup
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
+        toolbar.setOverflowIcon(ContextCompat.getDrawable(this, R.drawable.ic_menu_filter));
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.app_bar_open_votes) {
+                item.setChecked(!item.isChecked());
+            } else if (item.getItemId() == R.id.app_bar_page_size) {
+                pageSizeDialog.show();
+            }
+
+            return false;
+        });
 
         // TODO: Need to have a look (QRcode, nfc)
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setVisibility(View.INVISIBLE);
         fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show());
@@ -94,9 +163,19 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), "Déconnecté", Toast.LENGTH_SHORT).show();
                 getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("token", null).apply();
                 getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("name", "##erased##").apply();
+
             } else {
                 // This is for closing the drawer after acting on it, doesn't want this feature when menu_logout button is clicked on
                 drawerLayout.closeDrawer(GravityCompat.START);
+
+                toolbar.getMenu().setGroupVisible(R.id.app_bar_menu, true);
+
+            } if (id == R.id.nav_login) {
+                toolbar.getMenu().setGroupVisible(R.id.app_bar_menu, false);
+
+            } if (id == R.id.nav_signup) {
+                toolbar.getMenu().setGroupVisible(R.id.app_bar_menu, false);
+
             }
             // If already on the page that you want to navigate , doesn't reload the page
             if( !(navigationView.getMenu().findItem(R.id.nav_publicVotes).isChecked() && id == R.id.nav_publicVotes) ) {
@@ -153,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
                     // When disconnected or connected, navigate to the "home page"
                     navController.navigate(R.id.nav_publicVotes);
                     drawerLayout.openDrawer(GravityCompat.START);
+                    toolbar.getMenu().setGroupVisible(R.id.app_bar_menu, true);
                     break;
                 case "name":
                     // Header
@@ -173,6 +253,7 @@ public class MainActivity extends AppCompatActivity {
                     switch (content) {
                         case "login page":
                             navController.navigate(R.id.nav_login);
+                            toolbar.getMenu().setGroupVisible(R.id.app_bar_menu, false);
                             break;
                         // Add other destinations
                     }
@@ -258,5 +339,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
+    }
+
+    public static Context getContext() {
+        return AppContext;
     }
 }

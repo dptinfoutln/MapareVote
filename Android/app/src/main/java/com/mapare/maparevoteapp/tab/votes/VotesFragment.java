@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -17,7 +16,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 
@@ -27,6 +25,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mapare.maparevoteapp.MainActivity;
 import com.mapare.maparevoteapp.R;
 import com.mapare.maparevoteapp.VoteActivity;
 import com.mapare.maparevoteapp.adapter.VoteAdapter;
@@ -35,7 +34,6 @@ import com.mapare.maparevoteapp.model.entity_to_receive.Vote;
 import com.mapare.maparevoteapp.model.entity_to_receive.VotedVote;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +44,9 @@ public class VotesFragment extends Fragment {
     protected Vote vote;
     protected User voter;
 
-    protected int page;
+    SharedPreferences.OnSharedPreferenceChangeListener listener;
+
+    protected int page = 1;
     protected int page_size;
     int totalPages;
 
@@ -65,23 +65,15 @@ public class VotesFragment extends Fragment {
 
         LinearLayout btn_layout = view.findViewById(R.id.vote_btnLay);
         Button prev = view.findViewById(R.id.vote_prevButton);
-        prev.setOnClickListener(v -> {
-            voteRequest(getContext(), --page, page_size);
-        });
+        prev.setOnClickListener(v -> voteRequest(getContext(), --page, page_size));
         Button next = view.findViewById(R.id.vote_nextButton);
-        next.setOnClickListener(v -> {
-            voteRequest(getContext(), ++page, page_size);
-        });
+        next.setOnClickListener(v -> voteRequest(getContext(), ++page, page_size));
 
         Button first = view.findViewById(R.id.vote_firstButton);
-        first.setOnClickListener(v -> {
-            voteRequest(getContext(), page=1, page_size);
-        });
+        first.setOnClickListener(v -> voteRequest(getContext(), page=1, page_size));
 
         Button last = view.findViewById(R.id.vote_lastButton);
-        last.setOnClickListener(v -> {
-            voteRequest(getContext(), page=totalPages, page_size);
-        });
+        last.setOnClickListener(v -> voteRequest(getContext(), page=totalPages, page_size));
 
 
         LOADING_STATE_CODE = new MutableLiveData<>();
@@ -94,7 +86,8 @@ public class VotesFragment extends Fragment {
                         // Displays buttons
                         btn_layout.setVisibility(View.VISIBLE);
                     }
-                    totalPages = (int) Float.parseFloat(getContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getString("total_pages", null));
+                    totalPages = getContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getInt("total_pages", 1);
+                    Log.i("totalpages", totalPages+"");
 
                     // Buttons displaying
                     prev.setEnabled(true);
@@ -157,10 +150,20 @@ public class VotesFragment extends Fragment {
 
         });
         // TODO: filter
-        page = 1;
-        page_size = 10;
+        page_size = getContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getInt("page_size", 20);
 
+        listener = (prefs, key) -> {
+            if (key.equals("page_size")) {
+                page_size = prefs.getInt(key, 20);
+                Log.i("page_size", page_size+"");
+                voteRequest(getContext(), page=1, page_size);
+            }
+        };
 
+        getContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).registerOnSharedPreferenceChangeListener(listener);
+
+        // Makes the request
+        voteRequest(getContext(), page, page_size);
     }
 
     private void getVoteRequest(Context context, int id) {
@@ -254,4 +257,8 @@ public class VotesFragment extends Fragment {
 
     protected void voteRequest(Context context, int page, int page_size) {}
 
+    @Override
+    public Context getContext() {
+        return MainActivity.getContext();
+    }
 }

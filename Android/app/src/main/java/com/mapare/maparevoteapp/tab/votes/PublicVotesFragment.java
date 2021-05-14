@@ -1,12 +1,7 @@
 package com.mapare.maparevoteapp.tab.votes;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.RequestQueue;
@@ -25,15 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 public class PublicVotesFragment extends VotesFragment {
-
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        // Makes the request
-        voteRequest(getContext(), page, page_size);
-    }
 
     // PublicVotes request
     @Override
@@ -74,9 +60,10 @@ public class PublicVotesFragment extends VotesFragment {
 
             @Override
             protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                String totalPages = response.headers.get("pagecount");
-                getContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).edit().putString("total_pages", totalPages).apply();
-                Log.i("header_totalPages", totalPages);
+                int totalPages = (int) Float.parseFloat(response.headers.get("pagecount"));
+                totalPages = totalPages == 0 ? 1 : totalPages;
+                context.getSharedPreferences("Filter", Context.MODE_PRIVATE).edit().putInt("total_pages", totalPages).apply();
+                Log.i("pub_header_totalPages", totalPages+"");
                 return super.parseNetworkResponse(response);
             }
         };

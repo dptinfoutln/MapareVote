@@ -3,6 +3,7 @@ package com.mapare.maparevoteapp.adapter;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import com.mapare.maparevoteapp.R;
 import com.mapare.maparevoteapp.model.entity_to_receive.Vote;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,21 +44,29 @@ public class VoteAdapter extends CustomAdapter<Vote> {
         }else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.labelField.setText(entityList.get(position).getLabel());
+        String label = entityList.get(position).getLabel();
+        if (label.length() > 40)
+            label = label.substring(0, 40) + "...";
+        holder.labelField.setText(label);
 
         String votemaker = entityList.get(position).getVotemaker().getFirstname() + " " + entityList.get(position).getVotemaker().getName();
         holder.votemakerField.setText(votemaker);
-
-        if (entityList.get(position).isIntermediaryResult()) {
-            holder.intermediaryResultField.setText("Résultats disponibles");
-            holder.intermediaryResultField.setTypeface(null, Typeface.ITALIC);
-        }
 
         String dateString = entityList.get(position).getStartDate().toString().replace("[", "").replace("]", "");
         List<String> dateList = Arrays.asList(dateString.split(","));
         dateString = dateList.get(2) + "/" + dateList.get(1) + "/" + dateList.get(0);
 
         dateString = dateString.replace(" ", "");
+
+        List<String> dateList2= Arrays.asList(dateString.split("/"));
+        LocalDate date = LocalDate.of(Integer.parseInt(dateList2.get(2)), Integer.parseInt(dateList2.get(1)), Integer.parseInt(dateList2.get(0)));
+
+        if (entityList.get(position).isIntermediaryResult() || date.isBefore(LocalDate.now())) {
+            holder.intermediaryResultField.setText(R.string.vote_result_textView);
+            holder.intermediaryResultField.setTypeface(null, Typeface.ITALIC);
+        } else {
+            holder.intermediaryResultField.setVisibility(View.INVISIBLE);
+        }
 
         holder.startDateField.setText(Html.fromHtml("<u>Date d'ouverture:</u> " + dateString, Html.FROM_HTML_MODE_COMPACT));
 
