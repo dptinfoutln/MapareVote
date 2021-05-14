@@ -3,7 +3,10 @@ package fr.univtln.mapare.resources;
 import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.controllers.MailUtils;
 import fr.univtln.mapare.controllers.VoteUtils;
-import fr.univtln.mapare.dao.*;
+import fr.univtln.mapare.dao.BallotDAO;
+import fr.univtln.mapare.dao.ChoiceDAO;
+import fr.univtln.mapare.dao.UserDAO;
+import fr.univtln.mapare.dao.VoteDAO;
 import fr.univtln.mapare.exceptions.BusinessException;
 import fr.univtln.mapare.exceptions.ForbiddenException;
 import fr.univtln.mapare.exceptions.NotFoundException;
@@ -17,8 +20,8 @@ import jakarta.ws.rs.core.SecurityContext;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.lang.StrictMath.ceil;
@@ -74,8 +77,7 @@ public class VoteResource {
                 VoteUtils.voteResultsOf(vote).calculateResults();
             }
             return vote;
-        }
-        else
+        } else
             throw new ForbiddenException("You don't have access to this vote's details.");
     }
 
@@ -93,13 +95,12 @@ public class VoteResource {
 
         Controllers.checkUser(user);
 
-        if(vote.isPendingResult())
+        if (vote.isPendingResult())
             throw new TooEarlyException();
 
         if (vote.isPublic() || vote.getMembers().contains(user)) {
             return vote.getResultList();
-        }
-        else
+        } else
             throw new ForbiddenException();
     }
 
@@ -144,13 +145,13 @@ public class VoteResource {
             throw new ForbiddenException("Invalid start date.");
         if (vote.getStartDate().isBefore(LocalDate.now().minusDays(1)))
             throw new ForbiddenException("Start date before today.");
-        if (vote.getEndDate() != null && vote.getEndDate().isBefore(vote.getStartDate().plus(1, ChronoUnit.DAYS)))
+        if (vote.getEndDate() != null && vote.getEndDate().isBefore(vote.getStartDate().plusDays(1)))
             throw new ForbiddenException("End date before start date.");
         if (vote.getEndDate() == null && !vote.isIntermediaryResult())
             throw new ForbiddenException("Vote with no end date and no intermediary results: invalid.");
         if (vote.getEndDate() == null && vote.getAlgo().equals("STV"))
             throw new ForbiddenException("Votes with the STV algorithm have to have an end date.");
-        if (vote.getAlgo().equals("borda")){
+        if (vote.getAlgo().equals("borda")) {
             vote.setMaxChoices(vote.getChoices().size());
         }
         vote.setId(0);
@@ -196,7 +197,7 @@ public class VoteResource {
     @POST
     @JWTAuth
     @Path("{id}/ballots")
-    public Ballot addBallot(@Context SecurityContext securityContext, @PathParam ("id") int id, Ballot ballot) throws BusinessException {
+    public Ballot addBallot(@Context SecurityContext securityContext, @PathParam("id") int id, Ballot ballot) throws BusinessException {
         //TODO: check choices
         ballot.setId(0);
         User voter = (User) securityContext.getUserPrincipal();
@@ -269,15 +270,15 @@ public class VoteResource {
     @JWTAuth
     @Path("private/invited")
     public Response getPrivateVotesForUser(@Context SecurityContext securityContext,
-                                             @QueryParam("page_num") int pagenum,
-                                             @QueryParam("page_size") int pagesize,
-                                             @QueryParam("name_like") String approxname,
-                                             @QueryParam("starts_with") String namestart,
-                                             @QueryParam("ends_with") String nameend,
-                                             @QueryParam("algo") String algoname,
-                                             @QueryParam("sort") String sortkey,
-                                             @QueryParam("order") String order,
-                                             @QueryParam("open") boolean open) throws ForbiddenException {
+                                           @QueryParam("page_num") int pagenum,
+                                           @QueryParam("page_size") int pagesize,
+                                           @QueryParam("name_like") String approxname,
+                                           @QueryParam("starts_with") String namestart,
+                                           @QueryParam("ends_with") String nameend,
+                                           @QueryParam("algo") String algoname,
+                                           @QueryParam("sort") String sortkey,
+                                           @QueryParam("order") String order,
+                                           @QueryParam("open") boolean open) throws ForbiddenException {
         User user = (User) securityContext.getUserPrincipal();
 
         Controllers.checkUser(user);
@@ -299,15 +300,14 @@ public class VoteResource {
 
         if (!vote.isAnonymous()) {
             return BallotDAO.of(Controllers.getEntityManager()).findByVoteByVoter(vote, voter);
-        }
-        else
+        } else
             return null;
     }
 
     @GET
     @JWTAuth
     @Path("startedvotes")
-    public Response getStartedVotes(@Context SecurityContext securityContext,@QueryParam("page_num") int pagenum,
+    public Response getStartedVotes(@Context SecurityContext securityContext, @QueryParam("page_num") int pagenum,
                                     @QueryParam("page_size") int pagesize,
                                     @QueryParam("name_like") String approxname,
                                     @QueryParam("starts_with") String namestart,
@@ -330,15 +330,15 @@ public class VoteResource {
     @GET
     @JWTAuth
     @Path("votedvotes")
-    public Response getVotedVotes(@Context SecurityContext securityContext,@QueryParam("page_num") int pagenum,
-                                    @QueryParam("page_size") int pagesize,
-                                    @QueryParam("name_like") String approxname,
-                                    @QueryParam("starts_with") String namestart,
-                                    @QueryParam("ends_with") String nameend,
-                                    @QueryParam("algo") String algoname,
-                                    @QueryParam("sort") String sortkey,
-                                    @QueryParam("order") String order,
-                                    @QueryParam("open") boolean open) throws ForbiddenException {
+    public Response getVotedVotes(@Context SecurityContext securityContext, @QueryParam("page_num") int pagenum,
+                                  @QueryParam("page_size") int pagesize,
+                                  @QueryParam("name_like") String approxname,
+                                  @QueryParam("starts_with") String namestart,
+                                  @QueryParam("ends_with") String nameend,
+                                  @QueryParam("algo") String algoname,
+                                  @QueryParam("sort") String sortkey,
+                                  @QueryParam("order") String order,
+                                  @QueryParam("open") boolean open) throws ForbiddenException {
         User user = (User) securityContext.getUserPrincipal();
 
         Controllers.checkUser(user);

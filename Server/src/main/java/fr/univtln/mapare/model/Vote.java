@@ -1,21 +1,26 @@
 package fr.univtln.mapare.model;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.eclipse.persistence.annotations.AdditionalCriteria;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(of = {"label", "votemaker"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class,property="id", scope=Vote.class)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Vote.class)
 @Table(name = "\"VOTE\"")
 @NamedQueries({
         @NamedQuery(name = "Vote.findByVoter",
@@ -25,7 +30,7 @@ import java.util.*;
         @NamedQuery(name = "Vote.findPrivateByUser", query = "SELECT V FROM Vote V WHERE :user MEMBER OF V.members AND V.deleted = false"),
         @NamedQuery(name = "Vote.findAll", query = "SELECT V FROM Vote V")
 })
-public class Vote implements Serializable {
+public class Vote implements Serializable, Comparable<Vote> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -76,7 +81,7 @@ public class Vote implements Serializable {
     private List<VotedVote> votedVotes = new ArrayList<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name= "\"PRIVATE_VOTES\"",
+    @JoinTable(name = "\"PRIVATE_VOTES\"",
             joinColumns = @JoinColumn(name = "\"vote\""),
             inverseJoinColumns = @JoinColumn(name = "\"user\""))
     @JsonIgnoreProperties({"startedVotes", "privateVoteList", "votedVotes", "confirmed", "admin", "banned",
@@ -154,5 +159,10 @@ public class Vote implements Serializable {
 
     public boolean hasResults() {
         return resultList.isEmpty();
+    }
+
+    @Override
+    public int compareTo(@NotNull Vote o) {
+        return id - o.getId();
     }
 }
