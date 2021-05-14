@@ -24,7 +24,7 @@ import java.util.List;
 @Table(name = "\"VOTE\"")
 @NamedQueries({
         @NamedQuery(name = "Vote.findByVoter",
-                query = "SELECT V FROM Vote V WHERE V.id IN (SELECT VV.vote FROM VotedVote VV WHERE VV.user = :voter) AND V.deleted = false"),
+                query = "SELECT V FROM Vote V WHERE V IN (SELECT VV.vote FROM VotedVote VV WHERE VV.user = :voter) AND V.deleted = false"),
         @NamedQuery(name = "Vote.findByVotemaker", query = "SELECT V FROM Vote V WHERE V.votemaker = :votemaker AND V.deleted = false"),
         @NamedQuery(name = "Vote.findPublic", query = "SELECT V FROM Vote V WHERE V.members IS EMPTY AND V.deleted = false"),
         @NamedQuery(name = "Vote.findPrivateByUser", query = "SELECT V FROM Vote V WHERE :user MEMBER OF V.members AND V.deleted = false"),

@@ -24,3 +24,9 @@ Authorization: Bearer {{auth_token}}
 > {%
     client.global.set("last_id", response.body.id);
 %}
+
+###
+GET http://localhost:5431/votes/votedvotes
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
