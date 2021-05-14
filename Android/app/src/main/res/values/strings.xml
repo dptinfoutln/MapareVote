@@ -36,6 +36,7 @@
     <string name="ME_URL">/users/me</string>
     <string name="MYBALLOT_URL">/myballot</string>
     <string name="RESULT_URL">/results</string>
+    <string name="MY_VOTES_URL">/votes/startedvotes</string>
 
     <!-- Strings related to navigation menu -->
     <string name="user">Utilisateur</string>
