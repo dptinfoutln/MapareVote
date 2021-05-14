@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
@@ -134,32 +133,26 @@ public class VoteActivity extends AppCompatActivity {
                 // Results
                 if (vote.isIntermediaryResult()) {
                     RESULT_STATE_CODE = new MutableLiveData<>();
-                    RESULT_STATE_CODE.observe(this, new Observer<String>() {
-                        @Override
-                        public void onChanged(String s) {
-                            // Showing Results feature
-                            ExpandableListView resultView = findViewById(R.id.vote_resultView);
-                            ResultAdapter resultAdapter = new ResultAdapter(VoteActivity.this, resultList);
-                            resultView.setAdapter(resultAdapter);
+                    RESULT_STATE_CODE.observe(this, s1 -> {
+                        // Showing Results feature
+                        ExpandableListView resultView = findViewById(R.id.vote_resultView);
+                        ResultAdapter resultAdapter = new ResultAdapter(VoteActivity.this, resultList);
+                        resultView.setAdapter(resultAdapter);
 
-                            LinearLayout layout_result = findViewById(R.id.expandableView_linearLayout);
+                        LinearLayout layout_result = findViewById(R.id.expandableView_linearLayout);
 
-                            resultView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
-                                @Override
-                                public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-                                    if (!clicked) {
-                                        height = calculateHeight(resultView);
-                                    } else {
-                                        height = 0;
-                                    }
-                                    layout_result.getLayoutParams().height = height;
-                                    layout_result.requestLayout();
-                                    clicked = !clicked;
+                        resultView.setOnGroupClickListener((parent, v, groupPosition, id) -> {
+                            if (!clicked) {
+                                height = calculateHeight(resultView);
+                            } else {
+                                height = 0;
+                            }
+                            layout_result.getLayoutParams().height = height;
+                            layout_result.requestLayout();
+                            clicked = !clicked;
 
-                                    return false;
-                                }
-                            });
-                        }
+                            return false;
+                        });
                     });
                     getResultRequest(vote.getId());
                 }
