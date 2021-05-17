@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
@@ -16,7 +14,7 @@ import java.util.Base64;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="token")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "token")
 @Table(name = "\"VOTED_VOTES\"")//, uniqueConstraints = @UniqueConstraint(columnNames={"vote", "user"}))
 @NamedQueries({
         @NamedQuery(name = "VotedVotes.findByToken", query = "SELECT V FROM VotedVote V WHERE V.token = :token"),

@@ -20,7 +20,7 @@ import java.util.List;
 public class UserResource {
     @GET
     public List<User> getUsers(@DefaultValue("1") @QueryParam("page_num") int pagenum,
-                         @DefaultValue("20") @QueryParam("page_size") int pagesize) throws NotFoundException {
+                               @DefaultValue("20") @QueryParam("page_size") int pagesize) throws NotFoundException {
         // TODO: add admin authentication
         return UserDAO.of(Controllers.getEntityManager()).findAll();
     }
@@ -50,7 +50,7 @@ public class UserResource {
         user.setBanned(false);
 
         if (user.getEmail() == null || user.getFirstname() == null || user.getLastname() == null
-        || user.getPasswordHash() == null || user.getSalt() == null)
+                || user.getPasswordHash() == null || user.getSalt() == null)
             throw new ForbiddenException("Error: some fields haven't been filled.");
 
         try {

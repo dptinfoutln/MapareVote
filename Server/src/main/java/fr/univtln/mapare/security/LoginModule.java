@@ -4,7 +4,6 @@ import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.exceptions.BusinessException;
 import fr.univtln.mapare.model.User;
-import fr.univtln.mapare.resources.UserResource;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.AccessLevel;
@@ -13,10 +12,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.java.Log;
 
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.List;
 
 /**
  * this class model a simple in memory role based authentication database (RBAC).

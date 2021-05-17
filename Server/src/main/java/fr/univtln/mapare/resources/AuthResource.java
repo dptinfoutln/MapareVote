@@ -45,8 +45,8 @@ public class AuthResource {
     @Path("context")
     public String getContext(@Context UriInfo uriInfo, @Context HttpHeaders httpHeaders, @Context Request request, @Context SecurityContext securityContext) {
         String result = "UriInfo: (" + uriInfo.getRequestUri().toString() + ")\n"
-                        + "Method: (" + request.getMethod() + ")\n"
-                        + "HttpHeaders(" + httpHeaders.getRequestHeaders().toString() + ")\n";
+                + "Method: (" + request.getMethod() + ")\n"
+                + "HttpHeaders(" + httpHeaders.getRequestHeaders().toString() + ")\n";
 
         if (securityContext != null) {
             result += " SecurityContext(Auth.scheme: [" + securityContext.getAuthenticationScheme() + "] \n";

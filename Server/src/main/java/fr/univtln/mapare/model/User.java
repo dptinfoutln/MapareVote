@@ -1,24 +1,29 @@
 package fr.univtln.mapare.model;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import javax.security.auth.Subject;
 import java.io.Serializable;
 import java.security.Principal;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(of = "email")
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class,property="id", scope=User.class)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = User.class)
 @Table(name = "\"USERS\"")
 @NamedQueries({
         @NamedQuery(name = "User.findByEmail", query = "SELECT U FROM User U WHERE U.email = :email"),
@@ -125,7 +130,7 @@ public class User implements Serializable, Principal {
     @Override
     @JsonIgnore
     public String getName() {
-        return lastname + ", " + firstname+" <"+email+">";
+        return lastname + ", " + firstname + " <" + email + ">";
     }
 
     @Override
@@ -137,6 +142,7 @@ public class User implements Serializable, Principal {
                 ", firstname='" + firstname + '\'' +
                 '}';
     }
+
     @JsonIgnore
     public List<Vote> getVotesOnWhichTheUserHasVoted() {
         List<Vote> tempList = new ArrayList<>();

@@ -2,12 +2,8 @@ package fr.univtln.mapare;
 
 import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.dao.UserDAO;
-import fr.univtln.mapare.exceptions.ConflictException;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.model.Vote;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.Query;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -17,14 +13,11 @@ import jakarta.ws.rs.core.Response;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.*;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RestIT {
     private static HttpServer httpServer;
@@ -133,7 +126,7 @@ public class RestIT {
         response = webTarget.path("auth/signin")
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
-                .header("Authorization",  "Basic " + java.util.Base64.getEncoder()
+                .header("Authorization", "Basic " + java.util.Base64.getEncoder()
                         .encodeToString(("carlorff@hotmail.fr:ofortuna").getBytes()))
                 .get();
 
@@ -144,14 +137,14 @@ public class RestIT {
         String token = webTarget.path("auth/signin")
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
-                .header("Authorization",  "Basic " + java.util.Base64.getEncoder()
+                .header("Authorization", "Basic " + java.util.Base64.getEncoder()
                         .encodeToString(("carlorff@hotmail.fr:ofortuna").getBytes()))
                 .get(String.class);
 
         webTarget.path("users/me")
                 .request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .header( "Authorization",  "Bearer " + token)
+                .header("Authorization", "Bearer " + token)
                 .get();
 
 //        webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
@@ -184,7 +177,7 @@ public class RestIT {
         response = webTarget.path("auth/signin")
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
-                .header("Authorization",  "Basic " + java.util.Base64.getEncoder()
+                .header("Authorization", "Basic " + java.util.Base64.getEncoder()
                         .encodeToString(("carlorff@hotmail.fr:ofortuna").getBytes()))
                 .get();
 
@@ -210,14 +203,14 @@ public class RestIT {
 
         webTarget.path("votes/public").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .header( "Authorization",  "Bearer " + token)
+                .header("Authorization", "Bearer " + token)
                 .post(Entity.entity(
                         "{\"label\":\"Meilleur composition musicale\",\"startDate\":" + todaysdate +
-                        ",\"endDate\":" + dateintendays +
+                                ",\"endDate\":" + dateintendays +
                                 ",\"algo\":\"majority\",\"anonymous\":false,\"choices\":" +
                                 "[{\"names\":[\"Carmina Burana\"]},{\"names\":[\"Catulli Carmina\"]}," +
                                 "{\"names\":[\"Trionfo di Afrodite\"]}],\"maxChoices\":\"1\"}"
-                , MediaType.APPLICATION_JSON));
+                        , MediaType.APPLICATION_JSON));
 
         response = webTarget.path("votes/public").request(MediaType.APPLICATION_JSON).get();
 
@@ -227,7 +220,7 @@ public class RestIT {
 
         webTarget.path("votes/public").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .header( "Authorization",  "Bearer " + token)
+                .header("Authorization", "Bearer " + token)
                 .post(Entity.entity(
                         "{\"label\":\"Test\",\"startDate\":" + todaysdate +
                                 ",\"endDate\":" + dateintendays +
@@ -236,37 +229,37 @@ public class RestIT {
                                 "{\"names\":[\"Trionfo di Afrodite\"]}],\"maxChoices\":\"1\"}"
                         , MediaType.APPLICATION_JSON));
 
-        voteList = webTarget.path("votes/public").queryParam("starts_with","Te").request(MediaType.APPLICATION_JSON).get(List.class);
+        voteList = webTarget.path("votes/public").queryParam("starts_with", "Te").request(MediaType.APPLICATION_JSON).get(List.class);
 
         assertEquals(1, voteList.size());
 
-        voteList = webTarget.path("votes/public").queryParam("starts_with","X").request(MediaType.APPLICATION_JSON).get(List.class);
+        voteList = webTarget.path("votes/public").queryParam("starts_with", "X").request(MediaType.APPLICATION_JSON).get(List.class);
 
         assertEquals(0, voteList.size());
 
-        voteList = webTarget.path("votes/public").queryParam("name_like","Test").request(MediaType.APPLICATION_JSON).get(List.class);
+        voteList = webTarget.path("votes/public").queryParam("name_like", "Test").request(MediaType.APPLICATION_JSON).get(List.class);
 
         assertEquals(1, voteList.size());
 
-        voteList = webTarget.path("votes/public").queryParam("name_like","ofortuna").request(MediaType.APPLICATION_JSON).get(List.class);
+        voteList = webTarget.path("votes/public").queryParam("name_like", "ofortuna").request(MediaType.APPLICATION_JSON).get(List.class);
 
         assertEquals(0, voteList.size());
 
-        voteList = webTarget.path("votes/public").queryParam("name_like","e").request(MediaType.APPLICATION_JSON).get(List.class);
+        voteList = webTarget.path("votes/public").queryParam("name_like", "e").request(MediaType.APPLICATION_JSON).get(List.class);
 
         assertEquals(2, voteList.size());
 
-        voteList = webTarget.path("votes/public").queryParam("ends_with","st").request(MediaType.APPLICATION_JSON).get(List.class);
+        voteList = webTarget.path("votes/public").queryParam("ends_with", "st").request(MediaType.APPLICATION_JSON).get(List.class);
 
         assertEquals(1, voteList.size());
 
-        voteList = webTarget.path("votes/public").queryParam("ends_with","X").request(MediaType.APPLICATION_JSON).get(List.class);
+        voteList = webTarget.path("votes/public").queryParam("ends_with", "X").request(MediaType.APPLICATION_JSON).get(List.class);
 
         assertEquals(0, voteList.size());
 
         voteList = webTarget.path("votes/public")
                 .queryParam("stars_with", "Te")
-                .queryParam("ends_with","st")
+                .queryParam("ends_with", "st")
                 .request(MediaType.APPLICATION_JSON)
                 .get(List.class);
 
@@ -275,23 +268,23 @@ public class RestIT {
         voteList = webTarget.path("votes/public")
                 .queryParam("stars_with", "Me")
                 .queryParam("name_like", "composition")
-                .queryParam("ends_with","le")
+                .queryParam("ends_with", "le")
                 .request(MediaType.APPLICATION_JSON)
                 .get(List.class);
 
         assertEquals(1, voteList.size());
 
-        voteList = webTarget.path("votes/public").queryParam("algo","majority").request(MediaType.APPLICATION_JSON).get(List.class);
+        voteList = webTarget.path("votes/public").queryParam("algo", "majority").request(MediaType.APPLICATION_JSON).get(List.class);
 
         assertEquals(2, voteList.size());
 
-        voteList = webTarget.path("votes/public").queryParam("algo","majorit").request(MediaType.APPLICATION_JSON).get(List.class);
+        voteList = webTarget.path("votes/public").queryParam("algo", "majorit").request(MediaType.APPLICATION_JSON).get(List.class);
 
         assertEquals(0, voteList.size());
 
         webTarget.path("votes/private").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .header( "Authorization",  "Bearer " + token)
+                .header("Authorization", "Bearer " + token)
                 .post(Entity.entity(
                         "{\"label\":\"Privatvot\",\"startDate\":" + todaysdate +
                                 ",\"endDate\":" + dateintendays +
@@ -302,14 +295,14 @@ public class RestIT {
 
 
         voteList = webTarget.path("votes/private/invited").request(MediaType.APPLICATION_JSON)
-                .header( "Authorization",  "Bearer " + token).get(List.class);
+                .header("Authorization", "Bearer " + token).get(List.class);
 
         assertEquals(1, voteList.size());
 
         webTarget.path("users/me")
                 .request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .header( "Authorization",  "Bearer " + token)
+                .header("Authorization", "Bearer " + token)
                 .get();
 
 //        webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
@@ -341,7 +334,7 @@ public class RestIT {
         response = webTarget.path("auth/signin")
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
-                .header("Authorization",  "Basic " + java.util.Base64.getEncoder()
+                .header("Authorization", "Basic " + java.util.Base64.getEncoder()
                         .encodeToString(("carlorff@hotmail.fr:ofortuna").getBytes()))
                 .get();
 
@@ -352,7 +345,7 @@ public class RestIT {
         webTarget.path("users/me")
                 .request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .header( "Authorization",  "Bearer " + token)
+                .header("Authorization", "Bearer " + token)
                 .get();
 
         todaysdate = LocalDate.now() + "";
@@ -373,7 +366,7 @@ public class RestIT {
 
         response = webTarget.path("votes/public").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .header( "Authorization",  "Bearer " + token)
+                .header("Authorization", "Bearer " + token)
                 .post(Entity.entity(
                         "{\"label\":\"Meilleur composition musicale\",\"startDate\":" + todaysdate +
                                 ",\"endDate\":" + dateintendays +
@@ -390,7 +383,7 @@ public class RestIT {
 
         Vote vote = webTarget.path("votes/" + voteList.toString().charAt(5))
                 .request(MediaType.APPLICATION_JSON)
-                .header( "Authorization",  "Bearer " + token)
+                .header("Authorization", "Bearer " + token)
                 .get(Vote.class);
 
         System.out.println(vote);
@@ -401,7 +394,7 @@ public class RestIT {
 
         webTarget.path("votes/" + vote.getId() + "/ballots").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .header( "Authorization",  "Bearer " + token)
+                .header("Authorization", "Bearer " + token)
                 .post(Entity.entity(
                         "{\"id\":\"0\",\"choices\":[{\"choice\":{\"id\":" + vote.getChoices().get(0).getId() +
                                 "},\"weight\":1, \"ballot\":\"0\"}, {\"choice\":{\"id\":" +
@@ -413,12 +406,12 @@ public class RestIT {
 
         webTarget.path("votes/" + vote.getId() + "/myballot").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .header( "Authorization",  "Bearer " + token)
+                .header("Authorization", "Bearer " + token)
                 .get();
 
         webTarget.path("votes/" + vote.getId())
                 .request(MediaType.APPLICATION_JSON)
-                .header( "Authorization",  "Bearer " + token)
+                .header("Authorization", "Bearer " + token)
                 .get();
 
         webTarget.path("users").request(MediaType.APPLICATION_JSON).get();
@@ -440,21 +433,20 @@ public class RestIT {
         webTarget.path("users/me")
                 .request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .header( "Authorization",  "Bearer " + token)
+                .header("Authorization", "Bearer " + token)
                 .get();
 
         token = webTarget.path("auth/signin")
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
-                .header("Authorization",  "Basic " + java.util.Base64.getEncoder()
+                .header("Authorization", "Basic " + java.util.Base64.getEncoder()
                         .encodeToString(("tchaikovsky@hotmail.fr:1812").getBytes()))
                 .get(String.class);
 
 
-
         webTarget.path("votes/" + vote.getId() + "/results")
                 .request(MediaType.APPLICATION_JSON)
-                .header( "Authorization",  "Bearer " + token)
+                .header("Authorization", "Bearer " + token)
                 .get();
 
 //        webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();

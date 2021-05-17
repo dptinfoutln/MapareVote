@@ -10,7 +10,6 @@ import io.jsonwebtoken.Jwts;
 import jakarta.annotation.Priority;
 import jakarta.annotation.security.DenyAll;
 import jakarta.annotation.security.PermitAll;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -21,9 +20,6 @@ import jakarta.ws.rs.ext.Provider;
 import lombok.extern.java.Log;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.stream.Collectors;
 
 /**
  * This class if a filter for JAX-RS to perform authentication via JWT.
