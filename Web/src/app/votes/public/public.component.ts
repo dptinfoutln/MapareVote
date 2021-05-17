@@ -22,22 +22,29 @@ export class PublicComponent extends VotesComponent implements OnInit {
 
     loadVotes(): void {
         this.isLoading = true;
-        this.votesService.getPublicVotes(this.pageNum, this.pageSize, this.orderBy, this.sortBy, this.nameLike, this.open).then(
-            votes => {
-                this.isLoading = false;
-                if (votes.length > 0) {
-                    this.votes = votes;
-                } else {
-                    this.votes = null;
+        if (this.authService.isStillAuth()) {
+            this.authService.importSelf().then(user => {
+                    this.selfUser = user;
+                    this.votesService.getPublicVotes(this.pageNum, this.pageSize, this.orderBy, this.sortBy, this.nameLike, this.open).then(
+                        votes => {
+                            this.manageVotes(votes);
+                        },
+                        err => {
+                            this.errorsService.manageError(err);
+                        });
+                },
+                err => {
+                    this.errorsService.manageError(err);
                 }
-                votes.forEach(vote => {
-                    if (vote.votemaker.id) {
-                        this.votemakers.push(vote.votemaker);
-                    }
+            );
+        } else {
+            this.votesService.getPublicVotes(this.pageNum, this.pageSize, this.orderBy, this.sortBy, this.nameLike, this.open).then(
+                votes => {
+                    this.manageVotes(votes);
+                },
+                err => {
+                    this.errorsService.manageError(err);
                 });
-            },
-            err => {
-                this.errorsService.manageError(err);
-            });
+        }
     }
 }

@@ -76,12 +76,27 @@ export class VotesService {
             });
     }
 
+    getVotedVotes(pageNum = 1, pageSize = 25, orderBy = 'asc', sortBy ?: string, nameLike ?: string, open = true): Promise<Vote[]>  {
+        const url = environment.apiURL + 'votes/votedvotes';
+        let headers = environment.headers;
+        headers = headers.set('Authorization', 'Bearer ' + this.authService.utils.getToken());
+        const params = this.setHttpParams(pageNum, pageSize, orderBy, open, sortBy, nameLike);
+        return this.getVotes(url, headers, params);
+    }
+
+    getStartedVotes(pageNum = 1, pageSize = 25, orderBy = 'asc', sortBy ?: string, nameLike ?: string, open = true): Promise<Vote[]>  {
+        const url = environment.apiURL + 'votes/startedvotes';
+        let headers = environment.headers;
+        headers = headers.set('Authorization', 'Bearer ' + this.authService.utils.getToken());
+        const params = this.setHttpParams(pageNum, pageSize, orderBy, open, sortBy, nameLike);
+        return this.getVotes(url, headers, params);
+    }
+
     getPublicVotes(pageNum = 1, pageSize = 25, orderBy = 'asc', sortBy ?: string, nameLike ?: string, open = true): Promise<Vote[]> {
         const url = environment.apiURL + 'votes/public';
         let headers = environment.headers;
         headers = headers.set('Accept', 'application/json');
         const params = this.setHttpParams(pageNum, pageSize, orderBy, open, sortBy, nameLike);
-
         return this.getVotes(url, headers, params);
     }
 

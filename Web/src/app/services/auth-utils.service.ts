@@ -19,8 +19,12 @@ export class AuthUtilsService {
     }
 
     setSelfUser(user: User): void {
+        const tmpUser = {... user};
         this.removeSelfUser();
-        this.cookieService.set('self', JSON.stringify(user), this.getTokenExpirationDate(this.getToken()), '/');
+        tmpUser.privateVoteList = null;
+        tmpUser.startedVotes = null;
+        tmpUser.votedVotes = null;
+        this.cookieService.set('self', JSON.stringify(tmpUser), this.getTokenExpirationDate(this.getToken()), '/');
     }
 
     removeSelfUser(): void {

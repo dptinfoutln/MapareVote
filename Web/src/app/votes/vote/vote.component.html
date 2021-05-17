@@ -11,34 +11,40 @@
             <div *ngIf="isVoted">
                 <span class="badge bg-warning text-dark mb-2">Vous avez déjà voté</span>
             </div>
+            <div class="alert alert-warning alert-dismissible fade show text-center" role="alert"
+                 *ngIf="isVoted && vote.anonymous">
+                Ce vote est anonyme, nous ne pouvons donc pas vous afficher les choix que vous avez sélectionné
+            </div>
             <div *ngIf="!isVoted">
                 <span *ngIf="!isVoted && vote.algo !== 'majority'" placement="top" ngbTooltip="Vous devez trier la liste des choix par ordre de préférence" class="badge alert-info text-dark mb-2"><fa-icon [icon]="['fas', 'info-circle']"></fa-icon> Choix : Préférence</span>
                 <span *ngIf="isVoted || vote.algo === 'majority'" placement="top" ngbTooltip="Vous devez sélectionner le/les choix que vous préférez" class="badge alert-info text-dark mb-2"><fa-icon [icon]="['fas', 'info-circle']"></fa-icon> Choix : Majoritaire</span>
             </div>
-            <form name="voteForm mb-3" (ngSubmit)="onSubmit()">
-                <div class="row mb-5">
-                    <ul cdkDropList class="list-group list" [ngClass]="{'col-10': !isVoted && vote.algo !== 'majority'}" (cdkDropListDropped)="drop($event)">
-                        <li class="list-group-item" [ngClass]="{'box': !isVoted && vote.algo !== 'majority'}"
-                            *ngFor="let choice of vote.choices; let index = index" cdkDrag
-                            [cdkDragDisabled]="isVoted || vote.algo === 'majority'">
-                            <div class="placeholder" *cdkDragPlaceholder></div>
-                            <div>
-                                <label style="font-size: large">
-                                    <input [disabled]="isVoted" (change)="onChecked($event)" name="choices" #choices
-                                           id="choice{{choice.id}}" [type]="btnType" value="{{choice.id}}">
-                                    {{choice.names}}
-                                </label>
-                            </div>
-                            <fa-icon *ngIf="!isVoted && vote.algo !== 'majority'" [icon]="['fas', 'grip-lines']"></fa-icon>
-                        </li>
-                    </ul>
-                    <div *ngIf="!isVoted && vote.algo !== 'majority'" class="col h-auto w-auto d-flex flex-column align-items-center justify-content-between">
-                        <fa-icon [icon]="['fas', 'heart']" class="text-success"></fa-icon>
-                        <div class="h-100 progress green-red-gradient-background" style="width: 7px"></div>
-                        <fa-icon [icon]="['fas', 'poop']" class="text-danger"></fa-icon>
+            <form name="voteForm mb-3" (ngSubmit)="onSubmit()" *ngIf="!(isVoted && vote.anonymous)">
+                <div class="ps-3 pe-3">
+                    <div class="row mb-5">
+                        <ul cdkDropList class="list-group list" [ngClass]="{'col-10': vote.algo !== 'majority'}" (cdkDropListDropped)="drop($event)">
+                            <li class="list-group-item" [ngClass]="{'box': !isVoted && vote.algo !== 'majority'}"
+                                *ngFor="let choice of choices; let index = index" cdkDrag
+                                [cdkDragDisabled]="isVoted || vote.algo === 'majority'">
+                                <div class="placeholder" *cdkDragPlaceholder></div>
+                                <div>
+                                    <label style="font-size: large">
+                                        <input [disabled]="isVoted" (change)="onChecked($event)" name="choices" #choices
+                                               id="choice{{choice.id}}" [type]="btnType" value="{{choice.id}}">
+                                        {{choice.names}}
+                                    </label>
+                                </div>
+                                <fa-icon *ngIf="!isVoted && vote.algo !== 'majority'" [icon]="['fas', 'grip-lines']"></fa-icon>
+                            </li>
+                        </ul>
+                        <div *ngIf="vote.algo !== 'majority'" class="col h-auto w-auto d-flex flex-column align-items-center justify-content-between">
+                            <fa-icon [icon]="['fas', 'heart']" class="text-success"></fa-icon>
+                            <div class="h-100 progress green-red-gradient-background" style="width: 7px"></div>
+                            <fa-icon [icon]="['fas', 'poop']" class="text-danger"></fa-icon>
+                        </div>
                     </div>
                 </div>
-                <button *ngIf="!isVoted" [disabled]="this.choices.length < 1" class="btn btn-primary mb-2" #submitBtn
+                <button *ngIf="!isVoted" [disabled]="choices.length < 1" class="btn btn-primary mb-2" #submitBtn
                         type="submit">
                     <span *ngIf="isPending" class="spinner-border spinner-border-sm" role="status"
                           aria-hidden="true"></span>
