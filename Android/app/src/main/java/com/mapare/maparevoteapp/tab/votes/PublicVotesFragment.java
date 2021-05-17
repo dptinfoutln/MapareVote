@@ -1,12 +1,7 @@
 package com.mapare.maparevoteapp.tab.votes;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.RequestQueue;
@@ -26,16 +21,9 @@ import java.util.Map;
 
 public class PublicVotesFragment extends VotesFragment {
 
-
+    // PublicVotes request
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        // Makes the request
-        publicVotesRequest(getContext(), page, page_size);
-    }
-
-    private void publicVotesRequest(Context context, int page, int page_size) {
+    protected void voteRequest(Context context, int page, int page_size) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
         String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.PUBLIC_VOTE_URL) + "?"
@@ -66,16 +54,16 @@ public class PublicVotesFragment extends VotesFragment {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<>();
-                params.put("Accept", "application/json; charset=utf-8");
+                params.put("Accept", "application/json; charset=utf8");
                 return params;
             }
 
             @Override
             protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                String totalVotes = response.headers.get("votecount");
-                Log.i("header_totalVotes", totalVotes);
-                String totalPages = response.headers.get("pagecount");
-                Log.i("header_totalPages", totalPages);
+                int totalPages = (int) Float.parseFloat(response.headers.get("pagecount"));
+                totalPages = totalPages == 0 ? 1 : totalPages;
+                context.getSharedPreferences("Filter", Context.MODE_PRIVATE).edit().putInt("total_pages", totalPages).apply();
+                Log.i("pub_header_totalPages", totalPages+"");
                 return super.parseNetworkResponse(response);
             }
         };

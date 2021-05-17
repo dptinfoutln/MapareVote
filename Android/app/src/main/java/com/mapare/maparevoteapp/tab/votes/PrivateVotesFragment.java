@@ -1,15 +1,12 @@
 package com.mapare.maparevoteapp.tab.votes;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -25,16 +22,9 @@ import java.util.Map;
 
 public class PrivateVotesFragment extends VotesFragment {
 
+    // PrivateVotes request
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-
-        // Makes the request
-        privateVotesRequest(getContext(), page, page_size);
-    }
-
-    private void privateVotesRequest(Context context, int page, int page_size) {
+    protected void voteRequest(Context context, int page, int page_size) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
         String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.PRIVATE_VOTE_URL) + "?"
@@ -69,9 +59,18 @@ public class PrivateVotesFragment extends VotesFragment {
                 Map<String, String> params = new HashMap<>();
 
                 String token = context.getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null);
-                params.put("Accept", "application/json; charset=utf-8");
+                params.put("Accept", "application/json; charset=utf8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
+            }
+
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                int totalPages = (int) Float.parseFloat(response.headers.get("pagecount"));
+                totalPages = totalPages == 0 ? 1 : totalPages;
+                context.getSharedPreferences("Filter", Context.MODE_PRIVATE).edit().putInt("total_pages", totalPages).apply();
+                Log.i("priv_header_totalPages", totalPages+"");
+                return super.parseNetworkResponse(response);
             }
         };
 

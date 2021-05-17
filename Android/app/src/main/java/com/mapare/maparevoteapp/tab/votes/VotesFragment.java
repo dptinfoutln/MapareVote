@@ -2,11 +2,14 @@ package com.mapare.maparevoteapp.tab.votes;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +25,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mapare.maparevoteapp.MainActivity;
 import com.mapare.maparevoteapp.R;
 import com.mapare.maparevoteapp.VoteActivity;
 import com.mapare.maparevoteapp.adapter.VoteAdapter;
@@ -40,9 +44,11 @@ public class VotesFragment extends Fragment {
     protected Vote vote;
     protected User voter;
 
-    protected int page;
-    protected int page_size;
+    SharedPreferences.OnSharedPreferenceChangeListener listener;
 
+    protected int page = 1;
+    protected int page_size;
+    int totalPages;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -57,12 +63,47 @@ public class VotesFragment extends Fragment {
         ListView listView = view.findViewById(R.id.vote_list);
         TextView availability = view.findViewById(R.id.vote_availability);
 
+        LinearLayout btn_layout = view.findViewById(R.id.vote_btnLay);
+        Button prev = view.findViewById(R.id.vote_prevButton);
+        prev.setOnClickListener(v -> voteRequest(getContext(), --page, page_size));
+        Button next = view.findViewById(R.id.vote_nextButton);
+        next.setOnClickListener(v -> voteRequest(getContext(), ++page, page_size));
+
+        Button first = view.findViewById(R.id.vote_firstButton);
+        first.setOnClickListener(v -> voteRequest(getContext(), page=1, page_size));
+
+        Button last = view.findViewById(R.id.vote_lastButton);
+        last.setOnClickListener(v -> voteRequest(getContext(), page=totalPages, page_size));
+
+
         LOADING_STATE_CODE = new MutableLiveData<>();
         LOADING_STATE_CODE.observe(requireActivity(), s -> {
             switch (s) {
                 case "fetching all votes successful":
-                    if (voteList.isEmpty())
+                    if (voteList.isEmpty()) {
                         availability.setVisibility(View.VISIBLE);
+                    } else {
+                        // Displays buttons
+                        btn_layout.setVisibility(View.VISIBLE);
+                    }
+                    totalPages = getContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getInt("total_pages", 1);
+                    Log.i("totalpages", totalPages+"");
+
+                    // Buttons displaying
+                    prev.setEnabled(true);
+                    next.setEnabled(true);
+                    if (page == 1)
+                        prev.setEnabled(false);
+                    if (page == totalPages)
+                        next.setEnabled(false);
+                    if (page <= 2)
+                        first.setVisibility(View.INVISIBLE);
+                    else
+                        first.setVisibility(View.VISIBLE);
+                    if (page >= totalPages - 1)
+                        last.setVisibility(View.INVISIBLE);
+                    else
+                        last.setVisibility(View.VISIBLE);
 
                     VoteAdapter adapter = new VoteAdapter(getContext(), voteList);
                     listView.setAdapter(adapter);
@@ -94,6 +135,8 @@ public class VotesFragment extends Fragment {
                     // Navigate to login page because access is denied
                     requireContext().getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("go_to", "login page").apply();
                     break;
+                default:
+                    break;
             }
         });
         listView.setOnItemClickListener((parent, view1, position, id) -> {
@@ -106,9 +149,21 @@ public class VotesFragment extends Fragment {
 
 
         });
-        // TODO: pagination
-        page = 1;
-        page_size = 200;
+        // TODO: filter
+        page_size = getContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getInt("page_size", 20);
+
+        listener = (prefs, key) -> {
+            if (key.equals("page_size")) {
+                page_size = prefs.getInt(key, 20);
+                Log.i("page_size", page_size+"");
+                voteRequest(getContext(), page=1, page_size);
+            }
+        };
+
+        getContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).registerOnSharedPreferenceChangeListener(listener);
+
+        // Makes the request
+        voteRequest(getContext(), page, page_size);
     }
 
     private void getVoteRequest(Context context, int id) {
@@ -144,7 +199,7 @@ public class VotesFragment extends Fragment {
 
                 String token = context.getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null);
                 Log.i("token", token + "");
-                params.put("Accept", "application/json; charset=utf-8");
+                params.put("Accept", "application/json; charset=utf8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
             }
@@ -190,7 +245,7 @@ public class VotesFragment extends Fragment {
                 Map<String, String> params = new HashMap<>();
 
                 String token = context.getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null);
-                params.put("Accept", "application/json; charset=utf-8");
+                params.put("Accept", "application/json; charset=utf8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
             }
@@ -198,5 +253,12 @@ public class VotesFragment extends Fragment {
 
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
+    }
+
+    protected void voteRequest(Context context, int page, int page_size) {}
+
+    @Override
+    public Context getContext() {
+        return MainActivity.getContext();
     }
 }
