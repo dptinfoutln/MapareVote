@@ -10,6 +10,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Adapter;
+import android.widget.ImageView;
+import androidx.appcompat.widget.SearchView;
+
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
+import com.mapare.maparevoteapp.adapter.SortAdapter;
 import com.mapare.maparevoteapp.model.entity_to_receive.User;
 
 import androidx.annotation.NonNull;
@@ -37,10 +43,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -52,32 +58,36 @@ public class MainActivity extends AppCompatActivity {
     // Needs to be here (don't listen to IDE)
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
+    // Needed for filters
     int progressValueOfPageSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        AppContext = this;
-
-        // Clear filter cache
-        getSharedPreferences("Filter", MODE_PRIVATE).edit().remove("page_size").apply();
-
         setContentView(R.layout.activity_main);
 
+        AppContext = this; // To make our own getContext() accross the classes
+
+        // Clear filters cache
+        getSharedPreferences("Filter", MODE_PRIVATE).edit().remove("page_size").apply();
+        getSharedPreferences("Filter", MODE_PRIVATE).edit().remove("open_vote").apply();
+        getSharedPreferences("Filter", MODE_PRIVATE).edit().remove("search").apply();
+        getSharedPreferences("Filter", MODE_PRIVATE).edit().putString("sorting_by", getResources().getString(R.string.none_sort)).apply();
+
+
+        LayoutInflater inflater = this.getLayoutInflater();
         // Popup for choosing page size
         AlertDialog.Builder pageSizeBuilder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = this.getLayoutInflater();
-        View appBarView = inflater.inflate(R.layout.dialog_page_size, null);
-        pageSizeBuilder.setView(appBarView);
-        SeekBar seekBar = appBarView.findViewById(R.id.dialog_seekBar);
+        View dialogViewPageSize = inflater.inflate(R.layout.dialog_page_size, null);
+        pageSizeBuilder.setView(dialogViewPageSize);
+        SeekBar seekBar = dialogViewPageSize.findViewById(R.id.dialog_seekBar);
         seekBar.setMin(10);
         seekBar.setMax(150);
         seekBar.setKeyProgressIncrement(10);
         int value = getSharedPreferences("Filter", MODE_PRIVATE).getInt("page_size", 20);
         seekBar.setProgress(value);
 
-        TextView seekText = appBarView.findViewById(R.id.dialog_seekText);
+        TextView seekText = dialogViewPageSize.findViewById(R.id.dialog_seekText);
         String progressText = "Nombre de votes par page : " + value;
         seekText.setText(progressText);
 
@@ -101,8 +111,20 @@ public class MainActivity extends AppCompatActivity {
         });
         pageSizeBuilder.setPositiveButton("OK", (dialog, which) -> getSharedPreferences("Filter", MODE_PRIVATE).edit().putInt("page_size", progressValueOfPageSize).apply());
         pageSizeBuilder.setNegativeButton("Annuler", (dialog, which) -> {});
-
         AlertDialog pageSizeDialog = pageSizeBuilder.create();
+
+        //Popup for sorting
+        AlertDialog.Builder sortBuilder = new AlertDialog.Builder(this);
+        View dialogViewSort = inflater.inflate(R.layout.dialog_sort, null);
+        sortBuilder.setView(dialogViewSort);
+        ListView listViewSort = dialogViewSort.findViewById(R.id.sort_list);
+        String savePicked = getSharedPreferences("Filter", MODE_PRIVATE).getString("sorting_by", getResources().getString(R.string.none_sort));
+        List<String> sortList = getSortList();
+        SortAdapter adapterSort = new SortAdapter(this, sortList, savePicked);
+        listViewSort.setAdapter(adapterSort);
+        sortBuilder.setPositiveButton("OK", (dialog, which) -> getSharedPreferences("Filter", MODE_PRIVATE).edit().putString("sorting_by", adapterSort.getSortPicked()).apply());
+        AlertDialog sortDialog = sortBuilder.create();
+
 
 
         // Toolbar setup
@@ -112,12 +134,16 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.app_bar_open_votes) {
                 item.setChecked(!item.isChecked());
+                getSharedPreferences("Filter", MODE_PRIVATE).edit().putBoolean("open_vote", item.isChecked()).apply();
             } else if (item.getItemId() == R.id.app_bar_page_size) {
                 pageSizeDialog.show();
+            } else if (item.getItemId() == R.id.app_bar_sort) {
+                sortDialog.show();
             }
-
             return false;
         });
+//
+
 
         // TODO: Need to have a look (QRcode, nfc)
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -158,8 +184,6 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_logout) {
-                Log.i("debug", "clicked");
-
                 Toast.makeText(getBaseContext(), "Déconnecté", Toast.LENGTH_SHORT).show();
                 getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("token", null).apply();
                 getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("name", "##erased##").apply();
@@ -178,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
             // If already on the page that you want to navigate , doesn't reload the page
-            if( !(navigationView.getMenu().findItem(R.id.nav_publicVotes).isChecked() && id == R.id.nav_publicVotes) ) {
+            if( !(item.isChecked() && id == item.getItemId()) ) {
                 // This is for maintaining the behavior of the Navigation view
                 NavigationUI.onNavDestinationSelected(item, navController);
             }
@@ -212,7 +236,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         listener = (prefs, key) -> {
-            Log.i("key", key);
             String content = prefs.getString(key, null);
             // To know when the user switch between login and logout
             switch (key) {
@@ -249,7 +272,6 @@ public class MainActivity extends AppCompatActivity {
                     // If navigation is needed
                     break;
                 case "go_to":
-                    Log.i("listener", content + "");
                     switch (content) {
                         case "login page":
                             navController.navigate(R.id.nav_login);
@@ -275,12 +297,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // Handle back click to close menu
-        Log.i("backPressed", "touche détectée");
         if (this.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            Log.i("backPressed", "executé");
             this.drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            Log.i("backPressed", "non executé");
             super.onBackPressed();
         }
     }
@@ -289,6 +308,36 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        // Search feature in toolbar
+        MenuItem searchMenu = menu.findItem(R.id.app_bar_search);
+        SearchView searchView = (SearchView) searchMenu.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (query.equals("##code##EMPTY##code##")) //needed because setQuery() is not doing empty query like ""
+                    query = "";
+                getSharedPreferences("Filter", MODE_PRIVATE).edit().putString("search", query).apply();
+                return true;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        ImageView closeButton = searchView.findViewById(R.id.search_close_btn);
+        closeButton.setOnClickListener(v -> {
+            //Clear query
+            searchView.setQuery("##code##EMPTY##code##", true);
+            // Collapse the action view
+            searchView.onActionViewCollapsed();
+            //Collapse the search widget
+            searchMenu.collapseActionView();
+        });
+        searchView.setOnSearchClickListener(v -> {
+            String search_key = getSharedPreferences("Filter", MODE_PRIVATE).getString("search", "");
+            searchView.setQuery(search_key, false);
+        });
+
         return true;
     }
 
@@ -314,7 +363,6 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         User user = objectMapper.readValue(response, User.class);
                         prefs.edit().putString("name", user.getFirstname() + "\t" + user.getName()).apply();
-                        Log.i("getMe", response);
                     } catch (IOException e) { // shouldn't happen
                         e.printStackTrace();
                     }
@@ -343,5 +391,15 @@ public class MainActivity extends AppCompatActivity {
 
     public static Context getContext() {
         return AppContext;
+    }
+
+    // Defines all sorting by in here
+    private List<String> getSortList() {
+        List<String> sortList = new ArrayList<>();
+        sortList.add(getResources().getString(R.string.none_sort));
+        sortList.add(getResources().getString(R.string.name_sort));
+        sortList.add(getResources().getString(R.string.voters_sort));
+        sortList.add(getResources().getString(R.string.startDate_sort));
+        return sortList;
     }
 }

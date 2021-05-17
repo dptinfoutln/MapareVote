@@ -59,7 +59,6 @@ public class RegisterFragment extends Fragment {
             InputMethodManager inputMethodManager = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             switch (s) {
                 case "Registration successful":
-                    Log.i("debug", "enregistré");
 
                     Toast.makeText(getContext(), "Création du compte réussie", Toast.LENGTH_SHORT).show();
 
@@ -74,12 +73,10 @@ public class RegisterFragment extends Fragment {
                     break;
                 case "Server not responding":
                     // Manage ...
-                    Log.i("debug", "problème serveur");
 
                     break;
                 case "Wrong inputs":
                     // Manage ...
-                    Log.i("debug", "Informations rentrées non valides");
 
                     Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake);
                     emailField.setError(getResources().getString(R.string.incorrect_email));
@@ -142,10 +139,10 @@ public class RegisterFragment extends Fragment {
         StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.POST, url,
                 response -> {
                     REGISTERED_STATE_CODE.setValue("Registration successful");
-                    Log.i("debug", "requête réussi: " + response);
-                }, error -> {
+
+                    }, error -> {
                     // TODO: manage different types of errors
-                    Log.i("debug", "requête non réussi: " + error);
+
                     REGISTERED_STATE_CODE.setValue("Wrong inputs");
                 })
         {

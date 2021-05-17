@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class VotesFragment extends Fragment {
     protected List<Vote> voteList;
@@ -46,9 +47,13 @@ public class VotesFragment extends Fragment {
 
     SharedPreferences.OnSharedPreferenceChangeListener listener;
 
+    // Filters
     protected int page = 1;
     protected int page_size;
-    int totalPages;
+    protected String search;
+    protected String sorting_by;
+    protected Boolean open_vote;
+    private int totalPages;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -65,15 +70,15 @@ public class VotesFragment extends Fragment {
 
         LinearLayout btn_layout = view.findViewById(R.id.vote_btnLay);
         Button prev = view.findViewById(R.id.vote_prevButton);
-        prev.setOnClickListener(v -> voteRequest(getContext(), --page, page_size));
+        prev.setOnClickListener(v -> voteRequest(getContext(), --page, page_size, search, open_vote, sorting_by));
         Button next = view.findViewById(R.id.vote_nextButton);
-        next.setOnClickListener(v -> voteRequest(getContext(), ++page, page_size));
+        next.setOnClickListener(v -> voteRequest(getContext(), ++page, page_size, search, open_vote, sorting_by));
 
         Button first = view.findViewById(R.id.vote_firstButton);
-        first.setOnClickListener(v -> voteRequest(getContext(), page=1, page_size));
+        first.setOnClickListener(v -> voteRequest(getContext(), page=1, page_size, search, open_vote, sorting_by));
 
         Button last = view.findViewById(R.id.vote_lastButton);
-        last.setOnClickListener(v -> voteRequest(getContext(), page=totalPages, page_size));
+        last.setOnClickListener(v -> voteRequest(getContext(), page=totalPages, page_size, search, open_vote, sorting_by));
 
 
         LOADING_STATE_CODE = new MutableLiveData<>();
@@ -83,11 +88,11 @@ public class VotesFragment extends Fragment {
                     if (voteList.isEmpty()) {
                         availability.setVisibility(View.VISIBLE);
                     } else {
+                        availability.setVisibility(View.INVISIBLE);
                         // Displays buttons
                         btn_layout.setVisibility(View.VISIBLE);
                     }
-                    totalPages = getContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getInt("total_pages", 1);
-                    Log.i("totalpages", totalPages+"");
+                    totalPages = requireContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getInt("total_pages", 1);
 
                     // Buttons displaying
                     prev.setEnabled(true);
@@ -149,21 +154,39 @@ public class VotesFragment extends Fragment {
 
 
         });
-        // TODO: filter
-        page_size = getContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getInt("page_size", 20);
+        // Filters
+        page_size = requireContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getInt("page_size", 20);
+        search =  requireContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getString("search", "");
+        open_vote = requireContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getBoolean("open_vote", false);
+        sorting_by = getSort(requireContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getString("sorting_by", requireContext().getResources().getString(R.string.none_sort)));
 
         listener = (prefs, key) -> {
-            if (key.equals("page_size")) {
-                page_size = prefs.getInt(key, 20);
-                Log.i("page_size", page_size+"");
-                voteRequest(getContext(), page=1, page_size);
+            switch (key) {
+                case "page_size":
+                    page_size = prefs.getInt(key, 20);
+                    voteRequest(getContext(), page = 1, page_size, search, open_vote, sorting_by);
+                    break;
+                case "search":
+                    search = prefs.getString(key, "");
+                    voteRequest(getContext(), page = 1, page_size, search, open_vote, sorting_by);
+                    break;
+                case "open_vote":
+                    open_vote = prefs.getBoolean(key, false);
+                    voteRequest(getContext(), page = 1, page_size, search, open_vote, sorting_by);
+                    break;
+                case "sorting_by":
+                    sorting_by = prefs.getString(key, getResources().getString(R.string.none_sort));
+                    sorting_by = getSort(sorting_by);
+                    voteRequest(getContext(), page = 1, page_size, search, open_vote, sorting_by);
+                    break;
             }
+
         };
 
-        getContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).registerOnSharedPreferenceChangeListener(listener);
+        requireContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).registerOnSharedPreferenceChangeListener(listener);
 
         // Makes the request
-        voteRequest(getContext(), page, page_size);
+        voteRequest(getContext(), page, page_size, search, open_vote, sorting_by);
     }
 
     private void getVoteRequest(Context context, int id) {
@@ -188,7 +211,6 @@ public class VotesFragment extends Fragment {
 
                 }, error -> {
             // TODO: manage different types of errors
-            Log.i("vote_request", "requête non réussi: " + error.toString());
             if (error instanceof AuthFailureError) {
                 LOADING_STATE_CODE.setValue("session expired");
             }
@@ -198,7 +220,6 @@ public class VotesFragment extends Fragment {
                 Map<String, String> params = new HashMap<>();
 
                 String token = context.getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null);
-                Log.i("token", token + "");
                 params.put("Accept", "application/json; charset=utf8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
@@ -231,7 +252,6 @@ public class VotesFragment extends Fragment {
 
                 }, error -> {
             // TODO: manage different types of errors
-            Log.i("voter_request", "requête non réussi: " + error.toString());
             if (error instanceof AuthFailureError) {
                 if (context.getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null) != null)
                     LOADING_STATE_CODE.setValue("session expired");
@@ -255,10 +275,23 @@ public class VotesFragment extends Fragment {
         queue.add(stringRequest);
     }
 
-    protected void voteRequest(Context context, int page, int page_size) {}
+    protected void voteRequest(Context context, int page, int page_size, String search, Boolean open_vote, String sorting_by) {}
 
     @Override
     public Context getContext() {
         return MainActivity.getContext();
+    }
+
+    private String getSort(String name) {
+        if (name.equals(getResources().getString(R.string.none_sort))) {
+            name = null;
+        } else if (name.equals(getResources().getString(R.string.name_sort))) {
+            name = getResources().getString(R.string.NAME_SORT_VALUE);
+        } else if (name.equals(getResources().getString(R.string.voters_sort))) {
+            name = getResources().getString(R.string.VOTES_SORT_VALUE);
+        } else if (name.equals(getResources().getString(R.string.startDate_sort))) {
+            name = getResources().getString(R.string.STARTDATE_SORT_VALUE);
+        }
+        return name;
     }
 }

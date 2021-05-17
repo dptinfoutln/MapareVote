@@ -94,7 +94,7 @@ public class VoteActivity extends AppCompatActivity {
                 Toast.makeText(this, "Vous n'avez pas fait de choix", Toast.LENGTH_SHORT).show();
             } else {
                 // fetch the choices picked
-                for (int id : adapter.getPickedOnes().keySet()) {
+                for (int id : adapter.getPickedOnes().keySet()) {  // <-- exception can't happen --'
                     pickedChoices.add(new BallotChoice(new Choice(id), adapter.getPickedOnes().get(id)));
                 }
                 // Makes the request to vote
@@ -187,7 +187,6 @@ public class VoteActivity extends AppCompatActivity {
     }
 
     private void voteRequest(int id, Ballot ballot) {
-        Log.i("ballotenvoyé", ballot.toString());
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.VOTE_URL) + id + getResources().getString(R.string.BALLOT_URL);
@@ -196,10 +195,9 @@ public class VoteActivity extends AppCompatActivity {
         StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.POST, url,
                 response -> {
                     BALLOT_STATE_CODE.setValue("vote successful");
-                    Log.i("ballot_request", "requête réussi: " + response);
                 }, error -> {
             // TODO: manage different types of errors
-            Log.i("ballot_request", "requête non réussi: " + error);
+
         }) {
             @Override
             public Map<String, String> getHeaders() {
@@ -253,7 +251,6 @@ public class VoteActivity extends AppCompatActivity {
 
                 }, error -> {
             // TODO: manage different types of errors
-            Log.i("ballot_request", "requête non réussi: " + error.toString());
 
         }) {
             @Override
@@ -289,11 +286,9 @@ public class VoteActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     RESULT_STATE_CODE.setValue("fetching results successful");
-                    Log.i("results_response", response);
 
                 }, error -> {
             // TODO: manage different types of errors
-            Log.i("result_request", "requête non réussi: " + error.toString());
 
         }) {
             @Override

@@ -50,8 +50,6 @@ public class LoginFragment extends Fragment {
         CONNECTED_STATE_CODE.observe(requireActivity(), s -> {
             switch (s) {
                 case "Connection successful":
-                    Log.i("debug", "connecté");
-
                     Toast.makeText(getContext(), "Connecté", Toast.LENGTH_SHORT).show();
                     // Hides keyboard
                     InputMethodManager inputMethodManager = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -59,13 +57,11 @@ public class LoginFragment extends Fragment {
                     break;
                 case "Server not responding":
                     // Manage ...
-                    Log.i("debug", "problème serveur");
 
                     loginButton.setClickable(true);
                     break;
                 case "Wrong inputs":
                     // Manage ...
-                    Log.i("debug", "Informations rentrées incorrectes");
 
                     Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake);
                     passwordField.setError(getResources().getString(R.string.incorrect_password));

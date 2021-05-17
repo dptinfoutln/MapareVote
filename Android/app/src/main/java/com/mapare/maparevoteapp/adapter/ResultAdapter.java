@@ -93,7 +93,6 @@ public class ResultAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        Log.i("resultsAdapt", results.toString());
         ChildViewHolder holder;
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.result_list, null);

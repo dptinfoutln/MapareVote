@@ -31,12 +31,29 @@
     <string name="PRIVATE_VOTE_URL">/votes/private/invited""</string>
     <string name="PAGE_FILTER">page_num=</string>
     <string name="PAGE_SIZE_FILTER">page_size=</string>
+    <string name="SEARCH_FILTER">name_like=</string>
+    <string name="OPEN_VOTE_FILTER">open=</string>
+    <string name="SORT_FILTER">sort=</string>
     <string name="VOTE_URL">/votes/</string>
     <string name="BALLOT_URL">/ballots</string>
     <string name="ME_URL">/users/me</string>
     <string name="MYBALLOT_URL">/myballot</string>
     <string name="RESULT_URL">/results</string>
     <string name="MY_VOTES_URL">/votes/startedvotes</string>
+    <string name="NAME_SORT_VALUE">NAME</string>
+    <string name="VOTES_SORT_VALUE">VOTES</string>
+    <string name="STARTDATE_SORT_VALUE">STARTDATE</string>
+
+
+    <!-- Strings related to filters -->
+    <string name="search_filter">Rechercher</string>
+    <string name="open_vote_filter">Vote ouvert seulement</string>
+    <string name="page_size_filter">Votes par page</string>
+    <string name="sort_by_filter">Trier par</string>
+    <string name="none_sort">Aucun</string>
+    <string name="name_sort">Titre</string>
+    <string name="voters_sort">Nombre de voters</string>
+    <string name="startDate_sort">Date de début</string>
 
     <!-- Strings related to navigation menu -->
     <string name="user">Utilisateur</string>
