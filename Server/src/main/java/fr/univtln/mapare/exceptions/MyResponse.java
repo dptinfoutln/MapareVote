@@ -76,7 +76,7 @@ public abstract class MyResponse extends Response {
             Status[] var1 = values();
             int var2 = var1.length;
 
-            for(int var3 = 0; var3 < var2; ++var3) {
+            for (int var3 = 0; var3 < var2; ++var3) {
                 Status s = var1[var3];
                 if (s.getStatusCode() == statusCode) {
                     return s;
@@ -98,7 +98,7 @@ public abstract class MyResponse extends Response {
             }
 
             public static Family familyOf(int statusCode) {
-                switch(statusCode / 100) {
+                switch (statusCode / 100) {
                     case 1:
                         return INFORMATIONAL;
                     case 2:

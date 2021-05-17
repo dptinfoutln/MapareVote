@@ -2,7 +2,10 @@ package fr.univtln.mapare.dao;
 
 import fr.univtln.mapare.exceptions.BusinessException;
 import fr.univtln.mapare.exceptions.ConflictException;
-import fr.univtln.mapare.model.*;
+import fr.univtln.mapare.model.Ballot;
+import fr.univtln.mapare.model.User;
+import fr.univtln.mapare.model.Vote;
+import fr.univtln.mapare.model.VotedVote;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
@@ -25,7 +28,7 @@ public class BallotDAO extends GenericIdDAO<Ballot> {
     public List<Ballot> findAll(int pageIndex, int pageSize) {
         return entityManager.createNamedQuery("Ballot.findAll", Ballot.class)
                 .setMaxResults(pageSize)
-                .setFirstResult((pageIndex-1) * pageSize)
+                .setFirstResult((pageIndex - 1) * pageSize)
                 .getResultList();
 
     }
@@ -38,7 +41,7 @@ public class BallotDAO extends GenericIdDAO<Ballot> {
         return entityManager.createNamedQuery("Ballot.findByVoter", Ballot.class)
                 .setParameter("voter", voter)
                 .setMaxResults(pageSize)
-                .setFirstResult((pageIndex-1) * pageSize)
+                .setFirstResult((pageIndex - 1) * pageSize)
                 .getResultList();
     }
 
@@ -50,7 +53,7 @@ public class BallotDAO extends GenericIdDAO<Ballot> {
         return entityManager.createNamedQuery("Ballot.findByVote", Ballot.class)
                 .setParameter("vote", vote)
                 .setMaxResults(pageSize)
-                .setFirstResult((pageIndex-1) * pageSize)
+                .setFirstResult((pageIndex - 1) * pageSize)
                 .getResultList();
     }
 

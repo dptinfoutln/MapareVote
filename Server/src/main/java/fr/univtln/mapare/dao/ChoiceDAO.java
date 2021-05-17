@@ -24,7 +24,7 @@ public class ChoiceDAO extends GenericIdDAO<Choice> {
     public List<Choice> findAll(int pageIndex, int pageSize) {
         return entityManager.createNamedQuery("Choice.findAll", Choice.class)
                 .setMaxResults(pageSize)
-                .setFirstResult((pageIndex-1) * pageSize)
+                .setFirstResult((pageIndex - 1) * pageSize)
                 .getResultList();
     }
 
@@ -36,7 +36,7 @@ public class ChoiceDAO extends GenericIdDAO<Choice> {
         return entityManager.createNamedQuery("Choice.findByVote", Choice.class)
                 .setParameter("vote", vote)
                 .setMaxResults(pageSize)
-                .setFirstResult((pageIndex-1) * pageSize)
+                .setFirstResult((pageIndex - 1) * pageSize)
                 .getResultList();
     }
 

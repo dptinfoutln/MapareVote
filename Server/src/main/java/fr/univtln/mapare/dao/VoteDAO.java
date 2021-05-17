@@ -32,7 +32,7 @@ public class VoteDAO extends GenericIdDAO<Vote> {
     }
 
     public List<Vote> findAll(VoteQuery voteQuery) {
-        return filterAndSortList("Vote.findAll", null, null , voteQuery);
+        return filterAndSortList("Vote.findAll", null, null, voteQuery);
 
     }
 
@@ -74,7 +74,7 @@ public class VoteDAO extends GenericIdDAO<Vote> {
         if (voteQuery.isOpen())
             voteStream = voteStream.filter(v ->
                     (v.getStartDate().isBefore(LocalDate.now()) || v.getStartDate().isEqual(LocalDate.now())) &&
-                    (v.getEndDate() == null || (v.getEndDate() != null && v.getEndDate().isAfter(LocalDate.now()))));
+                            (v.getEndDate() == null || (v.getEndDate() != null && v.getEndDate().isAfter(LocalDate.now()))));
         if (voteQuery.getExactmatch() != null)
             voteStream = voteStream.filter(v -> v.getLabel().toUpperCase()
                     .contains(voteQuery.getExactmatch().toUpperCase()));

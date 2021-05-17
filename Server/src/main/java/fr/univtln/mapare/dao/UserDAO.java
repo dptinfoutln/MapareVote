@@ -1,7 +1,6 @@
 package fr.univtln.mapare.dao;
 
 import fr.univtln.mapare.model.User;
-import fr.univtln.mapare.model.Vote;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
@@ -24,12 +23,12 @@ public class UserDAO extends GenericIdDAO<User> {
     public List<User> findAll(int pageIndex, int pageSize) {
         return entityManager.createNamedQuery("User.findAll", User.class)
                 .setMaxResults(pageSize)
-                .setFirstResult((pageIndex-1) * pageSize)
+                .setFirstResult((pageIndex - 1) * pageSize)
                 .getResultList();
     }
 
     public User findByEmail(String email) {
-        List<User> userList  = entityManager.createNamedQuery("User.findByEmail", User.class).setParameter("email", email).getResultList();
+        List<User> userList = entityManager.createNamedQuery("User.findByEmail", User.class).setParameter("email", email).getResultList();
         return userList.isEmpty() ? null : userList.get(0);
     }
 }

@@ -14,23 +14,24 @@ public abstract class MailUtils {
     static final String AUTH_LINK = "https://maparevote.siannos.fr/validate/";
     static final String VOTING_LINK = "https://maparevote.siannos.fr/votes/";
 
-    private MailUtils() {}
+    private MailUtils() {
+    }
 
     public static void sendConfirmationMail(User user) {
         sendMail("[MapareVote] Code de confirmation!", user,
                 "Bonjour " + user.getFirstname() + " " + user.getLastname() + "!\n\nVous vous êtes " +
-                "inscrit à MapareVote dans le but de faire connaître votre opinion et d'interroger celle " +
-                "des autres sur des sujets divers et variés.\n\n\n" +
-                "Pour valider votre compte il suffit de cliquer sur le lien suivant: " + AUTH_LINK + user.getId() +
-                "/" + user.getEmailToken() + "\n\n\nSi ce n'est pas le cas, merci d'ignorer ce mail.");
+                        "inscrit à MapareVote dans le but de faire connaître votre opinion et d'interroger celle " +
+                        "des autres sur des sujets divers et variés.\n\n\n" +
+                        "Pour valider votre compte il suffit de cliquer sur le lien suivant: " + AUTH_LINK + user.getId() +
+                        "/" + user.getEmailToken() + "\n\n\nSi ce n'est pas le cas, merci d'ignorer ce mail.");
     }
 
     public static void sendInvitationMail(Vote vote, User invitee) {
         sendMail("[MapareVote] Invitation à un vote!", invitee,
                 "Bonjour " + invitee.getFirstname() + " " + invitee.getLastname() + "!\n\n" +
-                "Vous avez été invité par " + vote.getVotemaker().getFirstname() + " " +
-                vote.getVotemaker().getLastname() + " à participer a un vote privé intitulé: \"" + vote.getLabel() +
-                "\" !\n\nPour participer il vous suffit de cliquer sur ce lien: " + VOTING_LINK + vote.getId() + ".");
+                        "Vous avez été invité par " + vote.getVotemaker().getFirstname() + " " +
+                        vote.getVotemaker().getLastname() + " à participer a un vote privé intitulé: \"" + vote.getLabel() +
+                        "\" !\n\nPour participer il vous suffit de cliquer sur ce lien: " + VOTING_LINK + vote.getId() + ".");
     }
 
     public static void sendMail(String title, User user, String content) {
@@ -39,7 +40,7 @@ public abstract class MailUtils {
         properties.put("mail.smtp.user", SERVER_EMAIL_ADDRESS);
         properties.put("mail.smtp.host", "smtp.gmail.com");
         properties.put("mail.smtp.port", port);
-        properties.put("mail.smtp.starttls.enable","true");
+        properties.put("mail.smtp.starttls.enable", "true");
         properties.put("mail.smtp.debug", "true");
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.socketFactory.port", port);

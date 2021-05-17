@@ -2,7 +2,6 @@ package fr.univtln.mapare.controllers;
 
 import fr.univtln.mapare.dao.VoteDAO;
 import fr.univtln.mapare.model.*;
-import jakarta.persistence.EntityManager;
 
 import java.util.*;
 
