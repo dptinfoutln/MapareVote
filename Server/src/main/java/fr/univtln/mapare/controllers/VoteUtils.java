@@ -5,7 +5,16 @@ import fr.univtln.mapare.model.*;
 
 import java.util.*;
 
+/**
+ * The type Vote utils.
+ */
 public abstract class VoteUtils {
+    /**
+     * Vote results of vote results.
+     *
+     * @param vote the vote
+     * @return the vote results
+     */
     public static VoteResults voteResultsOf(Vote vote) {
         return new VoteResults(vote);
     }
@@ -13,9 +22,17 @@ public abstract class VoteUtils {
     private VoteUtils() {
     }
 
+    /**
+     * The type Vote results.
+     */
     public static class VoteResults implements Runnable {
         private final Vote vote;
 
+        /**
+         * Instantiates a new Vote results.
+         *
+         * @param vote the vote
+         */
         public VoteResults(Vote vote) {
             this.vote = vote;
         }
@@ -25,6 +42,9 @@ public abstract class VoteUtils {
             calculateResults();
         }
 
+        /**
+         * Calculate results.
+         */
         public void calculateResults() {
             if (!vote.isPendingResult()) {
                 vote.setPendingResult(true);
@@ -213,6 +233,11 @@ public abstract class VoteUtils {
     }
 
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         Controllers.init();
         Vote problem = VoteDAO.of(Controllers.getEntityManager()).findById(42);

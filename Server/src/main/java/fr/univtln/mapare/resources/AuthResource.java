@@ -125,6 +125,7 @@ public class AuthResource {
      *
      * @param securityContext the security context
      * @return the base64 encoded JWT Token.
+     * @throws ForbiddenException the forbidden exception
      */
     @GET
     @Path("signin")

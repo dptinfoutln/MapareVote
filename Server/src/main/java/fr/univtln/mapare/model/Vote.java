@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The type Vote.
+ */
 @Data
 @EqualsAndHashCode(of = {"label", "votemaker"})
 @AllArgsConstructor
@@ -99,6 +102,16 @@ public class Vote implements Serializable, Comparable<Vote> {
     @Transient
     private boolean pendingResult = false;
 
+    /**
+     * Instantiates a new Vote.
+     *
+     * @param label     the label
+     * @param startDate the start date
+     * @param endDate   the end date
+     * @param algo      the algo
+     * @param anonymous the anonymous
+     * @param votemaker the votemaker
+     */
     @Builder
     @SneakyThrows
     public Vote(String label, LocalDate startDate, LocalDate endDate, String algo, boolean anonymous, User votemaker) {
@@ -110,16 +123,31 @@ public class Vote implements Serializable, Comparable<Vote> {
         this.votemaker = votemaker;
     }
 
+    /**
+     * Add ballot.
+     *
+     * @param ballot the ballot
+     */
     public void addBallot(Ballot ballot) {
         if (!ballots.contains(ballot))
             ballots.add(ballot);
     }
 
+    /**
+     * Add choice.
+     *
+     * @param choice the choice
+     */
     public void addChoice(Choice choice) {
         if (!choices.contains(choice))
             choices.add(choice);
     }
 
+    /**
+     * Add member.
+     *
+     * @param member the member
+     */
     public void addMember(User member) {
         if (!members.contains(member))
             members.add(member);
@@ -127,15 +155,30 @@ public class Vote implements Serializable, Comparable<Vote> {
 
     private static final transient List<String> algolist = Arrays.asList("majority", "borda", "STV");
 
+    /**
+     * Gets algolist.
+     *
+     * @return the algolist
+     */
     public static List<String> getAlgolist() {
         return algolist;
     }
 
+    /**
+     * Is public boolean.
+     *
+     * @return the boolean
+     */
     @JsonIgnore
     public boolean isPublic() {
         return members.isEmpty();
     }
 
+    /**
+     * Is private boolean.
+     *
+     * @return the boolean
+     */
     @JsonIgnore
     public boolean isPrivate() {
         return !isPublic();
@@ -157,6 +200,11 @@ public class Vote implements Serializable, Comparable<Vote> {
                 '}';
     }
 
+    /**
+     * Has results boolean.
+     *
+     * @return the boolean
+     */
     public boolean hasResults() {
         return resultList.isEmpty();
     }

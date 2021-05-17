@@ -16,8 +16,19 @@ import jakarta.ws.rs.core.SecurityContext;
 
 import java.util.List;
 
+/**
+ * The type User resource.
+ */
 @Path("users")
 public class UserResource {
+    /**
+     * Gets users.
+     *
+     * @param pagenum  the pagenum
+     * @param pagesize the pagesize
+     * @return the users
+     * @throws NotFoundException the not found exception
+     */
     @GET
     public List<User> getUsers(@DefaultValue("1") @QueryParam("page_num") int pagenum,
                                @DefaultValue("20") @QueryParam("page_size") int pagesize) throws NotFoundException {
@@ -25,12 +36,24 @@ public class UserResource {
         return UserDAO.of(Controllers.getEntityManager()).findAll();
     }
 
+    /**
+     * Gets user.
+     *
+     * @param id the id
+     * @return the user
+     */
     @GET
     @Path("{id}")
     public User getUser(@PathParam("id") int id) {
         return UserDAO.of(Controllers.getEntityManager()).findById(id);
     }
 
+    /**
+     * Gets self.
+     *
+     * @param securityContext the security context
+     * @return the self
+     */
     @GET
     @JWTAuth
     @Path("me")
@@ -38,6 +61,13 @@ public class UserResource {
         return (User) securityContext.getUserPrincipal();
     }
 
+    /**
+     * Add user user.
+     *
+     * @param user the user
+     * @return the user
+     * @throws BusinessException the business exception
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public User addUser(User user) throws BusinessException {
@@ -68,6 +98,16 @@ public class UserResource {
         return user;
     }
 
+    /**
+     * Delete user int.
+     *
+     * @param securityContext the security context
+     * @param id              the id
+     * @return the int
+     * @throws NotFoundException     the not found exception
+     * @throws UnauthorizedException the unauthorized exception
+     * @throws ForbiddenException    the forbidden exception
+     */
     @DELETE
     @JWTAuth
     @Path("{id}")
@@ -92,6 +132,16 @@ public class UserResource {
         return 0;
     }
 
+    /**
+     * Ban user int.
+     *
+     * @param securityContext the security context
+     * @param id              the id
+     * @return the int
+     * @throws ForbiddenException    the forbidden exception
+     * @throws NotFoundException     the not found exception
+     * @throws UnauthorizedException the unauthorized exception
+     */
     @JWTAuth
     @PATCH
     @Path("{id}/ban")
@@ -121,6 +171,15 @@ public class UserResource {
         return 0;
     }
 
+    /**
+     * Validate user string.
+     *
+     * @param id    the id
+     * @param token the token
+     * @return the string
+     * @throws NotFoundException the not found exception
+     * @throws ConflictException the conflict exception
+     */
     @GET
     @Path("{id}/validate/{token}")
     public String validateUser(@PathParam("id") int id, @PathParam("token") String token)

@@ -3,6 +3,9 @@ package fr.univtln.mapare.resources;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * The type Vote query.
+ */
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @ToString

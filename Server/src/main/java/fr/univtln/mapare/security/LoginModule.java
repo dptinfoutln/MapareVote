@@ -36,6 +36,7 @@ public class LoginModule {
      * @param lastname  the lastname
      * @param email     the email
      * @param password  the password
+     * @throws BusinessException the business exception
      */
     public void addUser(String firstname, String lastname, String email, String password) throws BusinessException {
         User user = User.builder().firstname(firstname).lastname(lastname).email(email).password(password).build();
@@ -47,7 +48,6 @@ public class LoginModule {
      *
      * @return the users
      */
-
     public List<User> getUsers() {
         return UserDAO.of(Controllers.getEntityManager()).findAll();
     }
@@ -86,6 +86,11 @@ public class LoginModule {
         return UserDAO.of(Controllers.getEntityManager()).findByEmail(email);
     }
 
+    /**
+     * Logout boolean.
+     *
+     * @return the boolean
+     */
     @SuppressWarnings("SameReturnValue")
     public boolean logout() {
         return false;

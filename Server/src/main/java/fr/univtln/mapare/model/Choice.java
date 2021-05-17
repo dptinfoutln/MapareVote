@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * The type Choice.
+ */
 @Data
 @EqualsAndHashCode(of = {"id", "vote", "names"})
 @AllArgsConstructor
@@ -22,6 +25,9 @@ import java.util.List;
         @NamedQuery(name = "Choice.findByVote", query = "SELECT C FROM Choice C WHERE C.vote = :vote")
 })
 public class Choice implements Serializable {
+    /**
+     * The Id.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
@@ -38,6 +44,12 @@ public class Choice implements Serializable {
     @JoinColumn(nullable = false, name = "\"vote\"")
     private Vote vote;
 
+    /**
+     * Instantiates a new Choice.
+     *
+     * @param names the names
+     * @param vote  the vote
+     */
     @Builder
     @SneakyThrows
     public Choice(List<String> names, Vote vote) {
@@ -45,6 +57,11 @@ public class Choice implements Serializable {
         this.vote = vote;
     }
 
+    /**
+     * Add name.
+     *
+     * @param name the name
+     */
     public void addName(String name) {
         if (!names.contains(name))
             names.add(name);

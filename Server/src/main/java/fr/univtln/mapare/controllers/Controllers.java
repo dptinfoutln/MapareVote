@@ -42,6 +42,11 @@ public class Controllers {
             throw new IllegalStateException("EMF uninitialized.");
     }
 
+    /**
+     * Is open boolean.
+     *
+     * @return the boolean
+     */
     public static boolean isOpen() {
         return entityManager != null;
     }

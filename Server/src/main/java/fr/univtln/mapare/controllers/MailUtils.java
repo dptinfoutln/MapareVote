@@ -8,15 +8,35 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
+/**
+ * The type Mail utils.
+ */
 public abstract class MailUtils {
+    /**
+     * The Server email address.
+     */
     static final String SERVER_EMAIL_ADDRESS = "maparevote@gmail.com";
+    /**
+     * The Server password.
+     */
     static final String SERVER_PASSWORD = "alfrni666";
+    /**
+     * The Auth link.
+     */
     static final String AUTH_LINK = "https://maparevote.siannos.fr/validate/";
+    /**
+     * The Voting link.
+     */
     static final String VOTING_LINK = "https://maparevote.siannos.fr/votes/";
 
     private MailUtils() {
     }
 
+    /**
+     * Send confirmation mail.
+     *
+     * @param user the user
+     */
     public static void sendConfirmationMail(User user) {
         sendMail("[MapareVote] Code de confirmation!", user,
                 "Bonjour " + user.getFirstname() + " " + user.getLastname() + "!\n\nVous vous êtes " +
@@ -26,6 +46,12 @@ public abstract class MailUtils {
                         "/" + user.getEmailToken() + "\n\n\nSi ce n'est pas le cas, merci d'ignorer ce mail.");
     }
 
+    /**
+     * Send invitation mail.
+     *
+     * @param vote    the vote
+     * @param invitee the invitee
+     */
     public static void sendInvitationMail(Vote vote, User invitee) {
         sendMail("[MapareVote] Invitation à un vote!", invitee,
                 "Bonjour " + invitee.getFirstname() + " " + invitee.getLastname() + "!\n\n" +
@@ -34,6 +60,13 @@ public abstract class MailUtils {
                         "\" !\n\nPour participer il vous suffit de cliquer sur ce lien: " + VOTING_LINK + vote.getId() + ".");
     }
 
+    /**
+     * Send mail.
+     *
+     * @param title   the title
+     * @param user    the user
+     * @param content the content
+     */
     public static void sendMail(String title, User user, String content) {
         int port = 465;
         Properties properties = new Properties();
@@ -73,9 +106,17 @@ public abstract class MailUtils {
         }
     }
 
+    /**
+     * The type Confirmation mail sender.
+     */
     public static class ConfirmationMailSender implements Runnable {
         private final User user;
 
+        /**
+         * Instantiates a new Confirmation mail sender.
+         *
+         * @param user the user
+         */
         public ConfirmationMailSender(User user) {
             this.user = user;
         }
@@ -86,13 +127,27 @@ public abstract class MailUtils {
         }
     }
 
+    /**
+     * Send confirmation to confirmation mail sender.
+     *
+     * @param user the user
+     * @return the confirmation mail sender
+     */
     public static ConfirmationMailSender sendConfirmationTo(User user) {
         return new ConfirmationMailSender(user);
     }
 
+    /**
+     * The type Invitation mail sender.
+     */
     public static class InvitationMailSender implements Runnable {
         private final User user;
 
+        /**
+         * Instantiates a new Invitation mail sender.
+         *
+         * @param user the user
+         */
         public InvitationMailSender(User user) {
             this.user = user;
         }
@@ -103,6 +158,12 @@ public abstract class MailUtils {
         }
     }
 
+    /**
+     * Send invitation to invitation mail sender.
+     *
+     * @param user the user
+     * @return the invitation mail sender
+     */
     public static InvitationMailSender sendInvitationTo(User user) {
         return new InvitationMailSender(user);
     }

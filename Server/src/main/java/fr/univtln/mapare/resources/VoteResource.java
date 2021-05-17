@@ -26,8 +26,25 @@ import java.util.stream.Collectors;
 
 import static java.lang.StrictMath.ceil;
 
+/**
+ * The type Vote resource.
+ */
 @Path("votes")
 public class VoteResource {
+    /**
+     * Gets votes.
+     *
+     * @param pagenum    the pagenum
+     * @param pagesize   the pagesize
+     * @param approxname the approxname
+     * @param namestart  the namestart
+     * @param nameend    the nameend
+     * @param algoname   the algoname
+     * @param sortkey    the sortkey
+     * @param order      the order
+     * @param open       the open
+     * @return the votes
+     */
     @GET
     @Path("public")
     public Response getVotes(@QueryParam("page_num") int pagenum,
@@ -44,6 +61,15 @@ public class VoteResource {
         ));
     }
 
+    /**
+     * Gets vote.
+     *
+     * @param securityContext the security context
+     * @param id              the id
+     * @return the vote
+     * @throws NotFoundException  the not found exception
+     * @throws ForbiddenException the forbidden exception
+     */
     @GET
     @JWTAuth
     @Path("{id}")
@@ -81,6 +107,16 @@ public class VoteResource {
             throw new ForbiddenException("You don't have access to this vote's details.");
     }
 
+    /**
+     * Gets vote results.
+     *
+     * @param securityContext the security context
+     * @param id              the id
+     * @return the vote results
+     * @throws NotFoundException  the not found exception
+     * @throws ForbiddenException the forbidden exception
+     * @throws TooEarlyException  the too early exception
+     */
     @GET
     @JWTAuth
     @Path("{id}/results")
@@ -104,6 +140,14 @@ public class VoteResource {
             throw new ForbiddenException();
     }
 
+    /**
+     * Add public vote vote.
+     *
+     * @param securityContext the security context
+     * @param vote            the vote
+     * @return the vote
+     * @throws BusinessException the business exception
+     */
     @POST
     @JWTAuth
     @Path("public")
@@ -119,6 +163,14 @@ public class VoteResource {
         return addVote(vote);
     }
 
+    /**
+     * Add private vote vote.
+     *
+     * @param securityContext the security context
+     * @param vote            the vote
+     * @return the vote
+     * @throws BusinessException the business exception
+     */
     @POST
     @JWTAuth
     @Path("private")
@@ -132,6 +184,13 @@ public class VoteResource {
         return addVote(vote);
     }
 
+    /**
+     * Add vote vote.
+     *
+     * @param vote the vote
+     * @return the vote
+     * @throws BusinessException the business exception
+     */
     public Vote addVote(Vote vote) throws BusinessException {
         if (vote.getLabel() == null)
             throw new ForbiddenException("Please send a title.");
@@ -171,6 +230,15 @@ public class VoteResource {
         return vote;
     }
 
+    /**
+     * Delete vote int.
+     *
+     * @param securityContext the security context
+     * @param id              the id
+     * @return the int
+     * @throws NotFoundException  the not found exception
+     * @throws ForbiddenException the forbidden exception
+     */
     @DELETE
     @JWTAuth
     @Path("{id}")
@@ -194,6 +262,15 @@ public class VoteResource {
         return 0;
     }
 
+    /**
+     * Add ballot ballot.
+     *
+     * @param securityContext the security context
+     * @param id              the id
+     * @param ballot          the ballot
+     * @return the ballot
+     * @throws BusinessException the business exception
+     */
     @POST
     @JWTAuth
     @Path("{id}/ballots")
@@ -266,6 +343,22 @@ public class VoteResource {
         return ballot;
     }
 
+    /**
+     * Gets private votes for user.
+     *
+     * @param securityContext the security context
+     * @param pagenum         the pagenum
+     * @param pagesize        the pagesize
+     * @param approxname      the approxname
+     * @param namestart       the namestart
+     * @param nameend         the nameend
+     * @param algoname        the algoname
+     * @param sortkey         the sortkey
+     * @param order           the order
+     * @param open            the open
+     * @return the private votes for user
+     * @throws ForbiddenException the forbidden exception
+     */
     @GET
     @JWTAuth
     @Path("private/invited")
@@ -288,6 +381,14 @@ public class VoteResource {
                 new VoteQuery(approxname, namestart, nameend, algoname, sortkey, order, open)));
     }
 
+    /**
+     * Gets specific ballotfor user.
+     *
+     * @param securityContext the security context
+     * @param id              the id
+     * @return the specific ballotfor user
+     * @throws ForbiddenException the forbidden exception
+     */
     @GET
     @JWTAuth
     @Path("{id}/myballot")
@@ -304,6 +405,22 @@ public class VoteResource {
             return null;
     }
 
+    /**
+     * Gets started votes.
+     *
+     * @param securityContext the security context
+     * @param pagenum         the pagenum
+     * @param pagesize        the pagesize
+     * @param approxname      the approxname
+     * @param namestart       the namestart
+     * @param nameend         the nameend
+     * @param algoname        the algoname
+     * @param sortkey         the sortkey
+     * @param order           the order
+     * @param open            the open
+     * @return the started votes
+     * @throws ForbiddenException the forbidden exception
+     */
     @GET
     @JWTAuth
     @Path("startedvotes")
@@ -327,6 +444,22 @@ public class VoteResource {
         );
     }
 
+    /**
+     * Gets voted votes.
+     *
+     * @param securityContext the security context
+     * @param pagenum         the pagenum
+     * @param pagesize        the pagesize
+     * @param approxname      the approxname
+     * @param namestart       the namestart
+     * @param nameend         the nameend
+     * @param algoname        the algoname
+     * @param sortkey         the sortkey
+     * @param order           the order
+     * @param open            the open
+     * @return the voted votes
+     * @throws ForbiddenException the forbidden exception
+     */
     @GET
     @JWTAuth
     @Path("votedvotes")

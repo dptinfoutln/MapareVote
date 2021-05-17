@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * The type Ballot.
+ */
 @Data
 @EqualsAndHashCode(of = {"vote", "voter"})
 @AllArgsConstructor
@@ -28,6 +31,9 @@ import java.util.List;
 })
 public class Ballot implements Serializable {
 
+    /**
+     * The Id.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
@@ -48,6 +54,13 @@ public class Ballot implements Serializable {
     @OneToMany(mappedBy = "ballot", cascade = CascadeType.ALL)
     private List<BallotChoice> choices = new ArrayList<>();
 
+    /**
+     * Instantiates a new Ballot.
+     *
+     * @param date  the date
+     * @param vote  the vote
+     * @param voter the voter
+     */
     @Builder
     @SneakyThrows
     public Ballot(LocalDateTime date, Vote vote, User voter) {
@@ -56,6 +69,11 @@ public class Ballot implements Serializable {
         this.voter = voter;
     }
 
+    /**
+     * Add choice.
+     *
+     * @param choice the choice
+     */
     public void addChoice(BallotChoice choice) {
         if (!choices.contains(choice))
             choices.add(choice);

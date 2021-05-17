@@ -9,6 +9,9 @@ import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+/**
+ * The type Voted vote.
+ */
 @Data
 @EqualsAndHashCode(of = {"vote", "user"})
 @AllArgsConstructor
@@ -36,6 +39,12 @@ public class VotedVote implements Serializable {
     @JoinColumn(nullable = false, name = "\"user\"")
     private User user;
 
+    /**
+     * Instantiates a new Voted vote.
+     *
+     * @param vote the vote
+     * @param user the user
+     */
     @Builder
     @SneakyThrows
     public VotedVote(Vote vote, User user) {

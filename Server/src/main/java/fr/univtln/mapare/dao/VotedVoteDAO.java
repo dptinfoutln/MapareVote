@@ -7,8 +7,17 @@ import jakarta.persistence.EntityManager;
 
 import java.util.List;
 
+/**
+ * The type Voted vote dao.
+ */
 public class VotedVoteDAO extends DAO<VotedVote> {
 
+    /**
+     * Of voted vote dao.
+     *
+     * @param entityManager the entity manager
+     * @return the voted vote dao
+     */
     public static VotedVoteDAO of(EntityManager entityManager) {
         return new VotedVoteDAO(entityManager);
     }
@@ -22,11 +31,24 @@ public class VotedVoteDAO extends DAO<VotedVote> {
         return entityManager.createNamedQuery("VotedVotes.findAll", VotedVote.class).getResultList();
     }
 
+    /**
+     * Find by token voted vote.
+     *
+     * @param token the token
+     * @return the voted vote
+     */
     public VotedVote findByToken(String token) {
         List<VotedVote> votedVoteList = entityManager.createNamedQuery("VotedVotes.findByToken", VotedVote.class).setParameter("token", token).getResultList();
         return votedVoteList.isEmpty() ? null : votedVoteList.get(0);
     }
 
+    /**
+     * Find by user vote voted vote.
+     *
+     * @param user the user
+     * @param vote the vote
+     * @return the voted vote
+     */
     public VotedVote findByUserVote(User user, Vote vote) {
         List<VotedVote> votedVoteList = entityManager.createNamedQuery("VotedVotes.findByUser&Vote", VotedVote.class).setParameter("user", user).setParameter("vote", vote).getResultList();
         return votedVoteList.isEmpty() ? null : votedVoteList.get(0);

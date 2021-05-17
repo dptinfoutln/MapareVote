@@ -16,8 +16,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * The type Vote dao.
+ */
 public class VoteDAO extends GenericIdDAO<Vote> {
 
+    /**
+     * Of vote dao.
+     *
+     * @param entityManager the entity manager
+     * @return the vote dao
+     */
     public static VoteDAO of(EntityManager entityManager) {
         return new VoteDAO(entityManager);
     }
@@ -31,35 +40,85 @@ public class VoteDAO extends GenericIdDAO<Vote> {
         return entityManager.createNamedQuery("Vote.findAll", Vote.class).getResultList();
     }
 
+    /**
+     * Find all list.
+     *
+     * @param voteQuery the vote query
+     * @return the list
+     */
     public List<Vote> findAll(VoteQuery voteQuery) {
         return filterAndSortList("Vote.findAll", null, null, voteQuery);
 
     }
 
+    /**
+     * Find by votemaker list.
+     *
+     * @param votemaker the votemaker
+     * @return the list
+     */
     public List<Vote> findByVotemaker(User votemaker) {
         return entityManager.createNamedQuery("Vote.findByVotemaker", Vote.class).setParameter("votemaker", votemaker).getResultList();
     }
 
+    /**
+     * Find by votemaker list.
+     *
+     * @param votemaker the votemaker
+     * @param voteQuery the vote query
+     * @return the list
+     */
     public List<Vote> findByVotemaker(User votemaker, VoteQuery voteQuery) {
         return filterAndSortList("Vote.findByVotemaker", votemaker, "votemaker", voteQuery);
     }
 
+    /**
+     * Find by voter list.
+     *
+     * @param voter     the voter
+     * @param voteQuery the vote query
+     * @return the list
+     */
     public List<Vote> findByVoter(User voter, VoteQuery voteQuery) {
         return filterAndSortList("Vote.findByVoter", voter, "voter", voteQuery);
     }
 
+    /**
+     * Find all public list.
+     *
+     * @return the list
+     */
     public List<Vote> findAllPublic() {
         return entityManager.createNamedQuery("Vote.findPublic", Vote.class).getResultList();
     }
 
+    /**
+     * Find all public list.
+     *
+     * @param voteQuery the vote query
+     * @return the list
+     */
     public List<Vote> findAllPublic(VoteQuery voteQuery) {
         return filterAndSortList("Vote.findPublic", null, null, voteQuery);
     }
 
+    /**
+     * Find private by user list.
+     *
+     * @param user the user
+     * @return the list
+     */
     public List<Vote> findPrivateByUser(User user) {
         return entityManager.createNamedQuery("Vote.findPrivateByUser", Vote.class).setParameter("user", user).getResultList();
     }
 
+    /**
+     * Find private by user list.
+     *
+     * @param user      the user
+     * @param voteQuery the vote query
+     * @return the list
+     */
     public List<Vote> findPrivateByUser(User user, VoteQuery voteQuery) {
         return filterAndSortList("Vote.findPrivateByUser", user, "user", voteQuery);
     }

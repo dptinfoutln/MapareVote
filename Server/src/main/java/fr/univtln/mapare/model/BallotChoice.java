@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+/**
+ * The type Ballot choice.
+ */
 @Data
 @Builder
 @Entity
@@ -37,6 +40,11 @@ public class BallotChoice implements Serializable {
                 '}';
     }
 
+    /**
+     * Gets id.
+     *
+     * @return the id
+     */
     @Transient
     public String getId() {
         return ballot.getId() + " " + choice.getId();

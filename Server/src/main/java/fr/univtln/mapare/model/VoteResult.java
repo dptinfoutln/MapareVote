@@ -7,6 +7,9 @@ import lombok.*;
 
 import java.io.Serializable;
 
+/**
+ * The type Vote result.
+ */
 @Data
 @EqualsAndHashCode
 @AllArgsConstructor
