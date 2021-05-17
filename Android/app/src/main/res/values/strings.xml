@@ -66,7 +66,7 @@
     <string name="welcome">Bienvenue !</string>
 
     <!-- Strings related to (To determinate) -->
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">Home Menu</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
