@@ -3,7 +3,7 @@ package fr.univtln.mapare.exceptions;
 import jakarta.ws.rs.core.Response;
 
 public abstract class MyResponse extends Response {
-    public static enum Status implements Response.StatusType {
+    public enum Status implements Response.StatusType {
         OK(200, "OK"),
         CREATED(201, "Created"),
         ACCEPTED(202, "Accepted"),
@@ -50,7 +50,7 @@ public abstract class MyResponse extends Response {
         private final String reason;
         private final Response.Status.Family family;
 
-        private Status(int statusCode, String reasonPhrase) {
+        Status(int statusCode, String reasonPhrase) {
             this.code = statusCode;
             this.reason = reasonPhrase;
             this.family = Response.Status.Family.familyOf(statusCode);
@@ -86,7 +86,7 @@ public abstract class MyResponse extends Response {
             return null;
         }
 
-        public static enum Family {
+        public enum Family {
             INFORMATIONAL,
             SUCCESSFUL,
             REDIRECTION,
@@ -94,7 +94,7 @@ public abstract class MyResponse extends Response {
             SERVER_ERROR,
             OTHER;
 
-            private Family() {
+            Family() {
             }
 
             public static Family familyOf(int statusCode) {
