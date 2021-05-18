@@ -24,15 +24,20 @@ public class UserResource {
     /**
      * Gets users.
      *
-     * @param pagenum  the pagenum
-     * @param pagesize the pagesize
+     * @param securityContext the security context
      * @return the users
-     * @throws NotFoundException the not found exception
+     * @throws ForbiddenException the forbidden exception
      */
     @GET
-    public List<User> getUsers(@DefaultValue("1") @QueryParam("page_num") int pagenum,
-                               @DefaultValue("20") @QueryParam("page_size") int pagesize) throws NotFoundException {
-        // TODO: add admin authentication
+    @JWTAuth
+    public List<User> getUsers(@Context SecurityContext securityContext) throws ForbiddenException {
+        User user = (User) securityContext.getUserPrincipal();
+
+        Controllers.checkUser(user);
+
+        if (!user.isAdmin())
+            throw new ForbiddenException("You do not have the rights to do this.");
+
         return UserDAO.of(Controllers.getEntityManager()).findAll();
     }
 

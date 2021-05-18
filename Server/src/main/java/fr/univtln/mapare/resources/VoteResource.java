@@ -275,7 +275,6 @@ public class VoteResource {
     @JWTAuth
     @Path("{id}/ballots")
     public Ballot addBallot(@Context SecurityContext securityContext, @PathParam("id") int id, Ballot ballot) throws BusinessException {
-        //TODO: check choices
         ballot.setId(0);
         User voter = (User) securityContext.getUserPrincipal();
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
@@ -347,15 +346,15 @@ public class VoteResource {
      * Gets private votes for user.
      *
      * @param securityContext the security context
-     * @param pagenum         the pagenum
-     * @param pagesize        the pagesize
-     * @param approxname      the approxname
-     * @param namestart       the namestart
-     * @param nameend         the nameend
-     * @param algoname        the algoname
-     * @param sortkey         the sortkey
-     * @param order           the order
-     * @param open            the open
+     * @param pagenum         the page number
+     * @param pagesize        the page size
+     * @param approxname      the approximative name
+     * @param namestart       the name's start
+     * @param nameend         the name's end
+     * @param algoname        the algorithm's name
+     * @param sortkey         the sort key
+     * @param order           the order parameter
+     * @param open            the open boolean
      * @return the private votes for user
      * @throws ForbiddenException the forbidden exception
      */
