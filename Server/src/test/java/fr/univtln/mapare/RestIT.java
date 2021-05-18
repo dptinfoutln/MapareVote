@@ -4,6 +4,7 @@ import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.model.Vote;
+import fr.univtln.mapare.model.VoteResult;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class RestIT {
     private static HttpServer httpServer;
@@ -58,11 +60,9 @@ public class RestIT {
 
     @Test
     public void createAccountTest() {
-        Response response = webTarget.path("users").request(MediaType.APPLICATION_JSON).get();
+        List<User> beforeList = UserDAO.of(Controllers.getEntityManager()).findAll();
 
-        List<User> beforeList = response.readEntity(List.class);
-
-        response = webTarget.path("users").request(MediaType.APPLICATION_JSON)
+        Response response = webTarget.path("users").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(
                         "{\"email\":\"carlorff@hotmail.fr\",\"firstname\":\"carl\",\"password\":\"ofortuna\"}",
@@ -114,9 +114,7 @@ public class RestIT {
 
         assertEquals(409, response.getStatus());
 
-        response = webTarget.path("users").request(MediaType.APPLICATION_JSON).get();
-
-        List<User> afterList = response.readEntity(List.class);
+        List<User> afterList = UserDAO.of(Controllers.getEntityManager()).findAll();
 
         assertEquals(beforeList.size() + 1, afterList.size());
 
@@ -150,10 +148,7 @@ public class RestIT {
 //        webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
         UserDAO.of(Controllers.getEntityManager()).remove(carlorff.getId());
 
-
-        response = webTarget.path("users").request(MediaType.APPLICATION_JSON).get();
-
-        List<User> deletedList = response.readEntity(List.class);
+        List<User> deletedList = UserDAO.of(Controllers.getEntityManager()).findAll();
 
         assertEquals(beforeList.size(), deletedList.size());
     }
@@ -388,10 +383,6 @@ public class RestIT {
 
         System.out.println(vote);
 
-//        int delay = 250;
-
-//        Thread.sleep(delay);
-
         webTarget.path("votes/" + vote.getId() + "/ballots").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + token)
@@ -415,8 +406,6 @@ public class RestIT {
                 .get();
 
         webTarget.path("users").request(MediaType.APPLICATION_JSON).get();
-
-//        Thread.sleep(delay);
 
         response = webTarget.path("users").request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -444,15 +433,15 @@ public class RestIT {
                 .get(String.class);
 
 
-        webTarget.path("votes/" + vote.getId() + "/results")
+        List<VoteResult> voteResults = webTarget.path("votes/" + vote.getId() + "/results")
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + token)
-                .get();
+                .get(List.class);
 
-//        webTarget.path("users/" + carlorff.getId()).request(MediaType.APPLICATION_JSON).delete();
+        assertFalse(voteResults.isEmpty());
+
         UserDAO.of(Controllers.getEntityManager()).remove(carlorff.getId());
 
-//        webTarget.path("users/" + tchaikovsky.getId()).request(MediaType.APPLICATION_JSON).delete();
         UserDAO.of(Controllers.getEntityManager()).remove(tchaikovsky.getId());
     }
 
