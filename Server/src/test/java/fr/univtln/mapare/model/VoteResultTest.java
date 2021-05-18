@@ -6,9 +6,9 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
-public class VoteResultTest {
+class VoteResultTest {
     @Test
-    public void testToString() {
+    void testToString() {
         VoteResult voteResult = new VoteResult();
         voteResult.setVote(new Vote());
         ArrayList<String> names = new ArrayList<String>();
