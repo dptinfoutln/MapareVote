@@ -54,6 +54,12 @@ public class VotedVoteDAO extends DAO<VotedVote> {
         return votedVoteList.isEmpty() ? null : votedVoteList.get(0);
     }
 
+    /**
+     * Find by vote list.
+     *
+     * @param vote the vote
+     * @return the list
+     */
     public List<VotedVote> findByVote(Vote vote) {
         List<VotedVote> votedVoteList = entityManager.createNamedQuery("VotedVotes.findByVote", VotedVote.class).setParameter("vote", vote).getResultList();
         return votedVoteList.isEmpty() ? null : votedVoteList;
