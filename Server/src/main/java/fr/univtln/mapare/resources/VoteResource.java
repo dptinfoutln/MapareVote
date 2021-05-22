@@ -3,14 +3,10 @@ package fr.univtln.mapare.resources;
 import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.controllers.MailUtils;
 import fr.univtln.mapare.controllers.VoteUtils;
-import fr.univtln.mapare.dao.BallotDAO;
-import fr.univtln.mapare.dao.ChoiceDAO;
-import fr.univtln.mapare.dao.UserDAO;
-import fr.univtln.mapare.dao.VoteDAO;
-import fr.univtln.mapare.exceptions.BusinessException;
+import fr.univtln.mapare.dao.*;
+import fr.univtln.mapare.exceptions.*;
 import fr.univtln.mapare.exceptions.ForbiddenException;
 import fr.univtln.mapare.exceptions.NotFoundException;
-import fr.univtln.mapare.exceptions.TooEarlyException;
 import fr.univtln.mapare.model.*;
 import fr.univtln.mapare.security.annotations.JWTAuth;
 import jakarta.ws.rs.*;
@@ -20,6 +16,7 @@ import jakarta.ws.rs.core.SecurityContext;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -496,5 +493,41 @@ public class VoteResource {
         return rb.header("votecount", "" + size)
                 .header("pagecount", "" + ceil((double) size / pagesize))
                 .build();
+    }
+
+    /**
+     * Gets token list for vote.
+     *
+     * @param securityContext the security context
+     * @param id              the id
+     * @return the token list for vote
+     * @throws ForbiddenException the forbidden exception
+     * @throws NotFoundException  the not found exception
+     */
+    @GET
+    @JWTAuth
+    @Path("{id}/tokens")
+    public List<String> getTokenListForVote(@Context SecurityContext securityContext,
+                                            @PathParam("id") int id) throws ForbiddenException, NotFoundException {
+        User user = (User) securityContext.getUserPrincipal();
+
+        Controllers.checkUser(user);
+
+        Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
+
+        if (vote == null)
+            throw new NotFoundException("No vote found with id: " + id);
+
+        if (vote.isPrivate() && !vote.getMembers().contains(user))
+            throw new ForbiddenException("You do not have the access rights for this vote.");
+
+        List<VotedVote> votedVotes = VotedVoteDAO.of(Controllers.getEntityManager()).findByVote(vote);
+
+        List<String> returnList = new ArrayList<>();
+
+        for (VotedVote vv : votedVotes)
+            returnList.add(vv.getToken());
+
+        return returnList;
     }
 }
