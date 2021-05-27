@@ -6,16 +6,21 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_publicVotes"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_menu_public_votes"
             android:title="@string/menu_public_votes" />
         <item
             android:id="@+id/nav_privateVotes"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_menu_private_votes"
             android:title="@string/menu_private_votes" />
         <item
             android:id="@+id/nav_startedVotes"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_menu_started_votes"
             android:title="@string/menu_started_votes" />
+
+        <item
+            android:id="@+id/nav_votedVotes"
+            android:icon="@drawable/ic_menu_voted_votes"
+            android:title="@string/menu_voted_votes" />
     </group>
 
     <item android:title="@string/user">

@@ -1,7 +1,12 @@
 package com.mapare.maparevoteapp;
 
 import android.annotation.SuppressLint;
+import android.graphics.BlurMaskFilter;
+import android.graphics.MaskFilter;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.MaskFilterSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +38,8 @@ import com.mapare.maparevoteapp.model.entity_to_send.BallotChoice;
 import com.mapare.maparevoteapp.model.entity_to_send.Choice;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -51,10 +58,12 @@ public class VoteActivity extends AppCompatActivity {
     private MutableLiveData<String> LOADING_STATE_CODE;
     private MutableLiveData<String> RESULT_STATE_CODE;
 
-    // Needed for resizing the layout when show result is clicked
-    Boolean clicked = false;
-    int height;
+    // Needed for the blur
+    boolean clickedToken = false;
 
+    // Needed for resizing the layout when show result is clicked
+    private Boolean clicked = false;
+    private int height;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -77,14 +86,35 @@ public class VoteActivity extends AppCompatActivity {
         TextView labelField = findViewById(R.id.vote_labelField);
         labelField.setText("   " + vote.getLabel());
 
+        TextView votedInfo = findViewById(R.id.vote_votedField);
+
         TextView infofield = findViewById(R.id.vote_infoField);
+
         String dateString = vote.getStartDate().toString().replace("[", "").replace("]", "");
         List<String> dateList = Arrays.asList(dateString.split(","));
         dateString = dateList.get(2) + "/" + dateList.get(1) + "/" + dateList.get(0);
-
         dateString = dateString.replace(" ", "");
 
+        LocalDate endDate = LocalDate.now(ZoneId.of("GMT")).plusDays(1);
+
         String info = "Créé par " + vote.getVotemaker().getFirstname() + " " + vote.getVotemaker().getName() + ", ouvert depuis le " + dateString;
+
+        if (vote.getEndDate() != null) {
+            String dateString2 = vote.getEndDate().toString().replace("[", "").replace("]", "");
+            List<String> dateList2 = Arrays.asList(dateString2.split(","));
+            dateString2 = dateList2.get(2) + "/" + dateList2.get(1) + "/" + dateList2.get(0);
+            dateString2 = dateString2.replace(" ", "");
+
+            List<String> endDateList = Arrays.asList(dateString2.split("/"));
+            endDate = LocalDate.of(Integer.parseInt(endDateList.get(2)), Integer.parseInt(endDateList.get(1)), Integer.parseInt(endDateList.get(0)));
+
+            if (endDate.isBefore(LocalDate.now(ZoneId.of("GMT")).plusDays(1)))
+                info += " et a pris fin le ";
+            else
+                info += " et prend fin le ";
+            info += dateString2;
+        }
+
         infofield.setText(info);
 
         Button voteButton = findViewById(R.id.voteButton);
@@ -102,11 +132,31 @@ public class VoteActivity extends AppCompatActivity {
             }
         });
 
-
+        boolean checkVoteClosed = endDate.isBefore(LocalDate.now(ZoneId.of("GMT")).plusDays(1));
+        Log.i("dateee", endDate+"");
+        Log.i("datenn", LocalDate.now(ZoneId.of("GMT"))+"");
+        Log.i("date", checkVoteClosed+"");
         if (ballotToken != null) {
-            // deactivate the button, if already voted
-            voteButton.setEnabled(false);
-            // Wait the "callback" of the request to get the ballot
+            // Displays the token if voted
+            TextView tokenField = findViewById(R.id.vote_ballotTokenField);
+            SpannableString tokenString = new SpannableString(getResources().getString(R.string.ballot_token_text_view) + " " + ballotToken);
+            float radius = tokenField.getTextSize() / 3;
+            MaskFilterSpan span = new MaskFilterSpan(new BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL));
+            int tokenSize = getResources().getString(R.string.ballot_token_text_view).length() + 1;
+            tokenString.setSpan(span, tokenSize, ballotToken.length() + tokenSize, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            tokenField.setText(tokenString);
+            tokenField.setVisibility(View.VISIBLE);
+            tokenField.setOnClickListener(v -> {
+                clickedToken = !clickedToken;
+                if (clickedToken) {
+                    tokenString.removeSpan(span);
+                    tokenField.setText(tokenString);
+                } else {
+                    tokenString.setSpan(span, tokenSize, ballotToken.length() + tokenSize, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    tokenField.setText(tokenString);
+                }
+            });
+            // Wait the "callback" of the request to get the ballot if voted
             LOADING_STATE_CODE = new MutableLiveData<>();
             LOADING_STATE_CODE.observe(this, s -> {
                 switch (vote.getAlgo()) {
@@ -128,61 +178,83 @@ public class VoteActivity extends AppCompatActivity {
                 LinearLayout layout_choice = findViewById(R.id.listView_linearLayout);
                 layout_choice.getLayoutParams().height = calculateHeight(listView);
                 layout_choice.requestLayout();
-
-                // Let the user know that he has already voted for this vote
-                TextView votedInfo = findViewById(R.id.vote_votedField);
-                votedInfo.setVisibility(View.VISIBLE);
-
-                // Results
-                if (vote.isIntermediaryResult()) {
-                    RESULT_STATE_CODE = new MutableLiveData<>();
-                    RESULT_STATE_CODE.observe(this, s1 -> {
-                        // Showing Results feature
-                        ExpandableListView resultView = findViewById(R.id.vote_resultView);
-                        ResultAdapter resultAdapter = new ResultAdapter(VoteActivity.this, resultList);
-                        resultView.setAdapter(resultAdapter);
-
-                        LinearLayout layout_result = findViewById(R.id.expandableView_linearLayout);
-
-                        resultView.setOnGroupClickListener((parent, v, groupPosition, id) -> {
-                            if (!clicked) {
-                                height = calculateHeight(resultView);
-                            } else {
-                                height = 0;
-                            }
-                            layout_result.getLayoutParams().height = height;
-                            layout_result.requestLayout();
-                            clicked = !clicked;
-
-                            return false;
-                        });
-                    });
-                    getResultRequest(vote.getId());
-                }
             });
-
+            // Fetch ballot
             getBallotRequest(vote.getId());
+            // Let the user know that he has already voted for this vote
+            votedInfo.setVisibility(View.VISIBLE);
         } else {
-            switch (vote.getAlgo()) {
-                case "majority":
-                    if (vote.getMaxChoices() == 1)
-                        adapter = new UniqueChoiceAdapter(VoteActivity.this, vote.getChoices());
-                    else
-                        adapter = new MultipleChoicesAdapter(VoteActivity.this, vote.getChoices(), vote.getMaxChoices());
-                    break;
-                case "borda":
-                case "STV":
-                    adapter = new WeightedChoicesAdapter(VoteActivity.this, vote.getChoices());
-                    break;
-                default:
-                    break;
+            if (checkVoteClosed) {
+                switch (vote.getAlgo()) {
+                    case "majority":
+                        if (vote.getMaxChoices() == 1)
+                            adapter = new UniqueChoiceAdapter(VoteActivity.this, vote.getChoices(), null);
+                        else
+                            adapter = new MultipleChoicesAdapter(VoteActivity.this, vote.getChoices(), vote.getMaxChoices(), null);
+                        break;
+                    case "borda":
+                    case "STV":
+                        adapter = new WeightedChoicesAdapter(VoteActivity.this, vote.getChoices(), null);
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                switch (vote.getAlgo()) {
+                    case "majority":
+                        if (vote.getMaxChoices() == 1)
+                            adapter = new UniqueChoiceAdapter(VoteActivity.this, vote.getChoices());
+                        else
+                            adapter = new MultipleChoicesAdapter(VoteActivity.this, vote.getChoices(), vote.getMaxChoices());
+                        break;
+                    case "borda":
+                    case "STV":
+                        adapter = new WeightedChoicesAdapter(VoteActivity.this, vote.getChoices());
+                        break;
+                    default:
+                        break;
+                }
             }
             listView.setAdapter(adapter);
 
             LinearLayout layout_choice = findViewById(R.id.listView_linearLayout);
             layout_choice.getLayoutParams().height = calculateHeight(listView);
             layout_choice.requestLayout();
+        }
+        if (ballotToken != null || checkVoteClosed) {
+            // deactivate the button, if already voted or vote is closed
+            voteButton.setEnabled(false);
+            // Show Results
+            if (vote.isIntermediaryResult() || checkVoteClosed) {
+                RESULT_STATE_CODE = new MutableLiveData<>();
+                RESULT_STATE_CODE.observe(this, s1 -> {
+                    // Showing Results feature
+                    ExpandableListView resultView = findViewById(R.id.vote_resultView);
+                    ResultAdapter resultAdapter = new ResultAdapter(VoteActivity.this, resultList);
+                    resultView.setAdapter(resultAdapter);
 
+                    LinearLayout layout_result = findViewById(R.id.expandableView_linearLayout);
+
+                    resultView.setOnGroupClickListener((parent, v, groupPosition, id) -> {
+                        if (!clicked) {
+                            height = calculateHeight(resultView);
+                        } else {
+                            height = 0;
+                        }
+                        layout_result.getLayoutParams().height = height;
+                        layout_result.requestLayout();
+                        clicked = !clicked;
+
+                        return false;
+                    });
+                });
+                getResultRequest(vote.getId());
+            }
+            if (checkVoteClosed) {
+                // Change the reason why the button is deactivated
+                votedInfo.setVisibility(View.VISIBLE);
+                votedInfo.setText(R.string.closed_vote);
+            }
         }
     }
 

@@ -3,7 +3,6 @@ package com.mapare.maparevoteapp.adapter;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -12,6 +11,7 @@ import com.mapare.maparevoteapp.R;
 import com.mapare.maparevoteapp.model.entity_to_receive.Vote;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 
@@ -61,8 +61,8 @@ public class VoteAdapter extends CustomAdapter<Vote> {
         List<String> dateList2= Arrays.asList(dateString.split("/"));
         LocalDate date = LocalDate.of(Integer.parseInt(dateList2.get(2)), Integer.parseInt(dateList2.get(1)), Integer.parseInt(dateList2.get(0)));
 
-        if (entityList.get(position).isIntermediaryResult() || date.isBefore(LocalDate.now())) {
-            holder.intermediaryResultField.setText(R.string.vote_result_textView);
+        if (entityList.get(position).isIntermediaryResult() || date.isBefore(LocalDate.now(ZoneId.of("GMT")))) {
+            holder.intermediaryResultField.setText(R.string.vote_result_text_view);
             holder.intermediaryResultField.setTypeface(null, Typeface.ITALIC);
         } else {
             holder.intermediaryResultField.setVisibility(View.INVISIBLE);

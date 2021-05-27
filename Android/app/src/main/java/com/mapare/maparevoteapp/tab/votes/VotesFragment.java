@@ -125,7 +125,7 @@ public class VotesFragment extends Fragment {
                                 break;
                             }
                     intent.putExtra("token", ballotToken);
-                    // clean vote & vote, for back button pressed
+                    // clean vote & voter, for back button pressed
                     vote = null;
                     voter = null;
                     startActivity(intent);

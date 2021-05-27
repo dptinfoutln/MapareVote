@@ -20,14 +20,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class StartedVotesFragment extends VotesFragment {
+public class VotedVotesFragment extends VotesFragment {
 
     // StartedVotes request
     @Override
     protected void voteRequest(Context context, int page, int page_size, String search, Boolean open_vote, String sorting_by) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
-        String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.STARTED_VOTES_URL) + "?"
+        String url = getResources().getString(R.string.API_URL) + getResources().getString(R.string.VOTED_VOTES_URL) + "?"
                 + getResources().getString(R.string.PAGE_FILTER) + page + "&" + getResources().getString(R.string.PAGE_SIZE_FILTER) + page_size + "&"
                 + getResources().getString(R.string.SEARCH_FILTER) + search + "&" + getResources().getString(R.string.OPEN_VOTE_FILTER) + open_vote + "&"
                 + getResources().getString(R.string.SORT_FILTER) + sorting_by;

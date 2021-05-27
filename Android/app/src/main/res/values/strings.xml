@@ -12,7 +12,11 @@
     <string name="firstname_text_view">Prénom</string>
     <string name="confirm_password_text_view">Confirmer Mot de passe</string>
     <string name="already_voted">Vous avez déjà voté</string>
+    <string name="closed_vote">Le vote est clos</string>
     <string name="show_results">"Afficher résultats"</string>
+    <string name="vote_result_text_view">Résultats disponibles</string>
+    <string name="ballot_token_text_view">Token: </string>
+    <string name="voter_text_view">Voter</string>
 
     <!-- Strings related to login & register-->
     <string name="incorrect_email">Email non valide</string>
@@ -39,11 +43,11 @@
     <string name="ME_URL">/users/me</string>
     <string name="MYBALLOT_URL">/myballot</string>
     <string name="RESULT_URL">/results</string>
-    <string name="MY_VOTES_URL">/votes/startedvotes</string>
+    <string name="STARTED_VOTES_URL">/votes/startedvotes</string>
+    <string name="VOTED_VOTES_URL">/votes/votedvotes</string>
     <string name="NAME_SORT_VALUE">NAME</string>
     <string name="VOTES_SORT_VALUE">VOTES</string>
     <string name="STARTDATE_SORT_VALUE">STARTDATE</string>
-
 
     <!-- Strings related to filters -->
     <string name="search_filter">Rechercher</string>
@@ -54,26 +58,24 @@
     <string name="name_sort">Titre</string>
     <string name="voters_sort">Nombre de voters</string>
     <string name="startDate_sort">Date de début</string>
+    <string name="first_button">First</string>
+    <string name="previous_button">Prev</string>
+    <string name="next_button">Next</string>
+    <string name="last_button">Last</string>
 
     <!-- Strings related to navigation menu -->
     <string name="user">Utilisateur</string>
     <string name="menu_public_votes">Votes publiques</string>
     <string name="menu_private_votes">Votes privés</string>
-    <string name="menu_started_votes">Mes votes</string>
+    <string name="menu_started_votes">Votes créés</string>
+    <string name="menu_voted_votes">Mes votes</string>
     <string name="menu_login">Connexion</string>
     <string name="menu_logout">Déconnexion</string>
     <string name="menu_register">Créer un compte</string>
     <string name="welcome">Bienvenue !</string>
 
-    <!-- Strings related to (To determinate) -->
+
     <string name="title_activity_main">Home Menu</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_vote">VoteActivity</string>
-    <string name="vote_result_textView">Résultats disponibles</string>
+    <string name="title_activity_vote">Vote</string>
 
 </resources>
