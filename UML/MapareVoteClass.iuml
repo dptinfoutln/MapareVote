@@ -60,7 +60,7 @@ Ballot "1" -- "*" BallotChoice
 BallotChoice "*" -- "1" Choice
 Ballot "*" -- "0..1" User:Voter
 Vote "*" --- "1" User:Votemaker
-Vote "1" -- "*" User:Member
+Vote "*" -- "*" User:Member
 Vote "1"-- "*" VotedVote
 VotedVote "*" -- "1" User
 VoteResult "1" -- "1" Choice
