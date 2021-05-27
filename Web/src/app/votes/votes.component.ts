@@ -111,4 +111,12 @@ export class VotesComponent implements OnInit {
         }
         return isVoted;
     }
+
+    parseLabel(label: string): string {
+        if (label.length > 30) {
+            label = label.slice(0, 30);
+            label = label.concat(' ...');
+        }
+        return label;
+    }
 }

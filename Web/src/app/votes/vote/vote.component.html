@@ -13,7 +13,7 @@
             </div>
             <div class="alert alert-warning alert-dismissible fade show text-center" role="alert"
                  *ngIf="isVoted && vote.anonymous">
-                Ce vote est anonyme, nous ne pouvons donc pas vous afficher les choix que vous avez sélectionné
+                Ce vote est anonyme, nous ne pouvons donc pas vous afficher le(s) choix que vous avez sélectionné(s)
             </div>
             <div *ngIf="!isVoted">
                 <span *ngIf="!isVoted && vote.algo !== 'majority'" placement="top" ngbTooltip="Vous devez trier la liste des choix par ordre de préférence" class="badge alert-info text-dark mb-2"><fa-icon [icon]="['fas', 'info-circle']"></fa-icon> Choix : Préférence</span>

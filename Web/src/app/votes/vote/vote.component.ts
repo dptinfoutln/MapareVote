@@ -51,39 +51,44 @@ export class VoteComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.selfUser = this.authService.utils.getSelfUser();
         const id = this.route.snapshot.params.id;
-
-        this.votesService.getVote(+id).then(
-            (vote: Vote) => {
-                if (vote == null) {
-                    this.router.navigate(['/']);
-                } else {
-                    this.vote = vote;
-                    this.isLoaded = true;
-                    this.checkIfUserVoted();
-                    // console.log('vote anonyme ? ', this.vote.anonymous);
-                    if (this.isVoted && !this.vote.anonymous) {
-                        if (vote.algo !== Algo.MAJORITY) {
-                            this.setChoicesOrder(+id);
+        this.authService.importSelf().then(user => {
+                this.selfUser = user;
+                this.votesService.getVote(+id).then(
+                    (vote: Vote) => {
+                        if (vote == null) {
+                            this.router.navigate(['/']);
                         } else {
-                            this.choices = this.vote.choices;
-                            this.setCheckedChoices(+id);
-                        }
-                    } else {
-                        this.choices = this.vote.choices;
-                    }
-                    this.setChoiceBtnType();
-                    this.votesService.getVoteResults(+id).then(
-                        resultList => {
-                            this.results = resultList;
-                            if (this.results.length !== 0) {
-                                this.isResults = true;
-                                this.setResults();
+                            this.vote = vote;
+                            this.isLoaded = true;
+                            this.checkIfUserVoted();
+                            // console.log('vote anonyme ? ', this.vote.anonymous);
+                            if (this.isVoted && !this.vote.anonymous) {
+                                if (vote.algo !== Algo.MAJORITY) {
+                                    this.setChoicesOrder(+id);
+                                } else {
+                                    this.choices = this.vote.choices;
+                                    this.setCheckedChoices(+id);
+                                }
+                            } else {
+                                this.choices = this.vote.choices;
                             }
-                        });
-                }
-            }, err => {
+                            this.setChoiceBtnType();
+                            this.votesService.getVoteResults(+id).then(
+                                resultList => {
+                                    this.results = resultList;
+                                    if (this.results.length !== 0) {
+                                        this.isResults = true;
+                                        this.setResults();
+                                    }
+                                });
+                        }
+                    }, err => {
+                        this.errorsService.manageError(err);
+                    }
+                );
+            },
+            err => {
                 this.errorsService.manageError(err);
             }
         );
