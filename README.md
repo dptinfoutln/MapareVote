@@ -1,7 +1,7 @@
 # MapareVote
 
 Application de vote.
-Pour calculer le résultat du vote, les algorithmes suivant sont disponible pour l'instant:
+Pour calculer le résultat du vote, les algorithmes suivants sont disponible pour l'instant:
 - Choix majoritaire ("majority")
 - Méthode Borda ("borda")
 - Scrutin à vote unique transférable ("STV")
