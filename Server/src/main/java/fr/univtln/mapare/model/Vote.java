@@ -206,6 +206,8 @@ public class Vote implements Serializable, Comparable<Vote> {
      * @return the boolean
      */
     public boolean hasResults() {
+        if (resultList == null)
+            return false;
         return resultList.isEmpty();
     }
 

@@ -18,7 +18,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Table(name = "\"BALLOT_CHOICE\"")
 public class BallotChoice implements Serializable {
-
     @Id
     @ManyToOne
     @JoinColumn(name = "\"ballot\"")
