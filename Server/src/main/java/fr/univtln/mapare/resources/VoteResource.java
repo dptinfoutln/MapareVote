@@ -526,6 +526,9 @@ public class VoteResource {
 
         Map<String, String> returnMap = new HashMap<>();
 
+        if (votedVotes == null)
+            return returnMap;
+
         for (VotedVote vv : votedVotes) {
             if (vote.isAnonymous())
                 returnMap.put(vv.getToken(), "");
