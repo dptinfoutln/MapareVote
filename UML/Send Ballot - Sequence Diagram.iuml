@@ -7,22 +7,31 @@ control "REST Server" as RS
 entity DAO
 database "BDD"
 
-User -> GUI : Select choices
-GUI -> RS : tmpBallot
-RS -> RS : Create Real Ballot
-RS -> DAO : Persiste Ballot
-DAO -> DAO : Check if already voted
+User -> GUI: Selects choices
+GUI -> RS: Sends partial Ballot
+RS -> RS: Checks validity and completes Ballot
 
-alt successful case
 
-    DAO -> BDD : Persist Ballot
-    DAO -> RS: Ballot Accepted
-    RS -> GUI: Ballot Accepted
+alt Valid Ballot
 
-else User already voted
+    RS -> DAO: Sends real Ballot
+    DAO -> BDD: Persists Ballot
+    alt no database conflicts
+        BDD -> DAO: Confirms operation
+        DAO -> RS: Sends confirmation
+        RS -> GUI: Sends confirmation
+        GUI -> User: Confirmation Message
+    else database conflict
+        BDD -> DAO: Transmits error
+        DAO -> RS: Transmits error
+        RS -> GUI: Transmits error
+        GUI -> User: Error message
+    end
 
-    DAO -> RS: Ballot Refused
+else Invalid Ballot
+
     RS -> GUI: Ballot Refused
+    GUI -> User: Error Message
 
 end
 @enduml
