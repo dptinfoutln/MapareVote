@@ -4,9 +4,12 @@
         <div class="col-md-8 offset-md-2">
             <h1 class="bd-title mb-5">{{ vote.label }}</h1>
             <div class="text-end mb-4">
-                <h6>Vote créé par {{ vote.votemaker.firstname }} {{ vote.votemaker.lastname }},
+                <h6>Vote créé par <span class="text-secondary">{{ vote.votemaker.firstname }} {{ vote.votemaker.lastname }}</span>,
                     ouvert le {{ vote.startDate | date : 'dd MMMM YYYY': '' : 'fr-FR' }}</h6>
-                <h6 *ngIf="vote.endDate"> Prend fin le {{ vote.endDate | date : 'dd MMMM YYYY': '' : 'fr-FR' }}</h6>
+                <div *ngIf="vote.endDate">
+                    <h6 *ngIf="isDateBeforeToday()"> Prend fin le {{ vote.endDate | date : 'dd MMMM YYYY': '' : 'fr-FR' }}</h6>
+                    <h6 *ngIf="!isDateBeforeToday()"> À pris fin le {{ vote.endDate | date : 'dd MMMM YYYY': '' : 'fr-FR' }}</h6>
+                </div>
             </div>
             <div *ngIf="isVoted">
                 <span class="badge bg-warning text-dark mb-2">Vous avez déjà voté</span>
@@ -51,25 +54,41 @@
                     Valider
                 </button>
             </form>
-            <div class="accordion" id="accordionExample" *ngIf="isVoted">
+            <div class="accordion mb-5" id="accordionExample" *ngIf="isVoted">
                 <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingTwo">
+                    <h2 class="accordion-header" id="resultsHeading">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                data-bs-target="#resultsCollapse" aria-expanded="false" aria-controls="resultsCollapse">
                             Résultats
                         </button>
                     </h2>
-                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                    <div id="resultsCollapse" class="accordion-collapse collapse" aria-labelledby="resultsHeading"
                          data-bs-parent="#accordionExample">
                         <div class="accordion-body">
                             <div class="mt-2">
-                                <ul class="list-group">
+                                <ul class="list-group" *ngIf="vote.algo !== 'STV'">
                                     <li class="list-group-item d-flex justify-content-between align-items-center"
                                         *ngFor="let resultChoice of results; let index = index">
                                         {{resultChoice.choice.names}}
                                         <span class="badge bg-primary rounded-pill">{{resultChoice.value}}</span>
                                     </li>
                                 </ul>
+                                <div *ngIf="vote.algo === 'STV'">
+                                    Choix gagnant :
+                                    <ul class="list-group mt-1 mb-3">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center"
+                                            *ngFor="let resultChoice of winnerResults; let index = index">
+                                            {{resultChoice.choice.names}}
+                                        </li>
+                                    </ul>
+                                    Choix perdant :
+                                    <ul class="list-group mt-1 mb-2">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center"
+                                            *ngFor="let resultChoice of looserResults; let index = index">
+                                            {{resultChoice.choice.names}}
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                             <div class="alert alert-warning alert-dismissible fade show" role="alert"
                                  *ngIf="!isResults">
@@ -78,11 +97,32 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div *ngIf="isVoted" class="align-bottom mb-3" style="margin-top: 10%">
-                <p class="text-muted">Token : <span style="cursor: pointer" class="{{tokenStyle}}"
-                                                    (click)="toggleToken()">{{ this.voteToken }}</span></p>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="tokensHeading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#tokensCollapse" aria-expanded="false" aria-controls="tokensCollapse">
+                            Tokens de participation
+                        </button>
+                    </h2>
+                    <div id="tokensCollapse" class="accordion-collapse collapse" aria-labelledby="tokensHeading"
+                         data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            <div class="mt-2">
+                                <div class="align-bottom">
+                                    <p>Votre Token : <span class="text-muted"><span style="cursor: pointer" class="{{tokenStyle}}"
+                                                                        (click)="toggleToken()">{{ this.voteToken }}</span></span></p>
+                                </div>
+                                <ul class="list-group">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center"
+                                        *ngFor="let token of tokens; let index = index">
+                                        {{token[0]}}
+                                        <span class="badge bg-primary">{{token[1]}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

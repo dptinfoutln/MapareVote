@@ -78,24 +78,21 @@ export class VotesService {
 
     getVotedVotes(pageNum = 1, pageSize = 25, orderBy = 'asc', sortBy ?: string, nameLike ?: string, open = true): Promise<Vote[]>  {
         const url = environment.apiURL + 'votes/votedvotes';
-        let headers = environment.headers;
-        headers = headers.set('Authorization', 'Bearer ' + this.authService.utils.getToken());
+        const headers = environment.headers.set('Authorization', 'Bearer ' + this.authService.utils.getToken());
         const params = this.setHttpParams(pageNum, pageSize, orderBy, open, sortBy, nameLike);
         return this.getVotes(url, headers, params);
     }
 
     getStartedVotes(pageNum = 1, pageSize = 25, orderBy = 'asc', sortBy ?: string, nameLike ?: string, open = true): Promise<Vote[]>  {
         const url = environment.apiURL + 'votes/startedvotes';
-        let headers = environment.headers;
-        headers = headers.set('Authorization', 'Bearer ' + this.authService.utils.getToken());
+        const headers = environment.headers.set('Authorization', 'Bearer ' + this.authService.utils.getToken());
         const params = this.setHttpParams(pageNum, pageSize, orderBy, open, sortBy, nameLike);
         return this.getVotes(url, headers, params);
     }
 
     getPublicVotes(pageNum = 1, pageSize = 25, orderBy = 'asc', sortBy ?: string, nameLike ?: string, open = true): Promise<Vote[]> {
         const url = environment.apiURL + 'votes/public';
-        let headers = environment.headers;
-        headers = headers.set('Accept', 'application/json');
+        const headers = environment.headers.set('Accept', 'application/json');
         const params = this.setHttpParams(pageNum, pageSize, orderBy, open, sortBy, nameLike);
         return this.getVotes(url, headers, params);
     }
@@ -110,14 +107,29 @@ export class VotesService {
 
     getVoteResults(voteId: number): Promise<any> {
         const url = environment.apiURL + 'votes/' + voteId + '/results';
-        let headers = environment.headers;
-        headers = headers.set('Authorization', 'Bearer ' + this.authService.utils.getToken());
+        const headers = environment.headers.set('Authorization', 'Bearer ' + this.authService.utils.getToken());
 
         return new Promise(
             (resolve, reject) => {
                 this.http.get<[]>(url, {headers}).subscribe(
                     voteResults => {
                         resolve(voteResults);
+                    }, err => {
+                        reject(err);
+                    }
+                );
+            });
+    }
+
+    getVoteTokens(voteId: number): Promise<any> {
+        const url = environment.apiURL + 'votes/' + voteId + '/tokens';
+        const headers = environment.headers.set('Authorization', 'Bearer ' + this.authService.utils.getToken());
+
+        return new Promise(
+            (resolve, reject) => {
+                this.http.get<[]>(url, {headers}).subscribe(
+                    voteTokens => {
+                        resolve(voteTokens);
                     }, err => {
                         reject(err);
                     }
