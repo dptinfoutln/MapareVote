@@ -157,7 +157,8 @@ public abstract class VoteUtils {
                                     flag = false;
                                     for (Choice c : vote.getChoices()) {
                                         // If we have someone who has enough votes, we can add him to the winners list.
-                                        if (countMap.get(c) >= ((double) vote.getBallots().size()) / vote.getMaxChoices()) {
+                                        if (countMap.get(c) != null &&
+                                                countMap.get(c) >= ((double) vote.getBallots().size()) / vote.getMaxChoices()) {
                                             flag = true;
                                             resultList.add(new VoteResult(c, candidatecount, vote));
                                             candidatecount++;
@@ -173,7 +174,7 @@ public abstract class VoteUtils {
                                         // We find the candidate with the least amount of votes.
                                         minval = vote.getBallots().size() + 1.0;
                                         for (Choice c : vote.getChoices()) {
-                                            if (countMap.get(c) != 0 && countMap.get(c) < minval) {
+                                            if (countMap.get(c) != null && countMap.get(c) != 0 && countMap.get(c) < minval) {
                                                 minval = countMap.get(c);
                                                 minchoice = c;
                                             }
