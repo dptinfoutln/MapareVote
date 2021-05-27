@@ -13,14 +13,30 @@ import com.mapare.maparevoteapp.model.entity_to_receive.Choice;
 
 import java.util.List;
 
+/**
+ * The type Weighted choices adapter.
+ */
 public class WeightedChoicesAdapter extends CustomAdapter<Choice> {
     private Ballot ballot;
     private Boolean anonymous;
 
+    /**
+     * Instantiates a new Weighted choices adapter.
+     *
+     * @param context    the context
+     * @param choiceList the choice list
+     */
     public WeightedChoicesAdapter(Context context, List<Choice> choiceList) {
         super(context, choiceList);
     }
 
+    /**
+     * Instantiates a new Weighted choices adapter.
+     *
+     * @param context    the context
+     * @param choiceList the choice list
+     * @param ballot     the ballot
+     */
     public WeightedChoicesAdapter(Context context, List<Choice> choiceList, Ballot ballot) {
         super(context, choiceList);
         if (ballot == null)
@@ -31,8 +47,17 @@ public class WeightedChoicesAdapter extends CustomAdapter<Choice> {
         }
     }
 
+    /**
+     * The type View holder.
+     */
     public static class ViewHolder {
+        /**
+         * The Choice field.
+         */
         TextView choiceField;
+        /**
+         * The Weight field.
+         */
         NumberPicker weightField;
     }
 

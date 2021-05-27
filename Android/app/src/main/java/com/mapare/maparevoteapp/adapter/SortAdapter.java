@@ -13,12 +13,22 @@ import com.mapare.maparevoteapp.R;
 
 import java.util.List;
 
+/**
+ * The type Sort adapter.
+ */
 public class SortAdapter extends BaseAdapter {
     private final LayoutInflater inflater;
     private final List<String> sort_list;
     private RadioButton selected;
     private final String tempSelected;
 
+    /**
+     * Instantiates a new Sort adapter.
+     *
+     * @param context      the context
+     * @param sort_list    the sort list
+     * @param tempSelected the temp selected
+     */
     public SortAdapter(Context context, List<String> sort_list, String tempSelected) {
         this.inflater = LayoutInflater.from(context);
         this.sort_list = sort_list;
@@ -26,7 +36,13 @@ public class SortAdapter extends BaseAdapter {
 
     }
 
+    /**
+     * The type View holder.
+     */
     public static class ViewHolder {
+        /**
+         * The Sort field.
+         */
         RadioButton sortField;
     }
 
@@ -75,6 +91,11 @@ public class SortAdapter extends BaseAdapter {
         return convertView;
     }
 
+    /**
+     * Gets sort picked.
+     *
+     * @return the sort picked
+     */
     public String getSortPicked() {
         return selected.getText().toString();
     }

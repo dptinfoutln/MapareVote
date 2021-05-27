@@ -13,6 +13,9 @@ import com.mapare.maparevoteapp.model.entity_to_receive.Choice;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Multiple choices adapter.
+ */
 public class MultipleChoicesAdapter extends CustomAdapter<Choice> {
     private final List<CheckBox> selected = new ArrayList<>();
     private  Ballot ballot;
@@ -20,11 +23,26 @@ public class MultipleChoicesAdapter extends CustomAdapter<Choice> {
     private int count = 0;
     private Boolean anonymous;
 
+    /**
+     * Instantiates a new Multiple choices adapter.
+     *
+     * @param context    the context
+     * @param entityList the entity list
+     * @param maxChoices the max choices
+     */
     public MultipleChoicesAdapter(Context context, List<Choice> entityList, int maxChoices) {
         super(context, entityList);
         this.maxChoices = maxChoices;
     }
 
+    /**
+     * Instantiates a new Multiple choices adapter.
+     *
+     * @param context    the context
+     * @param entityList the entity list
+     * @param maxChoices the max choices
+     * @param ballot     the ballot
+     */
     public MultipleChoicesAdapter(Context context, List<Choice> entityList, int maxChoices, Ballot ballot) {
         super(context, entityList);
         this.maxChoices = maxChoices;
@@ -37,7 +55,13 @@ public class MultipleChoicesAdapter extends CustomAdapter<Choice> {
 
     }
 
+    /**
+     * The type View holder.
+     */
     public static class ViewHolder {
+        /**
+         * The Choice field.
+         */
         CheckBox choiceField;
     }
 

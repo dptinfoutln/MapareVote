@@ -14,10 +14,19 @@ import com.mapare.maparevoteapp.model.entity_to_receive.VoteResult;
 
 import java.util.List;
 
+/**
+ * The type Result adapter.
+ */
 public class ResultAdapter extends BaseExpandableListAdapter {
     private final LayoutInflater inflater;
     private final List<VoteResult> results;
 
+    /**
+     * Instantiates a new Result adapter.
+     *
+     * @param context the context
+     * @param results the results
+     */
     public ResultAdapter(Context context, List<VoteResult> results) {
         this.inflater = LayoutInflater.from(context);
         this.results = results;
@@ -58,8 +67,17 @@ public class ResultAdapter extends BaseExpandableListAdapter {
         return false;
     }
 
+    /**
+     * The type Group view holder.
+     */
     public static class GroupViewHolder {
+        /**
+         * The Text.
+         */
         TextView text;
+        /**
+         * The Img.
+         */
         ImageView img;
     }
 
@@ -86,8 +104,17 @@ public class ResultAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
+    /**
+     * The type Child view holder.
+     */
     public static class ChildViewHolder {
+        /**
+         * The Choice field.
+         */
         TextView choiceField;
+        /**
+         * The Result field.
+         */
         TextView resultField;
     }
 

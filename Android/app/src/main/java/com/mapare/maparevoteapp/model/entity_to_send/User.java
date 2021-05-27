@@ -2,6 +2,9 @@ package com.mapare.maparevoteapp.model.entity_to_send;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * The type User.
+ */
 public class User {
 
     @JsonProperty("email")
@@ -16,6 +19,14 @@ public class User {
     @JsonProperty("password")
     private final String password;
 
+    /**
+     * Instantiates a new User.
+     *
+     * @param email     the email
+     * @param name      the name
+     * @param firstname the firstname
+     * @param password  the password
+     */
     public User(String email, String name, String firstname, String password) {
         this.email = email;
         this.name = name;

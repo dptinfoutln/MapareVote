@@ -8,6 +8,9 @@ import java.io.Serializable;
 import java.util.List;
 
 
+/**
+ * The type User.
+ */
 @JsonIdentityInfo(scope=User.class, generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class User implements Serializable {
 
@@ -38,74 +41,164 @@ public class User implements Serializable {
     @JsonProperty("privateVoteList")
     private List<Vote> privateVoteList;
 
+    /**
+     * Gets id.
+     *
+     * @return the id
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Sets id.
+     *
+     * @param id the id
+     */
     public void setId(int id) {
         this.id = id;
     }
 
+    /**
+     * Gets email.
+     *
+     * @return the email
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     * Sets email.
+     *
+     * @param email the email
+     */
     public void setEmail(String email) {
         this.email = email;
     }
 
+    /**
+     * Gets name.
+     *
+     * @return the name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets name.
+     *
+     * @param name the name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Gets firstname.
+     *
+     * @return the firstname
+     */
     public String getFirstname() {
         return firstname;
     }
 
+    /**
+     * Sets firstname.
+     *
+     * @param firstname the firstname
+     */
     public void setFirstname(String firstname) {
         this.firstname = firstname;
     }
 
+    /**
+     * Is confirmed boolean.
+     *
+     * @return the boolean
+     */
     public boolean isConfirmed() {
         return confirmed;
     }
 
+    /**
+     * Sets confirmed.
+     *
+     * @param confirmed the confirmed
+     */
     public void setConfirmed(boolean confirmed) {
         this.confirmed = confirmed;
     }
 
+    /**
+     * Is banned boolean.
+     *
+     * @return the boolean
+     */
     public boolean isBanned() {
         return banned;
     }
 
+    /**
+     * Sets banned.
+     *
+     * @param banned the banned
+     */
     public void setBanned(boolean banned) {
         this.banned = banned;
     }
 
+    /**
+     * Gets voted votes.
+     *
+     * @return the voted votes
+     */
     public List<VotedVote> getVotedVotes() {
         return votedVotes;
     }
 
+    /**
+     * Sets voted votes.
+     *
+     * @param votedVotes the voted votes
+     */
     public void setVotedVotes(List<VotedVote> votedVotes) {
         this.votedVotes = votedVotes;
     }
 
+    /**
+     * Gets started votes.
+     *
+     * @return the started votes
+     */
     public List<Vote> getStartedVotes() {
         return startedVotes;
     }
 
+    /**
+     * Sets started votes.
+     *
+     * @param startedVotes the started votes
+     */
     public void setStartedVotes(List<Vote> startedVotes) {
         this.startedVotes = startedVotes;
     }
 
+    /**
+     * Gets private vote list.
+     *
+     * @return the private vote list
+     */
     public List<Vote> getPrivateVoteList() {
         return privateVoteList;
     }
 
+    /**
+     * Sets private vote list.
+     *
+     * @param privateVoteList the private vote list
+     */
     public void setPrivateVoteList(List<Vote> privateVoteList) {
         this.privateVoteList = privateVoteList;
     }

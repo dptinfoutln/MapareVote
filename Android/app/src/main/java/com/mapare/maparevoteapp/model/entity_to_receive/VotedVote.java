@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import java.io.Serializable;
 
+/**
+ * The type Voted vote.
+ */
 @JsonIdentityInfo(scope=User.class, generator= ObjectIdGenerators.PropertyGenerator.class, property="token")
 public class VotedVote implements Serializable {
 
@@ -15,18 +18,38 @@ public class VotedVote implements Serializable {
     @JsonProperty("vote")
     private Vote vote;
 
+    /**
+     * Gets token.
+     *
+     * @return the token
+     */
     public String getToken() {
         return token;
     }
 
+    /**
+     * Sets token.
+     *
+     * @param token the token
+     */
     public void setToken(String token) {
         this.token = token;
     }
 
+    /**
+     * Gets vote.
+     *
+     * @return the vote
+     */
     public Vote getVote() {
         return vote;
     }
 
+    /**
+     * Sets vote.
+     *
+     * @param vote the vote
+     */
     public void setVote(Vote vote) {
         this.vote = vote;
     }

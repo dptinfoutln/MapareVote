@@ -46,6 +46,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The type Vote activity.
+ */
 public class VoteActivity extends AppCompatActivity {
     private final List<BallotChoice> pickedChoices = new ArrayList<>();
     private CustomAdapter<?> adapter;
@@ -58,7 +61,10 @@ public class VoteActivity extends AppCompatActivity {
     private MutableLiveData<String> LOADING_STATE_CODE;
     private MutableLiveData<String> RESULT_STATE_CODE;
 
-    // Needed for the blur
+    /**
+     * The Clicked token.
+     */
+// Needed for the blur
     boolean clickedToken = false;
 
     // Needed for resizing the layout when show result is clicked

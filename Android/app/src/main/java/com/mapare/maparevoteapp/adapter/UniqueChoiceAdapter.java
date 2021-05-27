@@ -12,15 +12,31 @@ import com.mapare.maparevoteapp.model.entity_to_receive.Choice;
 
 import java.util.List;
 
+/**
+ * The type Unique choice adapter.
+ */
 public class UniqueChoiceAdapter extends CustomAdapter<Choice> {
     private RadioButton selected = null;
     private Ballot ballot;
     private Boolean anonymous;
 
+    /**
+     * Instantiates a new Unique choice adapter.
+     *
+     * @param context    the context
+     * @param choiceList the choice list
+     */
     public UniqueChoiceAdapter(Context context, List<Choice> choiceList) {
         super(context, choiceList);
     }
 
+    /**
+     * Instantiates a new Unique choice adapter.
+     *
+     * @param context    the context
+     * @param choiceList the choice list
+     * @param ballot     the ballot
+     */
     public UniqueChoiceAdapter(Context context, List<Choice> choiceList, Ballot ballot) {
         super(context, choiceList);
         if (ballot == null)
@@ -31,7 +47,13 @@ public class UniqueChoiceAdapter extends CustomAdapter<Choice> {
         }
     }
 
+    /**
+     * The type View holder.
+     */
     public static class ViewHolder {
+        /**
+         * The Choice field.
+         */
         RadioButton choiceField;
     }
 

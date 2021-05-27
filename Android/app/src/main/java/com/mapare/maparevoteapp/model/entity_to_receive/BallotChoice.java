@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import java.io.Serializable;
 
+/**
+ * The type Ballot choice.
+ */
 @JsonIdentityInfo(scope= BallotChoice.class, generator= ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class BallotChoice implements Serializable {
 
@@ -21,26 +24,56 @@ public class BallotChoice implements Serializable {
     @JsonProperty("weight")
     private int weight;
 
+    /**
+     * Gets ballot.
+     *
+     * @return the ballot
+     */
     public Ballot getBallot() {
         return ballot;
     }
 
+    /**
+     * Sets ballot.
+     *
+     * @param ballot the ballot
+     */
     public void setBallot(Ballot ballot) {
         this.ballot = ballot;
     }
 
+    /**
+     * Gets choice.
+     *
+     * @return the choice
+     */
     public Choice getChoice() {
         return choice;
     }
 
+    /**
+     * Sets choice.
+     *
+     * @param choice the choice
+     */
     public void setChoice(Choice choice) {
         this.choice = choice;
     }
 
+    /**
+     * Gets weight.
+     *
+     * @return the weight
+     */
     public int getWeight() {
         return weight;
     }
 
+    /**
+     * Sets weight.
+     *
+     * @param weight the weight
+     */
     public void setWeight(int weight) {
         this.weight = weight;
     }

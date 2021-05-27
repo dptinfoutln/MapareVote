@@ -8,6 +8,9 @@ import java.io.Serializable;
 import java.util.List;
 
 
+/**
+ * The type Ballot.
+ */
 @JsonIdentityInfo(scope= Ballot.class, generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Ballot implements Serializable {
 
@@ -23,26 +26,56 @@ public class Ballot implements Serializable {
     @JsonProperty("vote")
     private Vote vote;
 
+    /**
+     * Gets id.
+     *
+     * @return the id
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Sets id.
+     *
+     * @param id the id
+     */
     public void setId(int id) {
         this.id = id;
     }
 
+    /**
+     * Gets date.
+     *
+     * @return the date
+     */
     public List<String> getDate() {
         return date;
     }
 
+    /**
+     * Sets date.
+     *
+     * @param date the date
+     */
     public void setDate(List<String> date) {
         this.date = date;
     }
 
+    /**
+     * Gets choices.
+     *
+     * @return the choices
+     */
     public List<BallotChoice> getChoices() {
         return choices;
     }
 
+    /**
+     * Sets choices.
+     *
+     * @param choices the choices
+     */
     public void setChoices(List<BallotChoice> choices) {
         this.choices = choices;
     }

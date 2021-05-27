@@ -15,16 +15,40 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The type Vote adapter.
+ */
 public class VoteAdapter extends CustomAdapter<Vote> {
 
+    /**
+     * Instantiates a new Vote adapter.
+     *
+     * @param context  the context
+     * @param voteList the vote list
+     */
     public VoteAdapter(Context context, List<Vote> voteList) {
         super(context, voteList);
     }
 
+    /**
+     * The type View holder.
+     */
     public static class ViewHolder {
+        /**
+         * The Label field.
+         */
         TextView labelField;
+        /**
+         * The Votemaker field.
+         */
         TextView votemakerField;
+        /**
+         * The Intermediary result field.
+         */
         TextView intermediaryResultField;
+        /**
+         * The Start date field.
+         */
         TextView startDateField;
     }
 

@@ -51,6 +51,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The type Main activity.
+ */
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private AppBarConfiguration mAppBarConfiguration;
@@ -60,7 +63,10 @@ public class MainActivity extends AppCompatActivity {
     // Needs to be here (don't listen to IDE)
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
-    // Needed for filters
+    /**
+     * The Progress value of page size.
+     */
+// Needed for filters
     int progressValueOfPageSize;
 
     @Override
@@ -394,6 +400,11 @@ public class MainActivity extends AppCompatActivity {
         queue.add(stringRequest);
     }
 
+    /**
+     * Gets context.
+     *
+     * @return the context
+     */
     public static Context getContext() {
         return AppContext;
     }
