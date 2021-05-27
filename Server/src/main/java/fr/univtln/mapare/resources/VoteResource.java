@@ -16,9 +16,7 @@ import jakarta.ws.rs.core.SecurityContext;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.StrictMath.ceil;
@@ -510,8 +508,8 @@ public class VoteResource {
     @GET
     @JWTAuth
     @Path("{id}/tokens")
-    public List<String> getTokenListForVote(@Context SecurityContext securityContext,
-                                            @PathParam("id") int id) throws ForbiddenException, NotFoundException {
+    public Map<String, String> getTokenListForVote(@Context SecurityContext securityContext,
+                                           @PathParam("id") int id) throws ForbiddenException, NotFoundException {
         User user = (User) securityContext.getUserPrincipal();
 
         Controllers.checkUser(user);
@@ -526,11 +524,15 @@ public class VoteResource {
 
         List<VotedVote> votedVotes = VotedVoteDAO.of(Controllers.getEntityManager()).findByVote(vote);
 
-        List<String> returnList = new ArrayList<>();
+        Map<String, String> returnMap = new HashMap<>();
 
-        for (VotedVote vv : votedVotes)
-            returnList.add(vv.getToken());
+        for (VotedVote vv : votedVotes) {
+            if (vote.isAnonymous())
+                returnMap.put(vv.getToken(), "");
+            else
+                returnMap.put(vv.getToken(), vv.getUser().getLastname() + " " + vv.getUser().getFirstname());
+        }
 
-        return returnList;
+        return returnMap;
     }
 }
