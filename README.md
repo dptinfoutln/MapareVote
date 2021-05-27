@@ -1,5 +1,11 @@
 # MapareVote
 
+Application de vote.
+Pour calculer le résultat du vote, les algorithmes suivant sont disponible pour l'instant:
+- Choix majoritaire ("majority")
+- Méthode Borda ("borda")
+- Scrutin à vote unique transférable ("STV")
+
 ## Interface REST
 
 ### Liste des votes publics
@@ -9,74 +15,64 @@
 **Format de la requête**
 
 	Headers 
-	Authorization: bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJNYXBhcmVWb3RlIiwiaWF0IjoxNjIyMTI5NDEwLCJzdWIiOiJ0ZXN0QG1haWwuY29tIiwiZmlyc3RuYW1lIjoiSmVhbiIsImxhc3RuYW1lIjoiVW4iLCJleHAiOjE2NTM2NjU0MTB9.UEYDXj1nO2GsxU815BeUE-HLzlAv8-OLRH9VXQ3BEPg
 	Accept: application/json
-
-**Paramètres**
-
-**Nom**	Authorization  
-**Requis**	Oui  
-**Type**	String	
-**Valeur par défaut**	Aucune  
-**Description**	Authentification avec jeton JWT  
-**Valeur possible**	bearer <jeton>
 
 **Réponse**
 
 	Renvoie la liste des votes publics sous forme de liste JSON.  
 	Format d'un vote:  
-	{  
-  "id": 46,  
-  "label": "Lettre de l'alphabet préférée",  
-  "startDate": [  
-    2021,  
-    5,  
-    14  
-  ],  
-  "endDate": [  
-    2021,  
-    5,  
-    25  
-  ],  
-  "algo": "STV",  
-  "anonymous": false,  
-  "intermediaryResult": false,  
-  "votemaker": {  
-    "id": 1,  
-    "email": "fanduw@gmail.com",  
-    "lastname": "Watson",  
-    "firstname": "William",  
-    "confirmed": true,  
-    "admin": false,  
-    "banned": false  
-  },  
-  "choices": [  
-    {  
-      "id": 107,  
-      "names": [  
-        "La lettre W"  
-      ],  
-      "vote": 46  
-    },  
-    {  
-      "id": 108,  
-      "names": [  
-        "La lettre X"  
-      ],  
-      "vote": 46  
-    },  
-    {  
-      "id": 113,  
-      "names": [  
-        "La lettre D"  
-      ],  
-      "vote": 46  
-    }  
-  ],  
-  "maxChoices": 1,  
-  "members": [],  
-  "pendingResult": false  
-}
+	{
+	"id": 46,  
+	"label": "Lettre de l'alphabet préférée",  
+	"startDate": [  
+		2021,  
+		5,  
+		14  
+	],  
+	"endDate": [  
+		2021,  
+		5,  
+		25  
+	],  
+	"algo": "STV",  
+	"anonymous": false,  
+	"intermediaryResult": false,  
+	"votemaker": {  
+		"id": 1,  
+		"email": "fanduw@gmail.com",  
+		"lastname": "Watson",  
+		"firstname": "William",  
+		"confirmed": true,  
+		"admin": false,  
+		"banned": false  
+	},  
+	"choices": [  
+		{  
+		  "id": 107,  
+		  "names": [  
+		    "La lettre W"  
+		  ],  
+		  "vote": 46  
+		},  
+		{  
+		  "id": 108,  
+		  "names": [  
+		    "La lettre X"  
+		  ],  
+		  "vote": 46  
+		},  
+		{  
+		  "id": 113,  
+		  "names": [  
+		    "La lettre D"  
+		  ],  
+		  "vote": 46  
+		}  
+	],  
+	"maxChoices": 1,  
+	"members": [],  
+	"pendingResult": false  
+	}
 
 
 **Objet**
@@ -91,11 +87,116 @@ anonymous		|	Boolean		| Indique si le vote est anonyme ou si la liste des person
 intermediaryResult		|	Boolean		| Indique si le vote laisse la possibilité de consulter les résultats avant la date de fin. (Vrai par défaut si pas de date de fin)
 Votemaker		|	Objet		| Utilisateur créateur du vote en question. Voir format d'un utilisateur plus bas.
 choices		|	Array		| Liste de choix pour le vote en question. Format d'un choix: id du choix, names: intitulé du choix, id du vote.
-maxChoices		|	String		| Si le vote est de type STV, nombre de gagnants, sinon nombre de choix maximum que l'on peut sélectionner au moment du vote.
+maxChoices		|	Number		| Si le vote est de type STV, nombre de gagnants, sinon nombre de choix maximum que l'on peut sélectionner au moment du vote.
 members		|	Array		| En cas de vote privé, liste des membres invités à voter. Même format que votemaker pour un membre.
 pendingResult		|	Boolean		| Future proofing pour le multi-threading. Pas utilisé pour l'instant. 
 
 **Exemple Curl**
 
-	curl -H " Authorization: bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJNYXBhcmVWb3RlIiwiaWF0IjoxNjIyMTI5NDEwLCJzdWIiOiJ0ZXN0QG1haWwuY29tIiwiZmlyc3RuYW1lIjoiSmVhbiIsImxhc3RuYW1lIjoiVW4iLCJleHAiOjE2NTM2NjU0MTB9.UEYDXj1nO2GsxU815BeUE-HLzlAv8-OLRH9VXQ3BEPg" -H "Accept: application/json" -X GET
+	curl -H "Authorization: bearer {JETON}" -H "Accept: application/json" -X GET
 	https://api.maparevote.siannos.fr/public/votes
+
+### Détail d'un vote
+
+	GET https://api.maparevote.siannos.fr/votes/{ID}
+	Avec {ID} le nombre identifiant du vote.
+
+**Format de la requête**
+
+	Headers 
+	Authorization: bearer {JETON}
+	Accept: application/json
+
+**Paramètres**
+
+**Nom**	Authorization  
+**Requis**	Oui  
+**Type**	String  
+**Valeur par défaut**	Aucune  
+**Description**	Authentification avec jeton JWT  
+**Valeur possible**	bearer {JETON}
+
+**Réponse**
+
+	Renvoie le détail d'un vote en particulier et calcule les résultats d'un vote si besoin.
+	Format d'un vote: voir plus haut.
+
+**Exemple Curl**
+
+	curl -H "Authorization: bearer {JETON}" -H "Accept: application/json" -X GET
+	https://api.maparevote.siannos.fr/votes/46
+	
+### Résultats d'un vote
+
+	GET https://api.maparevote.siannos.fr/votes/{ID}/results
+	Avec {ID} le nombre identifiant du vote.
+
+**Format de la requête**
+
+	Headers 
+	Authorization: bearer {JETON}
+	Accept: application/json
+
+**Paramètres**
+
+**Nom**	Authorization  
+**Requis**	Oui  
+**Type**	String  
+**Valeur par défaut**	Aucune  
+**Description**	Authentification avec jeton JWT  
+**Valeur possible**	bearer {JETON}
+
+**Réponse**
+
+	Renvoie les résultats d'un vote si ceux ci existent.
+	Les résultats ne sont pas générés avec cette requête. Pour générer les résultats voir plus haut.  
+	Format d'un résultat:  
+	{  
+		"choice": {  
+		  "id": 13,  
+		  "names": [  
+		    "Vert"  
+		  ]  
+		},  
+		"value": 236  
+	},  
+	{  
+		"choice": {  
+		  "id": 12,  
+		  "names": [  
+		    "Blanc"  
+		  ]  
+		},  
+		"value": 249  
+	},  
+	{  
+		"choice": {  
+		  "id": 10,  
+		  "names": [  
+		    "Rouge"  
+		  ]  
+		},  
+		"value": 286  
+	},  
+	{  
+		"choice": {  
+		  "id": 11,  
+		  "names": [  
+		    "Bleu"  
+		  ]  
+		},  
+		"value": 26  
+	}
+
+**Objet**
+
+**Nom**				| **Type**	| **Description** 
+--------------------|-----------|-------------------
+choice		|	Array		| Choix pour le vote en question. Format d'un choix: id du choix, names: intitulé du choix, id du vote.
+value		|	Number		| Si le vote est de type STV, nombre positif = gagnant, nombre négatif = perdant, sinon score total pour ce choix.
+
+
+**Exemple Curl**
+
+	curl -H "Authorization: bearer {JETON}" -H "Accept: application/json" -X GET
+	https://api.maparevote.siannos.fr/votes/46/results 
