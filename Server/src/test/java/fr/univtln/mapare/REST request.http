@@ -8,6 +8,18 @@ Authorization: Basic dGVzdEBtYWlsLmNvbTptZHA=
 %}
 
 ###
+
+GET http://localhost:5431/votes/46
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+###
+
+GET http://localhost:5431/votes/46/results
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+###
 GET http://localhost:5431/users/me
 Content-Type: application/json
 Accept: application/json
@@ -30,3 +42,4 @@ GET http://localhost:5431/votes/votedvotes
 Accept: application/json
 Authorization: Bearer {{auth_token}}
 
+###

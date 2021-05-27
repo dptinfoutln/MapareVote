@@ -6,27 +6,35 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
-import javax.mail.*;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.Properties;
 
-
+/**
+ * The type Controllers.
+ */
 public class Controllers {
     private static EntityManagerFactory eMF = null;
     private static EntityManager entityManager = null;
 
-    private Controllers() {}
+    private Controllers() {
+    }
 
+
+    /**
+     * Gets entity manager.
+     *
+     * @return the entity manager
+     */
     public static EntityManager getEntityManager() {
 
         entityManager.setProperty("LABEL", "%");
         return entityManager;
     }
 
+
+    /**
+     * Gets emf.
+     *
+     * @return the emf
+     */
     public static EntityManagerFactory getEMF() {
         if (eMF != null)
             return eMF;
@@ -34,14 +42,25 @@ public class Controllers {
             throw new IllegalStateException("EMF uninitialized.");
     }
 
+    /**
+     * Is open boolean.
+     *
+     * @return the boolean
+     */
     public static boolean isOpen() {
         return entityManager != null;
     }
 
+    /**
+     * Init.
+     */
     public static void init() {
         _init("maparevotedb");
     }
 
+    /**
+     * Testinit.
+     */
     public static void testinit() {
         _init("maparevotedev");
     }
@@ -54,11 +73,20 @@ public class Controllers {
         entityManager.setProperty("ALGO", "%");
     }
 
+    /**
+     * Close.
+     */
     public static void close() {
         entityManager.close();
         entityManager = null;
     }
 
+    /**
+     * Check user.
+     *
+     * @param user the user
+     * @throws ForbiddenException the forbidden exception
+     */
     public static void checkUser(User user) throws ForbiddenException {
         if (!user.isConfirmed())
             throw new ForbiddenException("You need to confirm your email first.");

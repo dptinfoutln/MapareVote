@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {VotesService} from '../../services/votes.service';
@@ -30,7 +30,6 @@ export class FilterComponent implements OnInit {
     }
 
     ngOnInit(): void {
-
         this.votesService.voteCount.subscribe(voteCount => {
             this.voteCount = Number(voteCount);
         });
@@ -58,9 +57,6 @@ export class FilterComponent implements OnInit {
                 $('#searchInput').val(params.name);
             }
             this.open = (params.open !== 'false');
-            if (this.open && !this.initiated) {
-                $('#onlyOpenToggle').prop('checked', true);
-            }
             this.initiated = true;
         });
     }

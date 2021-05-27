@@ -1,24 +1,32 @@
 package fr.univtln.mapare.model;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import javax.security.auth.Subject;
 import java.io.Serializable;
 import java.security.Principal;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
+/**
+ * The type User.
+ */
 @Data
 @EqualsAndHashCode(of = "email")
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class,property="id", scope=User.class)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = User.class)
 @Table(name = "\"USERS\"")
 @NamedQueries({
         @NamedQuery(name = "User.findByEmail", query = "SELECT U FROM User U WHERE U.email = :email"),
@@ -49,13 +57,18 @@ public class User implements Serializable, Principal {
     private boolean admin;
 
     @Column(nullable = false)
-    private boolean
-            banned;
+    private boolean banned;
 
+    /**
+     * The Password hash.
+     */
     @JsonIgnore
     @Column(nullable = false)
     byte[] passwordHash;
 
+    /**
+     * The Salt.
+     */
     @JsonIgnore
     @Column(nullable = false)
     byte[] salt = new byte[16];
@@ -77,6 +90,14 @@ public class User implements Serializable, Principal {
     @JsonIgnoreProperties("user")
     private List<VotedVote> votedVotes = new ArrayList<>();
 
+    /**
+     * Instantiates a new User.
+     *
+     * @param email     the email
+     * @param lastname  the lastname
+     * @param firstname the firstname
+     * @param password  the password
+     */
     @Builder
     @SneakyThrows
     public User(String email, String lastname, String firstname, String password) {
@@ -91,6 +112,11 @@ public class User implements Serializable, Principal {
         setPassword(password);
     }
 
+    /**
+     * Sets password.
+     *
+     * @param password the password
+     */
     @SneakyThrows
     public void setPassword(String password) {
         new SecureRandom().nextBytes(salt);
@@ -99,21 +125,42 @@ public class User implements Serializable, Principal {
         passwordHash = factory.generateSecret(spec).getEncoded();
     }
 
+    /**
+     * Add started vote.
+     *
+     * @param vote the vote
+     */
     public void addStartedVote(Vote vote) {
         if (!startedVotes.contains(vote))
             startedVotes.add(vote);
     }
 
+    /**
+     * Add private vote.
+     *
+     * @param vote the vote
+     */
     public void addPrivateVote(Vote vote) {
         if (!privateVoteList.contains(vote))
             privateVoteList.add(vote);
     }
 
+    /**
+     * Add voted vote.
+     *
+     * @param votedVote the voted vote
+     */
     public void addVotedVote(VotedVote votedVote) {
         if (!votedVotes.contains(votedVote))
             votedVotes.add(votedVote);
     }
 
+    /**
+     * Check password boolean.
+     *
+     * @param password the password
+     * @return the boolean
+     */
     @SneakyThrows
     public boolean checkPassword(String password) {
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
@@ -125,7 +172,7 @@ public class User implements Serializable, Principal {
     @Override
     @JsonIgnore
     public String getName() {
-        return lastname + ", " + firstname+" <"+email+">";
+        return lastname + ", " + firstname + " <" + email + ">";
     }
 
     @Override
@@ -137,6 +184,12 @@ public class User implements Serializable, Principal {
                 ", firstname='" + firstname + '\'' +
                 '}';
     }
+
+    /**
+     * Gets votes on which the user has voted.
+     *
+     * @return the votes on which the user has voted
+     */
     @JsonIgnore
     public List<Vote> getVotesOnWhichTheUserHasVoted() {
         List<Vote> tempList = new ArrayList<>();

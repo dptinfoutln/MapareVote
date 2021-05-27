@@ -1,10 +1,16 @@
 package fr.univtln.mapare.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+/**
+ * The type Ballot choice.
+ */
 @Data
 @Builder
 @Entity
@@ -12,7 +18,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Table(name = "\"BALLOT_CHOICE\"")
 public class BallotChoice implements Serializable {
-
     @Id
     @ManyToOne
     @JoinColumn(name = "\"ballot\"")
@@ -34,6 +39,11 @@ public class BallotChoice implements Serializable {
                 '}';
     }
 
+    /**
+     * Gets id.
+     *
+     * @return the id
+     */
     @Transient
     public String getId() {
         return ballot.getId() + " " + choice.getId();

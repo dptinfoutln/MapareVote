@@ -1,6 +1,5 @@
 package fr.univtln.mapare.security;
 
-import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.security.filter.request.BasicAuthenticationFilter;
 import fr.univtln.mapare.security.filter.request.JsonWebTokenFilter;
 import jakarta.ws.rs.core.SecurityContext;

@@ -3,14 +3,10 @@ package fr.univtln.mapare.resources;
 import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.controllers.MailUtils;
 import fr.univtln.mapare.controllers.VoteUtils;
-import fr.univtln.mapare.dao.BallotDAO;
-import fr.univtln.mapare.dao.ChoiceDAO;
-import fr.univtln.mapare.dao.UserDAO;
-import fr.univtln.mapare.dao.VoteDAO;
-import fr.univtln.mapare.exceptions.BusinessException;
+import fr.univtln.mapare.dao.*;
+import fr.univtln.mapare.exceptions.*;
 import fr.univtln.mapare.exceptions.ForbiddenException;
 import fr.univtln.mapare.exceptions.NotFoundException;
-import fr.univtln.mapare.exceptions.TooEarlyException;
 import fr.univtln.mapare.model.*;
 import fr.univtln.mapare.security.annotations.JWTAuth;
 import jakarta.ws.rs.*;
@@ -20,14 +16,30 @@ import jakarta.ws.rs.core.SecurityContext;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.StrictMath.ceil;
 
+/**
+ * The type Vote resource.
+ */
 @Path("votes")
 public class VoteResource {
+    /**
+     * Gets votes.
+     *
+     * @param pagenum    the pagenum
+     * @param pagesize   the pagesize
+     * @param approxname the approxname
+     * @param namestart  the namestart
+     * @param nameend    the nameend
+     * @param algoname   the algoname
+     * @param sortkey    the sortkey
+     * @param order      the order
+     * @param open       the open
+     * @return the votes
+     */
     @GET
     @Path("public")
     public Response getVotes(@QueryParam("page_num") int pagenum,
@@ -44,6 +56,15 @@ public class VoteResource {
         ));
     }
 
+    /**
+     * Gets vote.
+     *
+     * @param securityContext the security context
+     * @param id              the id
+     * @return the vote
+     * @throws NotFoundException  the not found exception
+     * @throws ForbiddenException the forbidden exception
+     */
     @GET
     @JWTAuth
     @Path("{id}")
@@ -81,6 +102,16 @@ public class VoteResource {
             throw new ForbiddenException("You don't have access to this vote's details.");
     }
 
+    /**
+     * Gets vote results.
+     *
+     * @param securityContext the security context
+     * @param id              the id
+     * @return the vote results
+     * @throws NotFoundException  the not found exception
+     * @throws ForbiddenException the forbidden exception
+     * @throws TooEarlyException  the too early exception
+     */
     @GET
     @JWTAuth
     @Path("{id}/results")
@@ -104,6 +135,14 @@ public class VoteResource {
             throw new ForbiddenException();
     }
 
+    /**
+     * Add public vote vote.
+     *
+     * @param securityContext the security context
+     * @param vote            the vote
+     * @return the vote
+     * @throws BusinessException the business exception
+     */
     @POST
     @JWTAuth
     @Path("public")
@@ -119,6 +158,14 @@ public class VoteResource {
         return addVote(vote);
     }
 
+    /**
+     * Add private vote vote.
+     *
+     * @param securityContext the security context
+     * @param vote            the vote
+     * @return the vote
+     * @throws BusinessException the business exception
+     */
     @POST
     @JWTAuth
     @Path("private")
@@ -132,6 +179,13 @@ public class VoteResource {
         return addVote(vote);
     }
 
+    /**
+     * Add vote vote.
+     *
+     * @param vote the vote
+     * @return the vote
+     * @throws BusinessException the business exception
+     */
     public Vote addVote(Vote vote) throws BusinessException {
         if (vote.getLabel() == null)
             throw new ForbiddenException("Please send a title.");
@@ -171,6 +225,15 @@ public class VoteResource {
         return vote;
     }
 
+    /**
+     * Delete vote int.
+     *
+     * @param securityContext the security context
+     * @param id              the id
+     * @return the int
+     * @throws NotFoundException  the not found exception
+     * @throws ForbiddenException the forbidden exception
+     */
     @DELETE
     @JWTAuth
     @Path("{id}")
@@ -194,11 +257,19 @@ public class VoteResource {
         return 0;
     }
 
+    /**
+     * Add ballot ballot.
+     *
+     * @param securityContext the security context
+     * @param id              the id
+     * @param ballot          the ballot
+     * @return the ballot
+     * @throws BusinessException the business exception
+     */
     @POST
     @JWTAuth
     @Path("{id}/ballots")
     public Ballot addBallot(@Context SecurityContext securityContext, @PathParam("id") int id, Ballot ballot) throws BusinessException {
-        //TODO: check choices
         ballot.setId(0);
         User voter = (User) securityContext.getUserPrincipal();
         Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
@@ -244,7 +315,10 @@ public class VoteResource {
             default:
                 break;
         }
-        ballot.setVoter(voter);
+        if (vote.isAnonymous())
+            ballot.setVoter(null);
+        else
+            ballot.setVoter(voter);
         ChoiceDAO choiceDAO = ChoiceDAO.of(Controllers.getEntityManager());
         Choice tempchoice;
         for (BallotChoice bc : ballot.getChoices()) {
@@ -266,6 +340,22 @@ public class VoteResource {
         return ballot;
     }
 
+    /**
+     * Gets private votes for user.
+     *
+     * @param securityContext the security context
+     * @param pagenum         the page number
+     * @param pagesize        the page size
+     * @param approxname      the approximative name
+     * @param namestart       the name's start
+     * @param nameend         the name's end
+     * @param algoname        the algorithm's name
+     * @param sortkey         the sort key
+     * @param order           the order parameter
+     * @param open            the open boolean
+     * @return the private votes for user
+     * @throws ForbiddenException the forbidden exception
+     */
     @GET
     @JWTAuth
     @Path("private/invited")
@@ -288,6 +378,14 @@ public class VoteResource {
                 new VoteQuery(approxname, namestart, nameend, algoname, sortkey, order, open)));
     }
 
+    /**
+     * Gets specific ballotfor user.
+     *
+     * @param securityContext the security context
+     * @param id              the id
+     * @return the specific ballotfor user
+     * @throws ForbiddenException the forbidden exception
+     */
     @GET
     @JWTAuth
     @Path("{id}/myballot")
@@ -304,6 +402,22 @@ public class VoteResource {
             return null;
     }
 
+    /**
+     * Gets started votes.
+     *
+     * @param securityContext the security context
+     * @param pagenum         the pagenum
+     * @param pagesize        the pagesize
+     * @param approxname      the approxname
+     * @param namestart       the namestart
+     * @param nameend         the nameend
+     * @param algoname        the algoname
+     * @param sortkey         the sortkey
+     * @param order           the order
+     * @param open            the open
+     * @return the started votes
+     * @throws ForbiddenException the forbidden exception
+     */
     @GET
     @JWTAuth
     @Path("startedvotes")
@@ -327,6 +441,22 @@ public class VoteResource {
         );
     }
 
+    /**
+     * Gets voted votes.
+     *
+     * @param securityContext the security context
+     * @param pagenum         the pagenum
+     * @param pagesize        the pagesize
+     * @param approxname      the approxname
+     * @param namestart       the namestart
+     * @param nameend         the nameend
+     * @param algoname        the algoname
+     * @param sortkey         the sortkey
+     * @param order           the order
+     * @param open            the open
+     * @return the voted votes
+     * @throws ForbiddenException the forbidden exception
+     */
     @GET
     @JWTAuth
     @Path("votedvotes")
@@ -364,5 +494,48 @@ public class VoteResource {
         return rb.header("votecount", "" + size)
                 .header("pagecount", "" + ceil((double) size / pagesize))
                 .build();
+    }
+
+    /**
+     * Gets token list for vote.
+     *
+     * @param securityContext the security context
+     * @param id              the id
+     * @return the token list for vote
+     * @throws ForbiddenException the forbidden exception
+     * @throws NotFoundException  the not found exception
+     */
+    @GET
+    @JWTAuth
+    @Path("{id}/tokens")
+    public Map<String, String> getTokenListForVote(@Context SecurityContext securityContext,
+                                           @PathParam("id") int id) throws ForbiddenException, NotFoundException {
+        User user = (User) securityContext.getUserPrincipal();
+
+        Controllers.checkUser(user);
+
+        Vote vote = VoteDAO.of(Controllers.getEntityManager()).findById(id);
+
+        if (vote == null)
+            throw new NotFoundException("No vote found with id: " + id);
+
+        if (vote.isPrivate() && !vote.getMembers().contains(user))
+            throw new ForbiddenException("You do not have the access rights for this vote.");
+
+        List<VotedVote> votedVotes = VotedVoteDAO.of(Controllers.getEntityManager()).findByVote(vote);
+
+        Map<String, String> returnMap = new HashMap<>();
+
+        if (votedVotes == null)
+            return returnMap;
+
+        for (VotedVote vv : votedVotes) {
+            if (vote.isAnonymous())
+                returnMap.put(vv.getToken(), "");
+            else
+                returnMap.put(vv.getToken(), vv.getUser().getLastname() + " " + vv.getUser().getFirstname());
+        }
+
+        return returnMap;
     }
 }

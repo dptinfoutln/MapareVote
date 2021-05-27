@@ -2,11 +2,19 @@ package fr.univtln.mapare.controllers;
 
 import fr.univtln.mapare.dao.VoteDAO;
 import fr.univtln.mapare.model.*;
-import jakarta.persistence.EntityManager;
 
 import java.util.*;
 
+/**
+ * The type Vote utils.
+ */
 public abstract class VoteUtils {
+    /**
+     * Vote results of vote results.
+     *
+     * @param vote the vote
+     * @return the vote results
+     */
     public static VoteResults voteResultsOf(Vote vote) {
         return new VoteResults(vote);
     }
@@ -14,9 +22,17 @@ public abstract class VoteUtils {
     private VoteUtils() {
     }
 
+    /**
+     * The type Vote results.
+     */
     public static class VoteResults implements Runnable {
         private final Vote vote;
 
+        /**
+         * Instantiates a new Vote results.
+         *
+         * @param vote the vote
+         */
         public VoteResults(Vote vote) {
             this.vote = vote;
         }
@@ -26,6 +42,9 @@ public abstract class VoteUtils {
             calculateResults();
         }
 
+        /**
+         * Calculate results.
+         */
         public void calculateResults() {
             if (!vote.isPendingResult()) {
                 vote.setPendingResult(true);
@@ -138,7 +157,8 @@ public abstract class VoteUtils {
                                     flag = false;
                                     for (Choice c : vote.getChoices()) {
                                         // If we have someone who has enough votes, we can add him to the winners list.
-                                        if (countMap.get(c) >= ((double) vote.getBallots().size()) / vote.getMaxChoices()) {
+                                        if (countMap.get(c) != null &&
+                                                countMap.get(c) >= ((double) vote.getBallots().size()) / vote.getMaxChoices()) {
                                             flag = true;
                                             resultList.add(new VoteResult(c, candidatecount, vote));
                                             candidatecount++;
@@ -154,7 +174,7 @@ public abstract class VoteUtils {
                                         // We find the candidate with the least amount of votes.
                                         minval = vote.getBallots().size() + 1.0;
                                         for (Choice c : vote.getChoices()) {
-                                            if (countMap.get(c) != 0 && countMap.get(c) < minval) {
+                                            if (countMap.get(c) != null && countMap.get(c) != 0 && countMap.get(c) < minval) {
                                                 minval = countMap.get(c);
                                                 minchoice = c;
                                             }
@@ -214,6 +234,11 @@ public abstract class VoteUtils {
     }
 
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         Controllers.init();
         Vote problem = VoteDAO.of(Controllers.getEntityManager()).findById(42);
