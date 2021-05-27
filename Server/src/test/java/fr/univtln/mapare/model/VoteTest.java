@@ -248,7 +248,7 @@ class VoteTest {
     void testHasResults() {
         Vote vote = new Vote();
         vote.setResultList(new ArrayList<VoteResult>());
-        assertTrue(vote.hasResults());
+        assertFalse(vote.hasResults());
     }
 
     @Test
@@ -258,7 +258,7 @@ class VoteTest {
 
         Vote vote = new Vote();
         vote.setResultList(voteResultList);
-        assertFalse(vote.hasResults());
+        assertTrue(vote.hasResults());
     }
 
     @Test
