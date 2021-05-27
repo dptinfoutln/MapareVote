@@ -208,7 +208,7 @@ public class Vote implements Serializable, Comparable<Vote> {
     public boolean hasResults() {
         if (resultList == null)
             return false;
-        return resultList.isEmpty();
+        return !resultList.isEmpty();
     }
 
     @Override
