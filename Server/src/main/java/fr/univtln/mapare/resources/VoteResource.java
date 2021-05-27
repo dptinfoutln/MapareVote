@@ -317,7 +317,10 @@ public class VoteResource {
             default:
                 break;
         }
-        ballot.setVoter(voter);
+        if (vote.isAnonymous())
+            ballot.setVoter(null);
+        else
+            ballot.setVoter(voter);
         ChoiceDAO choiceDAO = ChoiceDAO.of(Controllers.getEntityManager());
         Choice tempchoice;
         for (BallotChoice bc : ballot.getChoices()) {
