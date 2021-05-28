@@ -1,6 +1,9 @@
 package fr.univtln.mapare.model;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,12 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * The type Ballot.
+ */
 @Data
 @EqualsAndHashCode(of = {"vote", "voter"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name = "\"BALLOT\"")
 @NamedQueries({
         @NamedQuery(name = "Ballot.findByVoter", query = "SELECT B FROM Ballot B WHERE B.voter = :voter"),
@@ -25,6 +31,9 @@ import java.util.List;
 })
 public class Ballot implements Serializable {
 
+    /**
+     * The Id.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
@@ -45,6 +54,13 @@ public class Ballot implements Serializable {
     @OneToMany(mappedBy = "ballot", cascade = CascadeType.ALL)
     private List<BallotChoice> choices = new ArrayList<>();
 
+    /**
+     * Instantiates a new Ballot.
+     *
+     * @param date  the date
+     * @param vote  the vote
+     * @param voter the voter
+     */
     @Builder
     @SneakyThrows
     public Ballot(LocalDateTime date, Vote vote, User voter) {
@@ -53,8 +69,24 @@ public class Ballot implements Serializable {
         this.voter = voter;
     }
 
+    /**
+     * Add choice.
+     *
+     * @param choice the choice
+     */
     public void addChoice(BallotChoice choice) {
         if (!choices.contains(choice))
             choices.add(choice);
+    }
+
+    @Override
+    public String toString() {
+        return "Ballot{" +
+                "id=" + id +
+                ", date=" + date +
+                ", vote=" + vote.getId() +
+                ", voter=" + voter.getId() +
+                ", choices=" + choices +
+                '}';
     }
 }

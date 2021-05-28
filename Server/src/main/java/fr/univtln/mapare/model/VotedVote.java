@@ -4,19 +4,20 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+/**
+ * The type Voted vote.
+ */
 @Data
 @EqualsAndHashCode(of = {"vote", "user"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="token")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "token")
 @Table(name = "\"VOTED_VOTES\"")//, uniqueConstraints = @UniqueConstraint(columnNames={"vote", "user"}))
 @NamedQueries({
         @NamedQuery(name = "VotedVotes.findByToken", query = "SELECT V FROM VotedVote V WHERE V.token = :token"),
@@ -38,6 +39,12 @@ public class VotedVote implements Serializable {
     @JoinColumn(nullable = false, name = "\"user\"")
     private User user;
 
+    /**
+     * Instantiates a new Voted vote.
+     *
+     * @param vote the vote
+     * @param user the user
+     */
     @Builder
     @SneakyThrows
     public VotedVote(Vote vote, User user) {

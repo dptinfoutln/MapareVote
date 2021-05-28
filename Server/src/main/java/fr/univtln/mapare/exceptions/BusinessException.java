@@ -35,10 +35,10 @@ public class BusinessException extends Exception implements Serializable {
     /**
      * Instantiates a new Business exception with the default message.
      *
-     * @param status the status
+     * @param status  the status
      * @param message the message
      */
-    public BusinessException(MyResponse.Status status,String message) {
+    public BusinessException(MyResponse.Status status, String message) {
         super(message);
         this.status = status;
     }

@@ -1,5 +1,6 @@
 package fr.univtln.mapare.resources;
 
+import fr.univtln.mapare.exceptions.ForbiddenException;
 import fr.univtln.mapare.model.User;
 import fr.univtln.mapare.security.LoginModule;
 import fr.univtln.mapare.security.annotations.BasicAuth;
@@ -44,8 +45,8 @@ public class AuthResource {
     @Path("context")
     public String getContext(@Context UriInfo uriInfo, @Context HttpHeaders httpHeaders, @Context Request request, @Context SecurityContext securityContext) {
         String result = "UriInfo: (" + uriInfo.getRequestUri().toString() + ")\n"
-                        + "Method: (" + request.getMethod() + ")\n"
-                        + "HttpHeaders(" + httpHeaders.getRequestHeaders().toString() + ")\n";
+                + "Method: (" + request.getMethod() + ")\n"
+                + "HttpHeaders(" + httpHeaders.getRequestHeaders().toString() + ")\n";
 
         if (securityContext != null) {
             result += " SecurityContext(Auth.scheme: [" + securityContext.getAuthenticationScheme() + "] \n";
@@ -124,15 +125,20 @@ public class AuthResource {
      *
      * @param securityContext the security context
      * @return the base64 encoded JWT Token.
+     * @throws ForbiddenException the forbidden exception
      */
     @GET
     @Path("signin")
     @RolesAllowed({"USER", "ADMIN"})
     @BasicAuth
     @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
-    public String login(@Context SecurityContext securityContext) {
+    public String login(@Context SecurityContext securityContext) throws ForbiddenException {
         if (securityContext.isSecure() && securityContext.getUserPrincipal() instanceof User) {
             User user = (User) securityContext.getUserPrincipal();
+
+            if (!user.isConfirmed())
+                throw new ForbiddenException("You need to validate your email first.");
+
             return Jwts.builder()
                     .setIssuer("MapareVote")
                     .setIssuedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))

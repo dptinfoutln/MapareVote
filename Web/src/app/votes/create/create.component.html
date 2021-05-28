@@ -1,1 +1,130 @@
-<p>create works!</p>
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 offset-md-1 col-xxl-8 offset-xxl-2">
+            <h1 class="bd-title mb-5">Créer un vote</h1>
+            <form (ngSubmit)="onSubmit()">
+                <div class="mb-3 form-floating">
+                    <input type="text" id="label" #labelInput class="form-control" placeholder="Titre du vote"
+                           (focusout)="onLabelInputFocusOut()">
+                    <label for="label">Titre du vote</label>
+                </div>
+                <div class="col mb-3 form-floating">
+                    <select name="algoType" #algoType id="algoType" class="form-select"
+                            aria-label="Floating label select" (input)="onAlgoTypeSelectorInput()">
+                        <option *ngFor="let algoOption of algoOptions"
+                                [value]="algoOption.value">{{algoOption.name}}</option>
+                    </select>
+                    <label for="algoType">Type de vote</label>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="container mb-3">
+                            <div class="row align-items-center">
+                                <div class=" col-12 col-lg-10 offset-lg-2 d-flex justify-content-start form-check form-switch">
+                                    <input class="form-check-input me-3" type="checkbox" #endDateToggle
+                                           id="endDateToggle"
+                                           (click)="onEndDateToggle()">
+                                    <label class="form-check-label" for="endDateToggle">Vote à durée limitée</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container g-2 offset-lg-1 mb-3">
+                            <div class="row align-items-center g-2">
+                                <div class="col-6 col-lg-6 mb-3 form-floating">
+                                    <input type="date" id="startDatePicker" #startDatePicker
+                                           class="form-control datepicker"
+                                           placeholder="Date de début" (focusout)="onStartDatePickerFocusOut()">
+                                    <label class="ms-1" for="endDatePicker">Date de début</label>
+                                </div>
+                                <div class="col-6 col-lg-6 mb-3 form-floating">
+                                    <input type="date" id="endDatePicker" #endDatePicker class="form-control datepicker"
+                                           placeholder="Date de fin" (focusout)="onEndDatePickerFocusOut()">
+                                    <label class="ms-1" for="endDatePicker">Date de fin</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="container mb-3">
+                            <div class="row align-items-center">
+                                <div class="col-12 col-lg-10 offset-lg-2 d-flex justify-content-start justify-content-md-start form-check form-switch">
+                                    <input class="form-check-input me-3" type="checkbox" #intermediaryResultsToggle
+                                           id="intermediaryResultsToggle"
+                                           (click)="onIntermediaryResultsToggle()">
+                                    <label class="form-check-label" for="intermediaryResultsToggle">Résultats
+                                        intermédiaires</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container mb-3">
+                            <div class="row align-items-center">
+                                <div class="col-6 col-md-12 col-lg-10 offset-lg-2 mb-3 d-flex justify-content-start justify-content-md-start form-check form-switch">
+                                    <input class="form-check-input me-3" type="checkbox" #anonymousToggle
+                                           id="anonymousToggle"
+                                           (click)="onAnonymousToggle()">
+                                    <label class="form-check-label" for="anonymousToggle">Vote anonyme</label>
+                                </div>
+                                <div class="col-6 col-md-12 col-lg-10 offset-lg-2 d-flex mb-3 justify-content-start justify-content-md-start form-check form-switch">
+                                    <input class="form-check-input me-3" type="checkbox" #privateToggle
+                                           id="privateToggle"
+                                           (click)="onPrivateToggle()">
+                                    <label class="form-check-label" for="privateToggle">Vote privé</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-1 p-sm-2 p-md-3 mb-3 border rounded">
+                    <h5>Définissez les choix</h5>
+                    <div class="row g-2 align-items-center" *ngFor="let choice of choices, let i = index">
+                        <div class="col-11 mb-2 form-floating">
+                            <input type="text" id="choice{{i+1}}" #choices class="form-control"
+                                   placeholder="choice{{i+1}}" (focusout)="onChoiceInputFocusOut(i)">
+                            <label for="choice{{i+1}}">Choix {{i + 1}}</label>
+                        </div>
+                        <div *ngIf="i>1" class="col-1 align-items-center d-flex justify-content-center">
+                            <button type="button" class="btn-close" (click)="removeChoice(i)"
+                                    aria-label="Close"></button>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex mb-3 mt-2 justify-content-sm-end">
+                        <button class="btn btn-outline-success" (click)="addChoice()" type="button">Ajouter un choix
+                        </button>
+                    </div>
+                    <div *ngIf="isMaxChoice" class="row align-items-center">
+                        <div class="col-2 mb-2">
+                            <input type="number" id="test" value="1" min="1" max="2" #maxChoice class="form-control"
+                                   (input)="onMaxChoiceInput()">
+                        </div>
+                        <label *ngIf="selectedAlgoType === 'majority'" class="col" for="test">Nombre maximum de choix acceptés par personne</label>
+                        <label *ngIf="selectedAlgoType === 'STV'" class="col" for="test">Nombre maximum de choix gagnant</label>
+                    </div>
+                </div>
+                <div *ngIf="isPrivate" class="p-1 p-sm-2 p-md-3 mb-3 border rounded">
+                    <h5>Ajoutez des membres</h5>
+                    <div class="row g-2 align-items-center" *ngFor="let member of members, let i = index">
+                        <div class="col-11 mb-2 form-floating">
+                            <input type="text" id="member{{i+1}}" #members class="form-control"
+                                   placeholder="member{{i+1}}" (focusout)="onMemberInputFocusOut(i)">
+                            <label for="member{{i+1}}">E-Mail</label>
+                        </div>
+                        <div *ngIf="i>0" class="col-1 align-items-center d-flex justify-content-center">
+                            <button type="button" class="btn-close" (click)="removeMember(i)"
+                                    aria-label="Close"></button>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex mt-2 justify-content-sm-end">
+                        <button class="btn btn-outline-success" (click)="addMember()" type="button">Ajouter un membre
+                        </button>
+                    </div>
+                </div>
+                <button class="btn btn-primary" #submitBtn type="submit">
+                    <span *ngIf="isPending" class="spinner-border spinner-border-sm" role="status"
+                          aria-hidden="true"></span>
+                    Créer le vote
+                </button>
+            </form>
+            <p class="text-danger">{{ errorMessage }}</p>
+        </div>
+    </div>
+</div>

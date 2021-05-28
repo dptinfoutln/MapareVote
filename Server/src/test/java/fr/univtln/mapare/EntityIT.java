@@ -16,14 +16,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Log
 class EntityIT {
@@ -57,7 +53,7 @@ class EntityIT {
         assertEquals(1, users.size());
 
         User received = users.get(0);
-        assertNotEquals(0,received.getId());
+        assertNotEquals(0, received.getId());
         assertEquals(sent.getId(), received.getId());
         assertEquals(sent.getEmail(), received.getEmail());
         assertEquals(sent.getEmailToken(), received.getEmailToken());
@@ -105,9 +101,7 @@ class EntityIT {
         sent.addMember(creator);
 
 
-
 //        creator.addStartedVote(sent);
-
 
 
 //        System.out.println(sent);
@@ -130,7 +124,7 @@ class EntityIT {
 
         Vote received = votes.get(0);
 
-        assertNotEquals(0,received.getId());
+        assertNotEquals(0, received.getId());
         assertEquals(sent.getId(), received.getId());
         assertEquals(sent.getAlgo(), received.getAlgo());
         assertEquals(sent.getChoices(), received.getChoices());

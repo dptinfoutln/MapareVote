@@ -2,19 +2,37 @@ package fr.univtln.mapare.controllers;
 
 import fr.univtln.mapare.dao.VoteDAO;
 import fr.univtln.mapare.model.*;
-import jakarta.persistence.EntityManager;
 
 import java.util.*;
 
+/**
+ * The type Vote utils.
+ */
 public abstract class VoteUtils {
-
+    /**
+     * Vote results of vote results.
+     *
+     * @param vote the vote
+     * @return the vote results
+     */
     public static VoteResults voteResultsOf(Vote vote) {
         return new VoteResults(vote);
     }
 
-    public static class VoteResults implements Runnable {
-        private Vote vote;
+    private VoteUtils() {
+    }
 
+    /**
+     * The type Vote results.
+     */
+    public static class VoteResults implements Runnable {
+        private final Vote vote;
+
+        /**
+         * Instantiates a new Vote results.
+         *
+         * @param vote the vote
+         */
         public VoteResults(Vote vote) {
             this.vote = vote;
         }
@@ -24,6 +42,9 @@ public abstract class VoteUtils {
             calculateResults();
         }
 
+        /**
+         * Calculate results.
+         */
         public void calculateResults() {
             if (!vote.isPendingResult()) {
                 vote.setPendingResult(true);
@@ -48,6 +69,7 @@ public abstract class VoteUtils {
                         break;
                     case "STV":
                         resultList = new ArrayList<>();
+                        int kickedout = 1;
 
                         // Here we construct a list of ordered choices for each BallotChoice list depending on weight.
                         // Low weight = earlier choice, higher placement on list.
@@ -68,13 +90,13 @@ public abstract class VoteUtils {
 
                         if (vote.getBallots().isEmpty()) {
                             for (Choice c : vote.getChoices()) {
-                                resultList.add(new VoteResult(c, -1, vote));
+                                resultList.add(new VoteResult(c, 0, vote));
                             }
-                        }
-                        else {
+                        } else {
                             // IRV = 1 winner.
                             if (vote.getMaxChoices() == 1) {
                                 int minval;
+                                boolean endmenow = false;
                                 Map<Choice, Integer> voteCounting = new HashMap<>();
 
                                 while (true) {
@@ -89,10 +111,14 @@ public abstract class VoteUtils {
                                     for (Choice c : vote.getChoices()) {
                                         if (voteCounting.get(c) > vote.getBallots().size() / 2) {
                                             resultList.add(new VoteResult(c, candidatecount, vote));
+                                            for (Choice oc : vote.getChoices())
+                                                if (resultList.stream().noneMatch(vr -> vr.getChoice().equals(oc)))
+                                                    resultList.add(new VoteResult(oc, 0, vote));
+                                            endmenow = true;
                                             break;
                                         }
                                     }
-                                    if (resultList.size() == 1)
+                                    if (endmenow)
                                         break;
 
                                     // Otherwise we search for the lowest ranked vote currently.
@@ -106,6 +132,9 @@ public abstract class VoteUtils {
                                         for (List<Choice> lc : collated) {
                                             lc.remove(minchoice);
                                         }
+                                        // We also add it to the list and give the number at which it was kicked out
+                                        resultList.add(new VoteResult(minchoice, -kickedout, vote));
+                                        kickedout++;
                                     }
                                 }
                             }
@@ -128,7 +157,8 @@ public abstract class VoteUtils {
                                     flag = false;
                                     for (Choice c : vote.getChoices()) {
                                         // If we have someone who has enough votes, we can add him to the winners list.
-                                        if (countMap.get(c) >= ((double) vote.getBallots().size()) / vote.getMaxChoices()) {
+                                        if (countMap.get(c) != null &&
+                                                countMap.get(c) >= ((double) vote.getBallots().size()) / vote.getMaxChoices()) {
                                             flag = true;
                                             resultList.add(new VoteResult(c, candidatecount, vote));
                                             candidatecount++;
@@ -144,11 +174,16 @@ public abstract class VoteUtils {
                                         // We find the candidate with the least amount of votes.
                                         minval = vote.getBallots().size() + 1.0;
                                         for (Choice c : vote.getChoices()) {
-                                            if (countMap.get(c) != 0 && countMap.get(c) < minval) {
+                                            if (countMap.get(c) != null && countMap.get(c) != 0 && countMap.get(c) < minval) {
                                                 minval = countMap.get(c);
                                                 minchoice = c;
                                             }
                                         }
+
+                                        // We register the order in which we kicked it out of the running
+                                        resultList.add(new VoteResult(minchoice, -kickedout, vote));
+                                        kickedout++;
+
                                         // Once found we redistribute the votes and remove it from the pool.
                                         votingforthis = 0;
 
@@ -165,6 +200,10 @@ public abstract class VoteUtils {
                                         redistribute(collated, minchoice, countMap, ratio);
                                     }
                                 }
+
+                                for (Choice oc : vote.getChoices())
+                                    if (resultList.stream().noneMatch(vr -> vr.getChoice().equals(oc)))
+                                        resultList.add(new VoteResult(oc, 0, vote));
                             }
                         }
                         vote.setResultList(resultList);
@@ -187,11 +226,24 @@ public abstract class VoteUtils {
                 if (lc.get(0).equals(choice)) {
                     lc.remove(0);
                     countMap.put(lc.get(0), countMap.get(lc.get(0)) + ratio);
-                }
-                else
+                } else
                     lc.remove(choice);
             }
             countMap.remove(choice);
         }
+    }
+
+
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
+    public static void main(String[] args) {
+        Controllers.init();
+        Vote problem = VoteDAO.of(Controllers.getEntityManager()).findById(42);
+        VoteResults vr = new VoteResults(problem);
+
+        vr.calculateResults();
     }
 }

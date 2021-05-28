@@ -1,39 +1,45 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-3 shadow-lg p-3 mb-5 bg-body rounded">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">MapareVote</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li routerLinkActive="active" class="nav-item">
-          <a routerLink="votes/public" class="nav-link">Votes publics</a>
-        </li>
-        <li routerLinkActive="active" class="nav-item">
-          <a routerLink="votes/private" class="nav-link">Votes privés</a>
-        </li>
-        <li routerLinkActive="active" class="nav-item">
-          <a routerLink="votes/create" class="nav-link">Créer un vote</a>
-        </li>
-      </ul>
-      <ul class="navbar-nav mr-auto">
-        <li routerLinkActive="active" class="nav-item" *ngIf="!this.authService.isStillAuth()">
-          <a routerLink="auth/signup" class="nav-link">Créer un compte</a>
-        </li>
-        <li routerLinkActive="active" class="nav-item" *ngIf="!this.authService.isStillAuth()">
-          <a routerLink="auth/signin" class="nav-link">Connexion</a>
-        </li>
-        <li class="nav-item dropdown" *ngIf="this.authService.isStillAuth()">
-          <a class="nav-link dropdown-toggle" id="navbarUsername" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            {{ userName }}
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUsername">
-            <li><a routerLink="auth/signin" class="dropdown-item" (click)="onSignOut()" href="#">Déconnexion</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item">Paramètres</a></li>
-          </ul>
-        </li>
-      </ul>
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">MapareVote</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li routerLinkActive="active" class="nav-item">
+                    <a routerLink="votes/public" class="nav-link">Votes publics</a>
+                </li>
+                <li routerLinkActive="active" class="nav-item" *ngIf="this.authService.isStillAuth()">
+                    <a routerLink="votes/private" class="nav-link">Votes privés</a>
+                </li>
+                <li routerLinkActive="active" class="nav-item" *ngIf="this.authService.isStillAuth()">
+                    <a routerLink="votes/create" class="nav-link">Créer un vote</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav mr-auto">
+                <li routerLinkActive="active" class="nav-item" *ngIf="!this.authService.isStillAuth()">
+                    <a routerLink="auth/signup" class="nav-link">Créer un compte</a>
+                </li>
+                <li routerLinkActive="active" class="nav-item" *ngIf="!this.authService.isStillAuth()">
+                    <a routerLink="auth/signin" class="nav-link">Connexion</a>
+                </li>
+                <li class="nav-item dropdown" *ngIf="this.authService.isStillAuth()">
+                    <a class="nav-link dropdown-toggle" id="navbarUsername" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        {{ userName }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUsername">
+                        <li><a routerLink="auth/signin" class="dropdown-item" (click)="onSignOut()"
+                               href="#">Déconnexion</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a routerLink="votes/history/voted" class="dropdown-item">Historique de vote</a></li>
+                        <li><a routerLink="votes/history/started" class="dropdown-item">Historique de creation</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </div>
-  </div>
 </nav>

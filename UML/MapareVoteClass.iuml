@@ -10,14 +10,21 @@ package M {
         LocalDate endDate
         String algo
         Boolean anonymous
+        Boolean deleted
+        Boolean intermediaryResult
+        int maxChoices
+        LocalDate lastCalculated
+        boolean pendingResult
     }
     
-    class PrivateVote
-    
-    class Choice
+    class Choice {
+        int id
+        int weight
+        List names
+    }
     
     class Ballot {
-        String identifyingHash
+        int id
         LocalDateTime date
     }
     
@@ -26,21 +33,36 @@ package M {
         String email
         String lastname
         String firstname
-        String confirmationHash
+        byte passwordHash
+        byte salt
+        String emailToken
         Boolean confirmed
         Boolean admin
         Boolean banned
+    }
+    
+    class VotedVote {
+        String token
+    }
+    
+    class BallotChoice {
+        int weight
+    }
+    class VoteResult {
+        int value
     }
 }
 
 
 Choice "1..*" --* "1" Vote
 Ballot "*" --* "1" Vote
-Ballot "*" -- "*" Choice
+Ballot "1" -- "*" BallotChoice
+BallotChoice "*" -- "1" Choice
 Ballot "*" -- "0..1" User:Voter
 Vote "*" --- "1" User:Votemaker
-PrivateVote "1" *-- "*" User:Member
-Vote "1"-- "*" User:Voted
-Vote <|-- PrivateVote
+Vote "*" -- "*" User:Member
+Vote "1"-- "*" VotedVote
+VotedVote "*" -- "1" User
+VoteResult "1" -- "1" Choice
 
 @enduml

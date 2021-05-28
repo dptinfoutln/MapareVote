@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!--
   #%L
-  MyApp
+  Maparevote
   %%
   Copyright (C) 2020 Université de Toulon
   %%
@@ -33,12 +33,12 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
 
         <properties>
-            <!-- Les paramètres de connexions  -->
-            <!-- property name="jakarta.persistence.target-database" value="postgresql" /-->
+            <!-- Les paramètres de connexions -->
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver" />
-<!--            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:6667/maparevotedb"/>-->
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://siannos.fr:5432/maparevotedb"/>
-            <property name="jakarta.persistence.jdbc.user" value="mapare" />
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://mapare-vote_database:5432/maparevotedb"/>
+<!--            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://siannos.fr:5432/maparevotedb"/>-->
+            <property name="jakarta.persistence.jdbc.user" value="maparevotedb" />
+<!--            <property name="jakarta.persistence.jdbc.user" value="mapare" />-->
             <property name="jakarta.persistence.jdbc.password" value="alfrni666" />
 
             <!-- Les options de générations des tables -->
@@ -58,10 +58,8 @@
 
         <properties>
             <!-- Les paramètres de connexions -->
-            <!-- property name="jakarta.persistence.target-database" value="postgresql" /-->
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver" />
-<!--            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:6667/maparevotedev"/>-->
-                        <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://siannos.fr:5432/maparevotedev"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://siannos.fr:5432/maparevotedev"/>
             <property name="jakarta.persistence.jdbc.user" value="mapare" />
             <property name="jakarta.persistence.jdbc.password" value="alfrni666" />
 

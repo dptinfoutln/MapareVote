@@ -6,7 +6,6 @@ import fr.univtln.mapare.security.annotations.BasicAuth;
 import jakarta.annotation.Priority;
 import jakarta.annotation.security.DenyAll;
 import jakarta.annotation.security.PermitAll;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -14,14 +13,10 @@ import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
-import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.EnumSet;
-import java.util.stream.Collectors;
 
 /**
  * Authentication filter is a JAX-RS filter (@Provider with implements ContainerRequestFilter) is applied to every request whose method is annotated with @BasicAuth

@@ -4,7 +4,6 @@ import fr.univtln.mapare.controllers.Controllers;
 import fr.univtln.mapare.dao.UserDAO;
 import fr.univtln.mapare.exceptions.BusinessException;
 import fr.univtln.mapare.model.User;
-import fr.univtln.mapare.resources.UserResource;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.AccessLevel;
@@ -13,10 +12,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.java.Log;
 
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.List;
 
 /**
  * this class model a simple in memory role based authentication database (RBAC).
@@ -40,6 +36,7 @@ public class LoginModule {
      * @param lastname  the lastname
      * @param email     the email
      * @param password  the password
+     * @throws BusinessException the business exception
      */
     public void addUser(String firstname, String lastname, String email, String password) throws BusinessException {
         User user = User.builder().firstname(firstname).lastname(lastname).email(email).password(password).build();
@@ -51,7 +48,6 @@ public class LoginModule {
      *
      * @return the users
      */
-
     public List<User> getUsers() {
         return UserDAO.of(Controllers.getEntityManager()).findAll();
     }
@@ -90,6 +86,11 @@ public class LoginModule {
         return UserDAO.of(Controllers.getEntityManager()).findByEmail(email);
     }
 
+    /**
+     * Logout boolean.
+     *
+     * @return the boolean
+     */
     @SuppressWarnings("SameReturnValue")
     public boolean logout() {
         return false;

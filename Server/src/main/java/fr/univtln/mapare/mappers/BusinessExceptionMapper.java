@@ -8,6 +8,9 @@ import jakarta.ws.rs.ext.Provider;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * The type Business exception mapper.
+ */
 @SuppressWarnings("unused")
 @Provider
 @FieldDefaults(level = AccessLevel.PRIVATE)
