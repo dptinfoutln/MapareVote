@@ -82,7 +82,7 @@ public class WeightedChoicesAdapter extends CustomAdapter<Choice> {
         if (anonymous == null) { // If not voted
             holder.weightField.setOnValueChangedListener((picker, oldVal, newVal) -> pickedIds.put((int)getItemId(position), newVal));
         } else {
-            if (Boolean.FALSE.equals(anonymous)) {
+            if (!anonymous) {
                 for (BallotChoice bc : ballot.getChoices()) {
                     if (bc.getChoice().getId() == getItemId(position)) {
                         holder.weightField.setValue(bc.getWeight());
@@ -90,6 +90,7 @@ public class WeightedChoicesAdapter extends CustomAdapter<Choice> {
                     }
                 }
             }
+            //else if TODO : print the fact that the vote is anonymous
             holder.weightField.setEnabled(false);
         }
 

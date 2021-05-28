@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class VotesFragment extends Fragment {
     protected List<Vote> voteList;
@@ -66,7 +68,7 @@ public class VotesFragment extends Fragment {
         ListView listView = view.findViewById(R.id.vote_list);
         TextView availability = view.findViewById(R.id.vote_availability);
 
-        LinearLayout btnLayout = view.findViewById(R.id.vote_btnLay);
+        LinearLayout btn_layout = view.findViewById(R.id.vote_btnLay);
         Button prev = view.findViewById(R.id.vote_prevButton);
         prev.setOnClickListener(v -> voteRequest(getContext(), --page, page_size, search, open_vote, sorting_by));
         Button next = view.findViewById(R.id.vote_nextButton);
@@ -88,9 +90,9 @@ public class VotesFragment extends Fragment {
                     } else {
                         availability.setVisibility(View.INVISIBLE);
                         // Displays buttons
-                        btnLayout.setVisibility(View.VISIBLE);
+                        btn_layout.setVisibility(View.VISIBLE);
                     }
-                    totalPages = MainActivity.getContext().getSharedPreferences(MainActivity.FILTER_STRING_KEY, Context.MODE_PRIVATE).getInt("total_pages", 1);
+                    totalPages = requireContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getInt("total_pages", 1);
 
                     // Buttons displaying
                     prev.setEnabled(true);
@@ -131,12 +133,12 @@ public class VotesFragment extends Fragment {
                 case "not authorized":
                     Toast.makeText(getContext(), "Veuillez vous connecter", Toast.LENGTH_SHORT).show();
                     // Navigate to login page because access is denied
-                    MainActivity.getContext().getSharedPreferences(MainActivity.LOGIN_STRING_KEY, Context.MODE_PRIVATE).edit().putString(MainActivity.GO_TO_STRING_KEY, "login page").apply();
+                    requireContext().getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("go_to", "login page").apply();
                     break;
                 case "session expired":
                     Toast.makeText(getContext(), "Session expirée", Toast.LENGTH_SHORT).show();
                     // Navigate to login page because access is denied
-                    MainActivity.getContext().getSharedPreferences(MainActivity.LOGIN_STRING_KEY, Context.MODE_PRIVATE).edit().putString(MainActivity.GO_TO_STRING_KEY, "login page").apply();
+                    requireContext().getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("go_to", "login page").apply();
                     break;
                 default:
                     break;
@@ -153,38 +155,35 @@ public class VotesFragment extends Fragment {
 
         });
         // Filters
-        page_size = MainActivity.getContext().getSharedPreferences(MainActivity.FILTER_STRING_KEY, Context.MODE_PRIVATE).getInt(MainActivity.PAGE_SIZE_STRING_KEY, 20);
-        search =  MainActivity.getContext().getSharedPreferences(MainActivity.FILTER_STRING_KEY, Context.MODE_PRIVATE).getString(MainActivity.SEARCH_STRING_KEY, "");
-        open_vote = MainActivity.getContext().getSharedPreferences(MainActivity.FILTER_STRING_KEY, Context.MODE_PRIVATE).getBoolean(MainActivity.OPEN_VOTE_STRING_KEY, false);
-        sorting_by = MainActivity.getContext().getSharedPreferences(MainActivity.FILTER_STRING_KEY, Context.MODE_PRIVATE).getString(MainActivity.SORTING_BY_STRING_KEY, requireContext().getResources().getString(R.string.none_sort));
+        page_size = requireContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getInt("page_size", 20);
+        search =  requireContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getString("search", "");
+        open_vote = requireContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getBoolean("open_vote", false);
+        sorting_by = getSort(requireContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).getString("sorting_by", requireContext().getResources().getString(R.string.none_sort)));
 
         listener = (prefs, key) -> {
-            page = 1;
             switch (key) {
                 case "page_size":
                     page_size = prefs.getInt(key, 20);
-                    voteRequest(getContext(), page, page_size, search, open_vote, sorting_by);
+                    voteRequest(getContext(), page = 1, page_size, search, open_vote, sorting_by);
                     break;
                 case "search":
                     search = prefs.getString(key, "");
-                    voteRequest(getContext(), page, page_size, search, open_vote, sorting_by);
+                    voteRequest(getContext(), page = 1, page_size, search, open_vote, sorting_by);
                     break;
                 case "open_vote":
                     open_vote = prefs.getBoolean(key, false);
-                    voteRequest(getContext(), page, page_size, search, open_vote, sorting_by);
+                    voteRequest(getContext(), page = 1, page_size, search, open_vote, sorting_by);
                     break;
                 case "sorting_by":
                     sorting_by = prefs.getString(key, getResources().getString(R.string.none_sort));
                     sorting_by = getSort(sorting_by);
-                    voteRequest(getContext(), page, page_size, search, open_vote, sorting_by);
-                    break;
-                default:
+                    voteRequest(getContext(), page = 1, page_size, search, open_vote, sorting_by);
                     break;
             }
 
         };
 
-        MainActivity.getContext().getSharedPreferences(MainActivity.FILTER_STRING_KEY, Context.MODE_PRIVATE).registerOnSharedPreferenceChangeListener(listener);
+        requireContext().getSharedPreferences("Filter", Context.MODE_PRIVATE).registerOnSharedPreferenceChangeListener(listener);
 
         // Makes the request
         voteRequest(getContext(), page, page_size, search, open_vote, sorting_by);
@@ -211,6 +210,7 @@ public class VotesFragment extends Fragment {
                     }
 
                 }, error -> {
+            // TODO: manage different types of errors
             if (error instanceof AuthFailureError) {
                 LOADING_STATE_CODE.setValue("session expired");
             }
@@ -219,7 +219,7 @@ public class VotesFragment extends Fragment {
             public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<>();
 
-                String token = context.getSharedPreferences(MainActivity.LOGIN_STRING_KEY, Context.MODE_PRIVATE).getString(MainActivity.TOKEN_STRING_KEY, null);
+                String token = context.getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null);
                 params.put("Accept", "application/json; charset=utf8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
@@ -251,8 +251,9 @@ public class VotesFragment extends Fragment {
                     }
 
                 }, error -> {
+            // TODO: manage different types of errors
             if (error instanceof AuthFailureError) {
-                if (context.getSharedPreferences(MainActivity.LOGIN_STRING_KEY, Context.MODE_PRIVATE).getString(MainActivity.TOKEN_STRING_KEY, null) != null)
+                if (context.getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null) != null)
                     LOADING_STATE_CODE.setValue("session expired");
                 else
                     LOADING_STATE_CODE.setValue("not authorized");
@@ -263,7 +264,7 @@ public class VotesFragment extends Fragment {
             public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<>();
 
-                String token = context.getSharedPreferences(MainActivity.LOGIN_STRING_KEY, Context.MODE_PRIVATE).getString(MainActivity.TOKEN_STRING_KEY, null);
+                String token = context.getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null);
                 params.put("Accept", "application/json; charset=utf8");
                 params.put("Authorization", "Bearer " + token);
                 return params;

@@ -18,8 +18,10 @@ import java.util.List;
  */
 public class MultipleChoicesAdapter extends CustomAdapter<Choice> {
     private final List<CheckBox> selected = new ArrayList<>();
+    private  Ballot ballot;
     private final int maxChoices;
     private int count = 0;
+    private Boolean anonymous;
 
     /**
      * Instantiates a new Multiple choices adapter.
@@ -100,7 +102,7 @@ public class MultipleChoicesAdapter extends CustomAdapter<Choice> {
             if (position == 0) // bug ?
                 holder.choiceField.setChecked(false);
 
-            if (Boolean.FALSE.equals(anonymous)) {
+            if (!anonymous) {
                 for (BallotChoice bc : ballot.getChoices()) {
                     if (bc.getChoice().getId() == getItemId(position)) {
                         holder.choiceField.setChecked(true);
@@ -108,6 +110,7 @@ public class MultipleChoicesAdapter extends CustomAdapter<Choice> {
                     }
                 }
             }
+            //else if TODO : print the fact that the vote is anonymous
             holder.choiceField.setEnabled(false);
         }
 

@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -205,7 +203,6 @@ public class User implements Serializable {
         this.privateVoteList = privateVoteList;
     }
 
-    @NotNull
     @Override
     public String toString() {
         return "User{" +

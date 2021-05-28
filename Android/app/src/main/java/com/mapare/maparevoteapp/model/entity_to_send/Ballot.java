@@ -2,8 +2,6 @@ package com.mapare.maparevoteapp.model.entity_to_send;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
 
 /**
@@ -23,7 +21,6 @@ public class Ballot {
         this.choices = choices;
     }
 
-    @NotNull
     @Override
     public String toString() {
         return "Ballot{" +

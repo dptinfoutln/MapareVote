@@ -2,8 +2,6 @@ package com.mapare.maparevoteapp.model.entity_to_send;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * The type Ballot choice.
  */
@@ -26,7 +24,6 @@ public class BallotChoice {
         this.weight = weight;
     }
 
-    @NotNull
     @Override
     public String toString() {
         return "BallotChoice{" +

@@ -11,7 +11,6 @@ import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mapare.maparevoteapp.MainActivity;
 import com.mapare.maparevoteapp.R;
 import com.mapare.maparevoteapp.model.entity_to_receive.Vote;
 
@@ -20,8 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import kotlin.jvm.internal.MagicApiIntrinsics;
 
 public class PublicVotesFragment extends VotesFragment {
 
@@ -50,6 +47,8 @@ public class PublicVotesFragment extends VotesFragment {
                     }
 
                 }, error -> {
+            // TODO: manage different types of errors
+
         }) {
             @Override
             public Map<String, String> getHeaders() {
@@ -63,7 +62,7 @@ public class PublicVotesFragment extends VotesFragment {
                 assert response.headers != null;
                 int totalPages = (int) Float.parseFloat(Objects.requireNonNull(response.headers.get("pagecount")));
                 totalPages = totalPages == 0 ? 1 : totalPages;
-            context.getSharedPreferences(MainActivity.FILTER_STRING_KEY, Context.MODE_PRIVATE).edit().putInt("total_pages", totalPages).apply();
+                context.getSharedPreferences("Filter", Context.MODE_PRIVATE).edit().putInt("total_pages", totalPages).apply();
                 return super.parseNetworkResponse(response);
             }
         };

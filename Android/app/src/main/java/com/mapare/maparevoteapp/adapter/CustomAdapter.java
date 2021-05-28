@@ -5,11 +5,9 @@ import android.view.LayoutInflater;
 import android.widget.BaseAdapter;
 
 import com.mapare.maparevoteapp.model.EntityWithId;
-import com.mapare.maparevoteapp.model.entity_to_receive.Ballot;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The type Custom adapter.
@@ -17,8 +15,6 @@ import java.util.Map;
  * @param <E> the type parameter
  */
 public abstract class CustomAdapter<E extends EntityWithId> extends BaseAdapter {
-    protected Ballot ballot;
-    protected Boolean anonymous;
     /**
      * The Inflater.
      */
@@ -58,13 +54,12 @@ public abstract class CustomAdapter<E extends EntityWithId> extends BaseAdapter 
         return entityList.get(position).getId();
     }
 
-
     /**
      * Gets picked ones.
      *
      * @return the picked ones
      */
-    public Map<Integer, Integer> getPickedOnes() {
+    public HashMap<Integer, Integer>  getPickedOnes() {
         return pickedIds;
     }
 
