@@ -16,6 +16,7 @@
     <string name="show_results">"Afficher résultats"</string>
     <string name="vote_result_text_view">Résultats disponibles</string>
     <string name="ballot_token_text_view">Token: </string>
+    <string name="algo_text_view">Algo: </string>
     <string name="voter_text_view">Voter</string>
 
     <!-- Strings related to login & register-->

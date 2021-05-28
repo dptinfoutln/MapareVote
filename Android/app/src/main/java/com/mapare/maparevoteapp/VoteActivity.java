@@ -123,6 +123,10 @@ public class VoteActivity extends AppCompatActivity {
 
         infofield.setText(info);
 
+        TextView algoField = findViewById(R.id.vote_algoField);
+        String algoText = getResources().getString(R.string.algo_text_view) + " " + vote.getAlgo();
+        algoField.setText(algoText);
+
         Button voteButton = findViewById(R.id.voteButton);
         voteButton.setOnClickListener(v -> {
             // if none, prompt something
