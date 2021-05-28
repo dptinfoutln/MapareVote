@@ -1,7 +1,8 @@
 version: '3.8'
 services:
    server:
-      build: ./Server/
+      build: ./Server
+      image: mapare/mapare-vote/server
       container_name: mapare-vote_server
       depends_on:
          database:
@@ -13,7 +14,8 @@ services:
          mapare_network:
    
    web:
-      build: ./Web/
+      build: ./Web
+      image: mapare/mapare-vote/web
       container_name: mapare-vote_web
       depends_on:
          - server
