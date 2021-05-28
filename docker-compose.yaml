@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+   server:
+      build: ./Server
+      image: mapare/mapare-vote/server
+      container_name: mapare-vote_server
+      depends_on:
+         database:
+            condition: service_healthy
+      ports:
+         - 5431:5431
+      restart: unless-stopped
+      networks:
+         mapare_network:
+   
+   web:
+      build: ./Web
+      image: mapare/mapare-vote/web
+      container_name: mapare-vote_web
+      depends_on:
+         - server
+      ports:
+         - 8080:80
+      restart: unless-stopped
+      networks:
+         mapare_network:
+         
+   database:
+      image: postgres:alpine
+      container_name: mapare-vote_database
+      environment:
+         POSTGRES_DB: maparevotedb
+         POSTGRES_USER: maparevotedb
+         POSTGRES_PASSWORD: alfrni666
+         PGDATA: /var/lib/postgresql/data
+      volumes:
+         - db-data:/var/lib/postgresql/data
+      ports:
+         - 5432:5432
+      restart: unless-stopped
+      networks:
+         mapare_network:
+      healthcheck:
+         test: ["CMD-SHELL", "pg_isready -U maparevotedb"]
+         interval: 10s
+         timeout: 5s
+         retries: 5
+
+networks:
+   mapare_network:
+
+volumes:
+   db-data:

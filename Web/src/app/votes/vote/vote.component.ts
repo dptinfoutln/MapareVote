@@ -32,14 +32,19 @@ export class VoteComponent implements OnInit {
     selfUser;
     voteToken: string;
     myBallot;
-    results;
+    results = [];
+    winnerResults = [];
+    looserResults = [];
+    tokens;
     isPending = false;
     isResults = false;
+    today = new Date();
 
     @ViewChildren('choices') choicesElem: QueryList<ElementRef>;
     @ViewChild('submitBtn') submitBtn: ElementRef;
 
     private checkedBoxes = [];
+
 
     constructor(private route: ActivatedRoute,
                 private votesService: VotesService,
@@ -53,46 +58,76 @@ export class VoteComponent implements OnInit {
     ngOnInit(): void {
         this.selfUser = this.authService.utils.getSelfUser();
         const id = this.route.snapshot.params.id;
-
-        this.votesService.getVote(+id).then(
-            (vote: Vote) => {
-                if (vote == null) {
-                    this.router.navigate(['/']);
-                } else {
-                    this.vote = vote;
-                    this.isLoaded = true;
-                    this.checkIfUserVoted();
-                    // console.log('vote anonyme ? ', this.vote.anonymous);
-                    if (this.isVoted && !this.vote.anonymous) {
-                        if (vote.algo !== Algo.MAJORITY) {
-                            this.setChoicesOrder(+id);
+        this.authService.importSelf().then(user => {
+                this.selfUser = user;
+                this.votesService.getVote(+id).then(
+                    (vote: Vote) => {
+                        if (vote == null) {
+                            this.router.navigate(['/']);
                         } else {
-                            this.choices = this.vote.choices;
-                            this.setCheckedChoices(+id);
-                        }
-                    } else {
-                        this.choices = this.vote.choices;
-                    }
-                    this.setChoiceBtnType();
-                    this.votesService.getVoteResults(+id).then(
-                        resultList => {
-                            this.results = resultList;
-                            if (this.results.length !== 0) {
-                                this.isResults = true;
-                                this.setResults();
+                            this.vote = vote;
+                            this.isLoaded = true;
+                            this.checkIfUserVoted();
+                            if (this.isVoted && !this.vote.anonymous) {
+                                if (vote.algo !== Algo.MAJORITY) {
+                                    this.setChoicesOrder(+id);
+                                } else {
+                                    this.choices = this.vote.choices;
+                                    this.setCheckedChoices(+id);
+                                }
+                            } else {
+                                this.choices = this.vote.choices;
                             }
-                        });
-                }
-            }, err => {
+                            this.setChoiceBtnType();
+                            this.votesService.getVoteResults(+id).then(
+                                resultList => {
+                                    this.results = resultList;
+                                    if (this.results.length !== 0) {
+                                        this.isResults = true;
+                                        this.setResults();
+                                        if (this.vote.algo === Algo.STV) {
+                                            for (const result of this.results) {
+                                                if (result.value !== 0){
+                                                    this.winnerResults.push(result);
+                                                } else {
+                                                    this.looserResults.push(result);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    this.votesService.getVoteTokens(+id).then(
+                                        tokensMap => {
+                                            this.tokens = Object.entries(tokensMap);
+                                        }
+                                    );
+                                });
+                        }
+                    }, err => {
+                        this.errorsService.manageError(err);
+                    }
+                );
+            },
+            err => {
                 this.errorsService.manageError(err);
             }
         );
     }
 
     private setResults(): void {
-        this.results.sort((a, b) => {
-            return b.value - a.value;
-        });
+        if (this.vote.algo === Algo.BORDA) {
+            this.results.sort((a, b) => {
+                return b.value - a.value;
+            });
+        } else if (this.vote.algo === Algo.STV) {
+            this.results.sort((a, b) => {
+                return a.value - b.value;
+            });
+        }
+
+    }
+
+    isDateBeforeToday(): boolean {
+        return this.today < new Date(this.vote.endDate);
     }
 
     onBack(): void {
@@ -123,10 +158,18 @@ export class VoteComponent implements OnInit {
         this.votesService.getMyBallot(voteId).then(
             myBallot => {
                 this.myBallot = myBallot;
-                this.vote.choices.sort((a, b) => {
-                    return this.myBallot.choices.find(choice => choice.choice.id === b.id).weight
-                        - this.myBallot.choices.find(choice => choice.choice.id === a.id).weight;
-                });
+                if (this.vote.algo === Algo.BORDA) {
+                    this.vote.choices.sort((a, b) => {
+                        return this.myBallot.choices.find(choice => choice.choice.id === b.id).weight
+                            - this.myBallot.choices.find(choice => choice.choice.id === a.id).weight;
+                    });
+                } else if (this.vote.algo === Algo.STV) {
+                    this.vote.choices.sort((a, b) => {
+                        return this.myBallot.choices.find(choice => choice.choice.id === a.id).weight
+                            - this.myBallot.choices.find(choice => choice.choice.id === b.id).weight;
+                    });
+                }
+
                 this.choices = this.vote.choices;
             }
         );
@@ -171,9 +214,13 @@ export class VoteComponent implements OnInit {
                     tmpChoices.push({choice: {id: choice.nativeElement.value}, weight: 1});
                 }
             }
-        } else {
+        } else if (this.vote.algo === Algo.BORDA) {
             this.choices.forEach((choice, index) => {
                 tmpChoices.push({choice: {id: choice.id}, weight: this.choices.length - index});
+            });
+        } else if (this.vote.algo === Algo.STV) {
+            this.choices.forEach((choice, index) => {
+                tmpChoices.push({choice: {id: choice.id}, weight: index});
             });
         }
         // console.log(tmpChoices);
