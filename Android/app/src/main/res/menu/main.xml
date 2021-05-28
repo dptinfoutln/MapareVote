@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group
+        android:id="@+id/app_bar_menu">
+
+    <item
+        android:id="@+id/app_bar_search"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="@string/search_filter"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="always|collapseActionView"/> <!--always is needed here !-->
+
+
+    <item
+        android:id="@+id/app_bar_open_votes"
+        android:title="@string/open_vote_filter"
+        android:checkable="true"
+        android:checked="false"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/app_bar_page_size"
+        android:title="@string/page_size_filter"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/app_bar_sort"
+        android:title="@string/sort_by_filter"
+        app:showAsAction="never" />
+
+    </group>
+
+</menu>

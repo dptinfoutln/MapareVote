@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">MapareMap</string>
+    <string name="login">Connexion</string>
+    <string name="email_text_view">Email</string>
+    <string name="password_text_view">Mot de passe</string>
+    <string name="incorrect_password">Mot de passe incorrect</string>
+    <string name="empty_email">Veuillez entrer une adresse email</string>
+    <string name="empty_password">Veuillez entrer un mot de passe</string>
+    <string name="logout">Déconnexion</string>
+    <string name="create_lobby">Créer un salon</string>
+    <string name="join_lobby">Rejoindre un salon</string>
+    <string name="settings">Paramètres</string>
+    <string name="server_id">Id du serveur</string>
+</resources>
