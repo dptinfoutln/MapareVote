@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.mapare.maparevoteapp.MainActivity;
 import com.mapare.maparevoteapp.R;
 
 import java.util.HashMap;
@@ -56,22 +57,20 @@ public class LoginFragment extends Fragment {
                     inputMethodManager.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
                     break;
                 case "Server not responding":
-                    // Manage ...
-
                     loginButton.setClickable(true);
                     break;
                 case "Wrong inputs":
-                    // Manage ...
-
                     Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake);
                     passwordField.setError(getResources().getString(R.string.incorrect_password));
                     loginButton.startAnimation(shake);
                     loginButton.setClickable(true);
                     break;
+                default:
+                    break;
             }
         });
 
-        String savedEmail = this.requireContext().getSharedPreferences("Login", Context.MODE_PRIVATE).getString("email", null);
+        String savedEmail = MainActivity.getContext().getSharedPreferences(MainActivity.LOGIN_STRING_KEY, Context.MODE_PRIVATE).getString(MainActivity.EMAIL_STRING_KEY, null);
 
         emailField = view.findViewById(R.id.login_emailField);
         passwordField = view.findViewById(R.id.login_passwordField);
@@ -106,16 +105,12 @@ public class LoginFragment extends Fragment {
         StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.GET, url,
                 response -> {
                     // Store BEARER token gotten
-                    context.getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("token", response).apply();
+                    context.getSharedPreferences(MainActivity.LOGIN_STRING_KEY, Context.MODE_PRIVATE).edit().putString(MainActivity.TOKEN_STRING_KEY, response).apply();
                     // Store the last email authenticated
-                    context.getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("email", email).apply();
+                    context.getSharedPreferences(MainActivity.LOGIN_STRING_KEY, Context.MODE_PRIVATE).edit().putString(MainActivity.EMAIL_STRING_KEY, email).apply();
 
                     CONNECTED_STATE_CODE.setValue("Connection successful");
-                }, error -> {
-                    // TODO: manage different types of errors
-
-                    CONNECTED_STATE_CODE.setValue("Wrong inputs");
-                })
+                }, error -> CONNECTED_STATE_CODE.setValue("Wrong inputs"))
         {
             @Override
             public Map<String, String> getHeaders() {

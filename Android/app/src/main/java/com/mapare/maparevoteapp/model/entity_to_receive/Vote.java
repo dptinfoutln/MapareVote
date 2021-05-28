@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.mapare.maparevoteapp.model.EntityWithId;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -219,6 +221,7 @@ public class Vote implements Serializable, EntityWithId {
         this.maxChoices = maxChoices;
     }
 
+    @NotNull
     @Override
     public String toString() {
         return "Vote{" +

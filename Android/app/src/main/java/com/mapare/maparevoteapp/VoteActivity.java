@@ -2,12 +2,10 @@ package com.mapare.maparevoteapp;
 
 import android.annotation.SuppressLint;
 import android.graphics.BlurMaskFilter;
-import android.graphics.MaskFilter;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.MaskFilterSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ExpandableListView;
@@ -52,7 +50,6 @@ import java.util.Map;
 public class VoteActivity extends AppCompatActivity {
     private final List<BallotChoice> pickedChoices = new ArrayList<>();
     private CustomAdapter<?> adapter;
-    private ListView listView;
     private List<VoteResult> resultList;
 
     private com.mapare.maparevoteapp.model.entity_to_receive.Ballot ballot;
@@ -87,7 +84,7 @@ public class VoteActivity extends AppCompatActivity {
         String ballotToken = (String) getIntent().getSerializableExtra("token");
 
 
-        listView = findViewById(R.id.choice_list);
+        ListView listView = findViewById(R.id.choice_list);
 
         TextView labelField = findViewById(R.id.vote_labelField);
         labelField.setText("   " + vote.getLabel());
@@ -139,9 +136,6 @@ public class VoteActivity extends AppCompatActivity {
         });
 
         boolean checkVoteClosed = endDate.isBefore(LocalDate.now(ZoneId.of("GMT")).plusDays(1));
-        Log.i("dateee", endDate+"");
-        Log.i("datenn", LocalDate.now(ZoneId.of("GMT"))+"");
-        Log.i("date", checkVoteClosed+"");
         if (ballotToken != null) {
             // Displays the token if voted
             TextView tokenField = findViewById(R.id.vote_ballotTokenField);
@@ -181,9 +175,9 @@ public class VoteActivity extends AppCompatActivity {
                 }
                 listView.setAdapter(adapter);
 
-                LinearLayout layout_choice = findViewById(R.id.listView_linearLayout);
-                layout_choice.getLayoutParams().height = calculateHeight(listView);
-                layout_choice.requestLayout();
+                LinearLayout layoutChoice = findViewById(R.id.listView_linearLayout);
+                layoutChoice.getLayoutParams().height = calculateHeight(listView);
+                layoutChoice.requestLayout();
             });
             // Fetch ballot
             getBallotRequest(vote.getId());
@@ -223,9 +217,9 @@ public class VoteActivity extends AppCompatActivity {
             }
             listView.setAdapter(adapter);
 
-            LinearLayout layout_choice = findViewById(R.id.listView_linearLayout);
-            layout_choice.getLayoutParams().height = calculateHeight(listView);
-            layout_choice.requestLayout();
+            LinearLayout layoutChoice = findViewById(R.id.listView_linearLayout);
+            layoutChoice.getLayoutParams().height = calculateHeight(listView);
+            layoutChoice.requestLayout();
         }
         if (ballotToken != null || checkVoteClosed) {
             // deactivate the button, if already voted or vote is closed
@@ -239,16 +233,16 @@ public class VoteActivity extends AppCompatActivity {
                     ResultAdapter resultAdapter = new ResultAdapter(VoteActivity.this, resultList);
                     resultView.setAdapter(resultAdapter);
 
-                    LinearLayout layout_result = findViewById(R.id.expandableView_linearLayout);
+                    LinearLayout layoutResult = findViewById(R.id.expandableView_linearLayout);
 
                     resultView.setOnGroupClickListener((parent, v, groupPosition, id) -> {
-                        if (!clicked) {
+                        if (Boolean.FALSE.equals(clicked)) {
                             height = calculateHeight(resultView);
                         } else {
                             height = 0;
                         }
-                        layout_result.getLayoutParams().height = height;
-                        layout_result.requestLayout();
+                        layoutResult.getLayoutParams().height = height;
+                        layoutResult.requestLayout();
                         clicked = !clicked;
 
                         return false;
@@ -271,17 +265,13 @@ public class VoteActivity extends AppCompatActivity {
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.POST, url,
-                response -> {
-                    BALLOT_STATE_CODE.setValue("vote successful");
-                }, error -> {
-            // TODO: manage different types of errors
-
+                response -> BALLOT_STATE_CODE.setValue("vote successful"), error -> {
         }) {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<>();
 
-                String token = getSharedPreferences("Login", MODE_PRIVATE).getString("token", null);
+                String token = getSharedPreferences(MainActivity.LOGIN_STRING_KEY, MODE_PRIVATE).getString(MainActivity.TOKEN_STRING_KEY, null);
                 params.put("Accept", "application/json; charset=utf-8");
                 params.put("Content-Type", "application/json; charset=utf-8");
                 params.put("Authorization", "Bearer " + token);
@@ -328,8 +318,6 @@ public class VoteActivity extends AppCompatActivity {
                     LOADING_STATE_CODE.setValue("fetching myBallot successful");
 
                 }, error -> {
-            // TODO: manage different types of errors
-
         }) {
             @Override
             public Map<String, String> getHeaders() {
@@ -366,14 +354,12 @@ public class VoteActivity extends AppCompatActivity {
                     RESULT_STATE_CODE.setValue("fetching results successful");
 
                 }, error -> {
-            // TODO: manage different types of errors
-
         }) {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<>();
 
-                String token = getSharedPreferences("Login", MODE_PRIVATE).getString("token", null);
+                String token = getSharedPreferences(MainActivity.LOGIN_STRING_KEY, MODE_PRIVATE).getString(MainActivity.TOKEN_STRING_KEY, null);
                 params.put("Accept", "application/json; charset=utf-8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
@@ -386,7 +372,7 @@ public class VoteActivity extends AppCompatActivity {
 
     private int calculateHeight(ListView list) {
 
-        int height = 0;
+        int cHeight = 0;
 
 
         if (list instanceof ExpandableListView) {
@@ -395,10 +381,10 @@ public class VoteActivity extends AppCompatActivity {
                 for (int i = 0; i < childCount; i++) {
                     View childView = ((ExpandableListView) list).getExpandableListAdapter().getChildView(j, i, false, null, list);
                     childView.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-                    height += childView.getMeasuredHeight();
+                    cHeight += childView.getMeasuredHeight();
                 }
                 //dividers height
-                height += list.getDividerHeight() * childCount;
+                cHeight += list.getDividerHeight() * childCount;
             }
         }
 
@@ -406,11 +392,11 @@ public class VoteActivity extends AppCompatActivity {
         for (int i = 0; i < list.getCount(); i++) {
             View childView = list.getAdapter().getView(i, null, list);
             childView.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-            height += childView.getMeasuredHeight();
+            cHeight += childView.getMeasuredHeight();
         }
         //dividers height
-        height += list.getDividerHeight() * list.getCount();
+        cHeight += list.getDividerHeight() * list.getCount();
 
-        return height;
+        return cHeight;
     }
 }

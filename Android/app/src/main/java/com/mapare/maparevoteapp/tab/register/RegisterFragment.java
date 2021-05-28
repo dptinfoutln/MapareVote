@@ -26,11 +26,13 @@ import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mapare.maparevoteapp.MainActivity;
 import com.mapare.maparevoteapp.R;
 import com.mapare.maparevoteapp.model.entity_to_send.User;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class RegisterFragment extends Fragment {
     private EditText nameField;
@@ -65,25 +67,25 @@ public class RegisterFragment extends Fragment {
                     // Hides keyboard
                     inputMethodManager.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
 
-                    SharedPreferences prefs = getContext().getSharedPreferences("Login", Context.MODE_PRIVATE);
+                    SharedPreferences prefs = MainActivity.getContext().getSharedPreferences(MainActivity.LOGIN_STRING_KEY, Context.MODE_PRIVATE);
                     // Save email for the next prompting
-                    prefs.edit().putString("email", email).apply();
+                    prefs.edit().putString(MainActivity.EMAIL_STRING_KEY, email).apply();
                     // Navigate to the login page right after a successful registration
-                    prefs.edit().putString("go_to", "login page").apply();
+                    prefs.edit().putString(MainActivity.GO_TO_STRING_KEY, "login page").apply();
                     break;
                 case "Server not responding":
                     // Manage ...
 
                     break;
                 case "Wrong inputs":
-                    // Manage ...
-
                     Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake);
                     emailField.setError(getResources().getString(R.string.incorrect_email));
                     registerButton.startAnimation(shake);
 
                     // Hides keyboard
                     inputMethodManager.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+                    break;
+                default:
                     break;
             }
             registerButton.setClickable(true);
@@ -137,14 +139,7 @@ public class RegisterFragment extends Fragment {
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.POST, url,
-                response -> {
-                    REGISTERED_STATE_CODE.setValue("Registration successful");
-
-                    }, error -> {
-                    // TODO: manage different types of errors
-
-                    REGISTERED_STATE_CODE.setValue("Wrong inputs");
-                })
+                response -> REGISTERED_STATE_CODE.setValue("Registration successful"), error -> REGISTERED_STATE_CODE.setValue("Wrong inputs"))
         {
             @Override
             public Map<String, String> getHeaders() {

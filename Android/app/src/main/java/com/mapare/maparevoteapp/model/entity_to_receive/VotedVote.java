@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 
 /**
@@ -54,6 +56,7 @@ public class VotedVote implements Serializable {
         this.vote = vote;
     }
 
+    @NotNull
     @Override
     public String toString() {
         return "VotedVote{" +

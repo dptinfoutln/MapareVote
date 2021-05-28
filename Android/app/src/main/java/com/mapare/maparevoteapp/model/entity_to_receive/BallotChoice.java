@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 
 /**
@@ -78,6 +80,7 @@ public class BallotChoice implements Serializable {
         this.weight = weight;
     }
 
+    @NotNull
     @Override
     public String toString() {
         return "BallotChoice{" +

@@ -1,7 +1,6 @@
 package com.mapare.maparevoteapp.tab.votes;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -12,6 +11,7 @@ import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mapare.maparevoteapp.MainActivity;
 import com.mapare.maparevoteapp.R;
 import com.mapare.maparevoteapp.model.entity_to_receive.Vote;
 
@@ -48,7 +48,6 @@ public class PrivateVotesFragment extends VotesFragment {
                     }
 
                 }, error -> {
-            // TODO: manage different types of errors
 
             if (error instanceof AuthFailureError) {
                 LOADING_STATE_CODE.setValue("session expired");
@@ -59,7 +58,7 @@ public class PrivateVotesFragment extends VotesFragment {
             public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<>();
 
-                String token = context.getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null);
+                String token = context.getSharedPreferences(MainActivity.LOGIN_STRING_KEY, Context.MODE_PRIVATE).getString(MainActivity.TOKEN_STRING_KEY, null);
                 params.put("Accept", "application/json; charset=utf8");
                 params.put("Authorization", "Bearer " + token);
                 return params;
@@ -70,7 +69,7 @@ public class PrivateVotesFragment extends VotesFragment {
                 assert response.headers != null;
                 int totalPages = (int) Float.parseFloat(Objects.requireNonNull(response.headers.get("pagecount")));
                 totalPages = totalPages == 0 ? 1 : totalPages;
-                context.getSharedPreferences("Filter", Context.MODE_PRIVATE).edit().putInt("total_pages", totalPages).apply();
+                context.getSharedPreferences(MainActivity.FILTER_STRING_KEY, Context.MODE_PRIVATE).edit().putInt("total_pages", totalPages).apply();
                 return super.parseNetworkResponse(response);
             }
         };
