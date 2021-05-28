@@ -43,3 +43,9 @@ Accept: application/json
 Authorization: Bearer {{auth_token}}
 
 ###
+
+POST http://localhost:5431/users
+Content-Type: application/json
+Accept: application/json
+
+{"email":"test@test.fr","lastname":"Prénom","firstname":"Nom","password":"mdp"}
