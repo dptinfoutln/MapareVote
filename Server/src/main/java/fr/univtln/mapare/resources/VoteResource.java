@@ -170,12 +170,23 @@ public class VoteResource {
     @JWTAuth
     @Path("private")
     public Vote addPrivateVote(@Context SecurityContext securityContext, Vote vote) throws BusinessException {
+        UserDAO dao = UserDAO.of(Controllers.getEntityManager());
         User voteMaker = (User) securityContext.getUserPrincipal();
 
         Controllers.checkUser(voteMaker);
 
         vote.setVotemaker(voteMaker);
-        vote.setMembers(Arrays.asList(voteMaker));
+        List<User> memberList = new ArrayList<>(Collections.singletonList(voteMaker));
+
+        User member;
+        for (User m : vote.getMembers()) {
+            member = dao.findByEmail(m.getEmail());
+            // TODO: Exception if member is null
+            if (member != null && !memberList.contains(member))
+                memberList.add(member);
+        }
+
+        vote.setMembers(memberList);
         return addVote(vote);
     }
 
@@ -191,6 +202,8 @@ public class VoteResource {
             throw new ForbiddenException("Please send a title.");
         if (vote.getAlgo() == null || !Vote.getAlgolist().contains(vote.getAlgo()))
             throw new ForbiddenException("Invalid algorithm");
+        if (vote.getAlgo().equals("borda"))
+            vote.setMaxChoices(vote.getChoices().size());
         if (vote.getMaxChoices() < 1)
             throw new ForbiddenException("Please enter a proper value for your maxChoices count.");
         if (vote.getChoices().size() < vote.getMaxChoices())
@@ -205,9 +218,6 @@ public class VoteResource {
             throw new ForbiddenException("Vote with no end date and no intermediary results: invalid.");
         if (vote.getEndDate() == null && vote.getAlgo().equals("STV"))
             throw new ForbiddenException("Votes with the STV algorithm have to have an end date.");
-        if (vote.getAlgo().equals("borda")) {
-            vote.setMaxChoices(vote.getChoices().size());
-        }
         vote.setId(0);
         for (Choice c : vote.getChoices())
             c.setVote(vote);
@@ -221,7 +231,7 @@ public class VoteResource {
         //TODO: limit number of thread if large amount of invited users
         for (User u : vote.getMembers())
             if (!u.equals(vote.getVotemaker()))
-                new Thread(MailUtils.sendInvitationTo(u)).start();
+                new Thread(MailUtils.sendInvitationTo(vote, u)).start();
         return vote;
     }
 

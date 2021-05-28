@@ -232,18 +232,4 @@ public abstract class VoteUtils {
             countMap.remove(choice);
         }
     }
-
-
-    /**
-     * The entry point of application.
-     *
-     * @param args the input arguments
-     */
-    public static void main(String[] args) {
-        Controllers.init();
-        Vote problem = VoteDAO.of(Controllers.getEntityManager()).findById(42);
-        VoteResults vr = new VoteResults(problem);
-
-        vr.calculateResults();
-    }
 }

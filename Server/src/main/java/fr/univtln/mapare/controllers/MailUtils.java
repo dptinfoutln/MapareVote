@@ -141,6 +141,7 @@ public abstract class MailUtils {
      * The type Invitation mail sender.
      */
     public static class InvitationMailSender implements Runnable {
+        private final Vote vote;
         private final User user;
 
         /**
@@ -148,13 +149,14 @@ public abstract class MailUtils {
          *
          * @param user the user
          */
-        public InvitationMailSender(User user) {
+        public InvitationMailSender(Vote vote, User user) {
             this.user = user;
+            this.vote = vote;
         }
 
         @Override
         public void run() {
-            sendConfirmationMail(user);
+            sendInvitationMail(vote, user);
         }
     }
 
@@ -164,7 +166,7 @@ public abstract class MailUtils {
      * @param user the user
      * @return the invitation mail sender
      */
-    public static InvitationMailSender sendInvitationTo(User user) {
-        return new InvitationMailSender(user);
+    public static InvitationMailSender sendInvitationTo(Vote vote, User user) {
+        return new InvitationMailSender(vote, user);
     }
 }
