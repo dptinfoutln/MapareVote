@@ -3,6 +3,7 @@ package com.mapare.maparevoteapp.model.entity_to_receive;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.mapare.maparevoteapp.model.EntityWithId;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +15,7 @@ import java.util.List;
  * The type Ballot.
  */
 @JsonIdentityInfo(scope= Ballot.class, generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-public class Ballot implements Serializable {
+public class Ballot implements Serializable, EntityWithId {
 
     @JsonProperty("id")
     private int id;
