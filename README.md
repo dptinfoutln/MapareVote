@@ -1,7 +1,7 @@
 # MapareVote
 
 Application de vote.
-Pour calculer le résultat du vote, les algorithmes suivants sont disponible pour l'instant:
+Pour calculer le résultat du vote, les algorithmes suivant sont disponible pour l'instant:
 - Choix majoritaire ("majority")
 - Méthode Borda ("borda")
 - Scrutin à vote unique transférable ("STV")
@@ -48,25 +48,25 @@ Pour calculer le résultat du vote, les algorithmes suivants sont disponible pou
 	},  
 	"choices": [  
 		{  
-		  "id": 107,  
-		  "names": [  
-		    "La lettre W"  
-		  ],  
-		  "vote": 46  
+			"id": 107,  
+			"names": [  
+				"La lettre W"  
+			],  
+			"vote": 46  
 		},  
 		{  
-		  "id": 108,  
-		  "names": [  
-		    "La lettre X"  
-		  ],  
-		  "vote": 46  
+			"id": 108,  
+			"names": [  
+				"La lettre X"  
+			],  
+			"vote": 46  
 		},  
 		{  
-		  "id": 113,  
-		  "names": [  
-		    "La lettre D"  
-		  ],  
-		  "vote": 46  
+			"id": 113,  
+			"names": [  
+				"La lettre D"  
+			],  
+			"vote": 46  
 		}  
 	],  
 	"maxChoices": 1,  
@@ -93,8 +93,7 @@ pendingResult		|	Boolean		| Future proofing pour le multi-threading. Pas utilis�
 
 **Exemple Curl**
 
-	curl -H "Authorization: bearer {JETON}" -H "Accept: application/json" -X GET
-	https://api.maparevote.siannos.fr/public/votes
+	curl -H "Authorization: bearer {JETON}" -H "Accept: application/json" -X GET "https://api.maparevote.siannos.fr/public/votes"
 
 ### Détail d'un vote
 
@@ -123,8 +122,7 @@ pendingResult		|	Boolean		| Future proofing pour le multi-threading. Pas utilis�
 
 **Exemple Curl**
 
-	curl -H "Authorization: bearer {JETON}" -H "Accept: application/json" -X GET
-	https://api.maparevote.siannos.fr/votes/46
+	curl -H "Authorization: bearer {JETON}" -H "Accept: application/json" -X GET "https://api.maparevote.siannos.fr/votes/46"
 	
 ### Résultats d'un vote
 
@@ -153,37 +151,37 @@ pendingResult		|	Boolean		| Future proofing pour le multi-threading. Pas utilis�
 	Format d'un résultat:  
 	{  
 		"choice": {  
-		  "id": 13,  
-		  "names": [  
-		    "Vert"  
-		  ]  
+			"id": 13,  
+			"names": [  
+				"Vert"  
+			]  
 		},  
 		"value": 236  
 	},  
 	{  
 		"choice": {  
-		  "id": 12,  
-		  "names": [  
-		    "Blanc"  
-		  ]  
+			"id": 12,  
+			"names": [  
+				"Blanc"  
+			]  
 		},  
 		"value": 249  
 	},  
 	{  
 		"choice": {  
-		  "id": 10,  
-		  "names": [  
-		    "Rouge"  
-		  ]  
+			"id": 10,  
+			"names": [  
+				"Rouge"  
+			]  
 		},  
 		"value": 286  
 	},  
 	{  
 		"choice": {  
-		  "id": 11,  
-		  "names": [  
-		    "Bleu"  
-		  ]  
+			"id": 11,  
+			"names": [  
+				"Bleu"  
+			]  
 		},  
 		"value": 26  
 	}
@@ -198,5 +196,56 @@ value		|	Number		| Si le vote est de type STV, nombre positif = gagnant, nombre 
 
 **Exemple Curl**
 
-	curl -H "Authorization: bearer {JETON}" -H "Accept: application/json" -X GET
-	https://api.maparevote.siannos.fr/votes/46/results 
+	curl -H "Authorization: bearer {JETON}" -H "Accept: application/json" -X GET "https://api.maparevote.siannos.fr/votes/46/results"
+
+### Créer un vote publique
+
+	POST https://api.maparevote.siannos.fr/votes/public
+
+**Format de la requête**
+
+	Headers 
+	Authorization: bearer {JETON}
+	Accept: application/json
+	Content: application/json
+
+	Payload
+	{  
+		"label":"De quelle couleur sont les moutons?",  
+		"startDate":[  
+			2021,05,12
+		],  
+		"endDate":null,  
+		"algo":"majority",  
+		"anonymous":false,  
+		"intermediaryResult":true,  
+		"choices":[  
+		{  
+		"names":["Blanc"]},  
+		{"names":["Beige"]}],  
+		"maxChoices":"1"  
+	}
+
+	
+**Paramètres**
+
+**Nom**			| **Requis**| **Type** 	| **Valeur par défaut**	| **Description**																| **Valeur possible**
+----------------|-----------|-----------|-----------------------|-------------------------------------------------------------------------------|----------------------
+Authorization	| Oui 		| String	| Aucune 				| Authentification avec jeton JWT. 												| bearer {JETON}
+label	| Oui 		| String	| Aucune 				| Intitulé du vote en question. 												| Chaine de caractère quelconque.
+startDate	| Oui 		| Date	| Aucune 				| Date à partir de laquelle le vote est ouvert. 												| La date doit être aujourd'hui ou plus tard.
+endDate	| Non 		| Date	| null 				| Date de fermeture du vote (peut être nulle si vote a durée indéterminée). 												| Peut être nulle, date supérieure à la date de début requise.
+algo	| Oui 		| String	| Aucune 				| Algorithme utilisé pour calculer les résultats. Voir plus haut pour liste d'algorithmes implantés. 												| majority/borda/STV.
+anonymous	| Non 		| Boolean	| false 				| Indique si le vote est anonyme ou si la liste des personnes ayant voté sera publique. 												| true/false.
+intermediaryResult	| Non 		| Boolean	| false 				| Indique si le vote laisse la possibilité de consulter les résultats avant la date de fin.													| true/false. Doit être vrai si pas de date de fin.
+choices	| Oui 		| Array	| Aucune 				| Liste de choix pour le vote en question. Format d'un choix: id du choix, names: intitulé du choix, id du vote. 												| Au moins 2 choix.
+maxChoices	| Oui sauf borda 		| Number	| Aucune 				| Si le vote est de type STV, nombre de gagnants, sinon nombre de choix maximum que l'on peut sélectionner au moment du vote. 												| Entier inférieur ou égal au nombre de choix total. Ignoré pour borda.
+
+**Réponse**
+
+	Renvoie le détail du vote créé avec les bons identifiants si tout est correct.
+	Format d'un vote: voir plus haut.
+
+**Exemple Curl**
+
+	curl -H "Authorization: bearer {JETON}" -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"label":"Nomduvote","startDate":[2021,05,21],"endDate":null,"algo":"borda","anonymous":false,"intermediaryResult":true,"choices":[{"names":["choix 1"]},{"names":["choix 2"]}]}' "https://api.maparevote.siannos.fr/votes/public"
