@@ -8,6 +8,7 @@ import com.mapare.maparevoteapp.model.EntityWithId;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The type Custom adapter.
@@ -59,7 +60,7 @@ public abstract class CustomAdapter<E extends EntityWithId> extends BaseAdapter 
      *
      * @return the picked ones
      */
-    public HashMap<Integer, Integer>  getPickedOnes() {
+    public Map<Integer, Integer> getPickedOnes() {
         return pickedIds;
     }
 

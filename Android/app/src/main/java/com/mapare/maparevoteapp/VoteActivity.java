@@ -242,7 +242,7 @@ public class VoteActivity extends AppCompatActivity {
                     LinearLayout layout_result = findViewById(R.id.expandableView_linearLayout);
 
                     resultView.setOnGroupClickListener((parent, v, groupPosition, id) -> {
-                        if (!clicked) {
+                        if (Boolean.FALSE.equals(clicked)) {
                             height = calculateHeight(resultView);
                         } else {
                             height = 0;
@@ -271,11 +271,7 @@ public class VoteActivity extends AppCompatActivity {
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.POST, url,
-                response -> {
-                    BALLOT_STATE_CODE.setValue("vote successful");
-                }, error -> {
-            // TODO: manage different types of errors
-
+                response -> BALLOT_STATE_CODE.setValue("vote successful"), error -> {
         }) {
             @Override
             public Map<String, String> getHeaders() {
@@ -328,8 +324,6 @@ public class VoteActivity extends AppCompatActivity {
                     LOADING_STATE_CODE.setValue("fetching myBallot successful");
 
                 }, error -> {
-            // TODO: manage different types of errors
-
         }) {
             @Override
             public Map<String, String> getHeaders() {
@@ -366,8 +360,6 @@ public class VoteActivity extends AppCompatActivity {
                     RESULT_STATE_CODE.setValue("fetching results successful");
 
                 }, error -> {
-            // TODO: manage different types of errors
-
         }) {
             @Override
             public Map<String, String> getHeaders() {
@@ -386,7 +378,7 @@ public class VoteActivity extends AppCompatActivity {
 
     private int calculateHeight(ListView list) {
 
-        int height = 0;
+        int cHeight = 0;
 
 
         if (list instanceof ExpandableListView) {
@@ -395,10 +387,10 @@ public class VoteActivity extends AppCompatActivity {
                 for (int i = 0; i < childCount; i++) {
                     View childView = ((ExpandableListView) list).getExpandableListAdapter().getChildView(j, i, false, null, list);
                     childView.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-                    height += childView.getMeasuredHeight();
+                    cHeight += childView.getMeasuredHeight();
                 }
                 //dividers height
-                height += list.getDividerHeight() * childCount;
+                cHeight += list.getDividerHeight() * childCount;
             }
         }
 
@@ -406,11 +398,11 @@ public class VoteActivity extends AppCompatActivity {
         for (int i = 0; i < list.getCount(); i++) {
             View childView = list.getAdapter().getView(i, null, list);
             childView.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-            height += childView.getMeasuredHeight();
+            cHeight += childView.getMeasuredHeight();
         }
         //dividers height
-        height += list.getDividerHeight() * list.getCount();
+        cHeight += list.getDividerHeight() * list.getCount();
 
-        return height;
+        return cHeight;
     }
 }

@@ -47,8 +47,6 @@ public class VotedVotesFragment extends VotesFragment {
                     }
 
                 }, error -> {
-            // TODO: manage different types of errors
-
             if (error instanceof AuthFailureError) {
                 LOADING_STATE_CODE.setValue("session expired");
             }

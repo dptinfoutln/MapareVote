@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,6 +85,8 @@ public class RegisterFragment extends Fragment {
                     // Hides keyboard
                     inputMethodManager.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
                     break;
+                default:
+                    break;
             }
             registerButton.setClickable(true);
         });
@@ -137,14 +139,7 @@ public class RegisterFragment extends Fragment {
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.POST, url,
-                response -> {
-                    REGISTERED_STATE_CODE.setValue("Registration successful");
-
-                    }, error -> {
-                    // TODO: manage different types of errors
-
-                    REGISTERED_STATE_CODE.setValue("Wrong inputs");
-                })
+                response -> REGISTERED_STATE_CODE.setValue("Registration successful"), error -> REGISTERED_STATE_CODE.setValue("Wrong inputs"))
         {
             @Override
             public Map<String, String> getHeaders() {

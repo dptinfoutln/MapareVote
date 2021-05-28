@@ -1,13 +1,11 @@
 package com.mapare.maparevoteapp.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.RadioButton;
-import android.widget.SearchView;
 
 import com.mapare.maparevoteapp.R;
 
@@ -74,11 +72,9 @@ public class SortAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         holder.sortField.setText(sort_list.get(position));
-        if (selected == null) {
-            if (holder.sortField.getText().toString().equals(tempSelected)) {
-                holder.sortField.setChecked(true);
-                selected = holder.sortField;
-            }
+        if (selected == null && holder.sortField.getText().toString().equals(tempSelected)) {
+            holder.sortField.setChecked(true);
+            selected = holder.sortField;
         }
 
 

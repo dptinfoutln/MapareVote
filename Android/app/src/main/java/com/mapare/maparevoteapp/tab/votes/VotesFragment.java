@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +36,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class VotesFragment extends Fragment {
     protected List<Vote> voteList;
@@ -179,6 +177,8 @@ public class VotesFragment extends Fragment {
                     sorting_by = getSort(sorting_by);
                     voteRequest(getContext(), page = 1, page_size, search, open_vote, sorting_by);
                     break;
+                default:
+                    break;
             }
 
         };
@@ -210,7 +210,6 @@ public class VotesFragment extends Fragment {
                     }
 
                 }, error -> {
-            // TODO: manage different types of errors
             if (error instanceof AuthFailureError) {
                 LOADING_STATE_CODE.setValue("session expired");
             }
@@ -251,7 +250,6 @@ public class VotesFragment extends Fragment {
                     }
 
                 }, error -> {
-            // TODO: manage different types of errors
             if (error instanceof AuthFailureError) {
                 if (context.getSharedPreferences("Login", Context.MODE_PRIVATE).getString("token", null) != null)
                     LOADING_STATE_CODE.setValue("session expired");
@@ -275,7 +273,9 @@ public class VotesFragment extends Fragment {
         queue.add(stringRequest);
     }
 
-    protected void voteRequest(Context context, int page, int page_size, String search, Boolean open_vote, String sorting_by) {}
+    protected void voteRequest(Context context, int page, int page_size, String search, Boolean open_vote, String sorting_by) {
+        // To be overriden
+    }
 
     @Override
     public Context getContext() {

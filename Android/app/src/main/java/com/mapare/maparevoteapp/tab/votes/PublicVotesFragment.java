@@ -47,8 +47,6 @@ public class PublicVotesFragment extends VotesFragment {
                     }
 
                 }, error -> {
-            // TODO: manage different types of errors
-
         }) {
             @Override
             public Map<String, String> getHeaders() {

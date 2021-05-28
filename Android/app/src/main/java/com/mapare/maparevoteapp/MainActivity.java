@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
 //
 
 
-        // TODO: Need to have a look (QRcode, nfc)
+        // For (QRcode, nfc) in progress
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setVisibility(View.INVISIBLE);
         fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -163,11 +163,17 @@ public class MainActivity extends AppCompatActivity {
         // Needed to close the keyboard if needed
         drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {}
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+                // Not used
+            }
             @Override
-            public void onDrawerOpened(@NonNull View drawerView) {}
+            public void onDrawerOpened(@NonNull View drawerView) {
+                // Not used
+            }
             @Override
-            public void onDrawerClosed(@NonNull View drawerView) {}
+            public void onDrawerClosed(@NonNull View drawerView) {
+                // Not used
+            }
             @Override
             public void onDrawerStateChanged(int newState) {
                 View view = getCurrentFocus();
@@ -283,14 +289,14 @@ public class MainActivity extends AppCompatActivity {
                     // If navigation is needed
                     break;
                 case "go_to":
-                    switch (content) {
-                        case "login page":
-                            navController.navigate(R.id.nav_login);
-                            toolbar.getMenu().setGroupVisible(R.id.app_bar_menu, false);
-                            break;
+                    if ("login page".equals(content)) {
+                        navController.navigate(R.id.nav_login);
+                        toolbar.getMenu().setGroupVisible(R.id.app_bar_menu, false);
                         // Add other destinations
                     }
                     prefs.edit().putString("go_to", "nowhere").apply();
+                    break;
+                default:
                     break;
             }
         };
@@ -379,7 +385,6 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 }, error -> {
-            // TODO: manage different types of errors
             if (error instanceof AuthFailureError) {
                 prefs.edit().putString("go_to", "login page").apply();
                 Toast.makeText(this, "Session expirée", Toast.LENGTH_SHORT).show();

@@ -84,7 +84,7 @@ public class UniqueChoiceAdapter extends CustomAdapter<Choice> {
             if (position == 0) // bug ?
                 holder.choiceField.setChecked(false);
 
-            if (!anonymous) {
+            if (Boolean.FALSE.equals(anonymous)) {
                 for (BallotChoice bc : ballot.getChoices()) {
                     if (bc.getChoice().getId() == getItemId(position)) {
                         holder.choiceField.setChecked(true);
@@ -92,7 +92,6 @@ public class UniqueChoiceAdapter extends CustomAdapter<Choice> {
                     }
                 }
             }
-            //else if TODO : print the fact that the vote is anonymous
             holder.choiceField.setEnabled(false);
         }
 

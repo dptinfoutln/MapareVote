@@ -68,6 +68,8 @@ public class LoginFragment extends Fragment {
                     loginButton.startAnimation(shake);
                     loginButton.setClickable(true);
                     break;
+                default:
+                    break;
             }
         });
 
@@ -111,11 +113,7 @@ public class LoginFragment extends Fragment {
                     context.getSharedPreferences("Login", Context.MODE_PRIVATE).edit().putString("email", email).apply();
 
                     CONNECTED_STATE_CODE.setValue("Connection successful");
-                }, error -> {
-                    // TODO: manage different types of errors
-
-                    CONNECTED_STATE_CODE.setValue("Wrong inputs");
-                })
+                }, error -> CONNECTED_STATE_CODE.setValue("Wrong inputs"))
         {
             @Override
             public Map<String, String> getHeaders() {
