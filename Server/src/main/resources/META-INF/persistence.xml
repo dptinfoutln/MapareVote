@@ -60,7 +60,7 @@
             <!-- Les paramètres de connexions -->
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver" />
             <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://siannos.fr:5432/maparevotedev"/>
-            <property name="jakarta.persistence.jdbc.user" value="mapare" />
+            <property name="jakarta.persistence.jdbc.user" value="maparevotedb" />
             <property name="jakarta.persistence.jdbc.password" value="alfrni666" />
 
             <!-- Les options de générations des tables -->
