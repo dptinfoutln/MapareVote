@@ -120,7 +120,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
                 choices.push({names: [choiceInput.nativeElement.value]});
             });
             this.memberInputs.forEach((memberInput) => {
-                members.push({email: [memberInput.nativeElement.value]});
+                members.push({email: memberInput.nativeElement.value});
             });
             const startDate = new Date(this.startDatePicker.nativeElement.value);
             const endDate = new Date(this.endDatePicker.nativeElement.value);
@@ -139,6 +139,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
                 choices,
                 members,
                 maxChoice);
+            // console.log(JSON.stringify(vote));
             this.votesService.sendVote(vote, !this.isPrivate).then(
                 newVote => {
                     this.router.navigate(['/', 'votes', newVote.id]).then();
