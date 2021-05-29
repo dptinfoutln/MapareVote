@@ -1,0 +1,75 @@
+@startuml
+
+
+
+package tab <<Frame>> {
+    package votes <<Cloud>> {
+        class PrivateVotesFragment
+        class PublicVotesFragment
+        class StartedVotesFragment
+        class VotedVotesFragment
+        class VotesFragment
+    }
+    package register <<Cloud>> {
+        class RegisterFragment
+    }
+    package login <<Cloud>> {
+        class LoginFragment
+    }
+}
+
+package adapter <<Frame>> {
+    abstract class CustomAdapter
+    class UniqueChoiceAdapter
+    class MultipleChoicesAdapter
+    class WeightedChoicesAdapter
+    class SortAdapter
+    class VoteAdapter
+    class ResultAdapter
+}
+
+package model <<Frame>> {
+    interface EntityWithId
+    package entity_to_receive <<Cloud>> {
+        class rBallot
+        class rBallotChoice
+        class rChoice
+        class rUser
+        class rVote
+        class rVotedVote
+        class rVoteResult
+    }
+    package entity_to_send <<Cloud>> {
+          class sBallot
+          class sBallotChoice
+          class sChoice
+          class sUser
+    }
+}
+
+
+class VoteActivity
+class MainActivity
+
+tab --up-- MainActivity
+VotesFragment --right-- adapter
+VoteActivity --right-- adapter
+model ---up--- tab
+votes --down-- VoteActivity
+
+CustomAdapter <|-right- UniqueChoiceAdapter
+CustomAdapter <|-down- MultipleChoicesAdapter
+CustomAdapter <|-left- WeightedChoicesAdapter
+CustomAdapter <|-up- VoteAdapter
+
+VotesFragment <|-right- PublicVotesFragment
+VotesFragment <|-left- PrivateVotesFragment
+VotesFragment <|-up- StartedVotesFragment
+VotesFragment <|-down- VotedVotesFragment
+
+EntityWithId <|-- rBallot
+EntityWithId <|-- rChoice
+EntityWithId <|-- rUser
+EntityWithId <|-- rVote
+
+@enduml
