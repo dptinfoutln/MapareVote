@@ -1,0 +1,37 @@
+@startuml
+title "Send Ballot - Sequence Diagram"
+
+actor User
+boundary "Web GUI" as GUI
+control "REST Server" as RS
+entity DAO
+database "BDD"
+
+User -> GUI: Selects choices
+GUI -> RS: Sends partial Ballot
+RS -> RS: Checks validity and completes Ballot
+
+
+alt Valid Ballot
+
+    RS -> DAO: Sends real Ballot
+    DAO -> BDD: Persists Ballot
+    alt no database conflicts
+        BDD -> DAO: Confirms operation
+        DAO -> RS: Sends confirmation
+        RS -> GUI: Sends confirmation
+        GUI -> User: Confirmation Message
+    else database conflict
+        BDD -> DAO: Transmits error
+        DAO -> RS: Transmits error
+        RS -> GUI: Transmits error
+        GUI -> User: Error message
+    end
+
+else Invalid Ballot
+
+    RS -> GUI: Ballot Refused
+    GUI -> User: Error Message
+
+end
+@enduml

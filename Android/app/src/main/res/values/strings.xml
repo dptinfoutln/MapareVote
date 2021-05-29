@@ -1,14 +1,82 @@
 <resources>
-    <string name="app_name">MapareMap</string>
+    <string name="app_name">MapareVoteApp</string>
+
+    <!-- Strings related to buttons -->
     <string name="login">Connexion</string>
+    <string name="signup">Créer</string>
+
+    <!-- Strings related to forms -->
     <string name="email_text_view">Email</string>
     <string name="password_text_view">Mot de passe</string>
+    <string name="name_text_view">Nom</string>
+    <string name="firstname_text_view">Prénom</string>
+    <string name="confirm_password_text_view">Confirmer Mot de passe</string>
+    <string name="already_voted">Vous avez déjà voté</string>
+    <string name="closed_vote">Le vote est clos</string>
+    <string name="show_results">"Afficher résultats"</string>
+    <string name="vote_result_text_view">Résultats disponibles</string>
+    <string name="ballot_token_text_view">Token: </string>
+    <string name="algo_text_view">Algo: </string>
+    <string name="voter_text_view">Voter</string>
+
+    <!-- Strings related to login & register-->
+    <string name="incorrect_email">Email non valide</string>
     <string name="incorrect_password">Mot de passe incorrect</string>
     <string name="empty_email">Veuillez entrer une adresse email</string>
     <string name="empty_password">Veuillez entrer un mot de passe</string>
-    <string name="logout">Déconnexion</string>
-    <string name="create_lobby">Créer un salon</string>
-    <string name="join_lobby">Rejoindre un salon</string>
-    <string name="settings">Paramètres</string>
-    <string name="server_id">Id du serveur</string>
+    <string name="empty_name">Veuillez entrer un nom</string>
+    <string name="empty_firstname">Veuillez entrer un prénom</string>
+
+
+    <!-- Strings related to REST API -->
+    <string name="API_URL">https://api.maparevote.siannos.fr</string>
+    <string name="LOGIN_URL">/auth/signin</string>
+    <string name="SIGNUP_URL">/users</string>
+    <string name="PUBLIC_VOTE_URL">/votes/public"</string>
+    <string name="PRIVATE_VOTE_URL">/votes/private/invited""</string>
+    <string name="PAGE_FILTER">page_num=</string>
+    <string name="PAGE_SIZE_FILTER">page_size=</string>
+    <string name="SEARCH_FILTER">name_like=</string>
+    <string name="OPEN_VOTE_FILTER">open=</string>
+    <string name="SORT_FILTER">sort=</string>
+    <string name="VOTE_URL">/votes/</string>
+    <string name="BALLOT_URL">/ballots</string>
+    <string name="ME_URL">/users/me</string>
+    <string name="MYBALLOT_URL">/myballot</string>
+    <string name="RESULT_URL">/results</string>
+    <string name="STARTED_VOTES_URL">/votes/startedvotes</string>
+    <string name="VOTED_VOTES_URL">/votes/votedvotes</string>
+    <string name="NAME_SORT_VALUE">NAME</string>
+    <string name="VOTES_SORT_VALUE">VOTES</string>
+    <string name="STARTDATE_SORT_VALUE">STARTDATE</string>
+
+    <!-- Strings related to filters -->
+    <string name="search_filter">Rechercher</string>
+    <string name="open_vote_filter">Vote ouvert seulement</string>
+    <string name="page_size_filter">Votes par page</string>
+    <string name="sort_by_filter">Trier par</string>
+    <string name="none_sort">Aucun</string>
+    <string name="name_sort">Titre</string>
+    <string name="voters_sort">Nombre de voters</string>
+    <string name="startDate_sort">Date de début</string>
+    <string name="first_button">First</string>
+    <string name="previous_button">Prev</string>
+    <string name="next_button">Next</string>
+    <string name="last_button">Last</string>
+
+    <!-- Strings related to navigation menu -->
+    <string name="user">Utilisateur</string>
+    <string name="menu_public_votes">Votes publiques</string>
+    <string name="menu_private_votes">Votes privés</string>
+    <string name="menu_started_votes">Votes créés</string>
+    <string name="menu_voted_votes">Mes votes</string>
+    <string name="menu_login">Connexion</string>
+    <string name="menu_logout">Déconnexion</string>
+    <string name="menu_register">Créer un compte</string>
+    <string name="welcome">Bienvenue !</string>
+
+
+    <string name="title_activity_main">Home Menu</string>
+    <string name="title_activity_vote">Vote</string>
+
 </resources>
