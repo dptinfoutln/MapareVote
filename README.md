@@ -213,7 +213,7 @@ value		|	Number		| Si le vote est de type STV, nombre positif = gagnant, nombre 
 	{  
 		"label":"De quelle couleur sont les moutons?",  
 		"startDate":[  
-			2021,05,12
+			2021,5,12
 		],  
 		"endDate":null,  
 		"algo":"majority",  
@@ -248,7 +248,7 @@ maxChoices	| Oui sauf borda 		| Number	| Aucune 				| Si le vote est de type STV
 
 **Exemple Curl**
 
-	curl -H "Authorization: Bearer {JETON}" -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"label":"Nomduvote","startDate":[2021,05,21],"endDate":null,"algo":"borda","anonymous":false,"intermediaryResult":true,"choices":[{"names":["choix 1"]},{"names":["choix 2"]}]}' "https://api.maparevote.siannos.fr/votes/public"
+	curl -H "Authorization: Bearer {JETON}" -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"label":"Nomduvote","startDate":[2021,5,21],"endDate":null,"algo":"borda","anonymous":false,"intermediaryResult":true,"choices":[{"names":["choix 1"]},{"names":["choix 2"]}]}' "https://api.maparevote.siannos.fr/votes/public"
 
 
 ### Créer un vote privé
