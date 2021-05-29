@@ -150,7 +150,7 @@ votedVotes		|	Array		| Liste des identifiants des votes pour lesquels l'utilisat
 	curl -X GET "https://api.maparevote.siannos.fr/users/33/validate/a37d43b3-b991-4ceb-955c-56d4256f4681"
 	
 
-### Supression d'un utilisateur
+### Suppression d'un utilisateur
 
 	DELETE https://api.maparevote.siannos.fr/users/{ID}
 	Avec {ID} le nombre identifiant de l'utilisateur.
