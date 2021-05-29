@@ -513,7 +513,7 @@ members	| Non 		| Array	| Aucune 				| Liste des emails de chaque membre. 						
 
 	curl -H "Authorization: Bearer {TOKEN}" -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"label":"De quel couleur est le cheval blanc d'Henri IV?","startDate":[2021,5,29],"endDate":null,"algo":"borda","anonymous":false,"intermediaryResult":true,"choices":[{"names":["Magenta"]},{"names":["Champagne"]}],"members":[{"email":"henri8@examplemail.com"},{"email":"shakespeare@bill.com"}]}' "http://localhost:5431/votes/private"
 	
-### Supression d'un vote
+### Suppression d'un vote
 
 	DELETE https://api.maparevote.siannos.fr/votes/{ID}
 	Avec {ID} le nombre identifiant du vote.
