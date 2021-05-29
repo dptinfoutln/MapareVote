@@ -1,0 +1,52 @@
+@startuml
+left to right direction
+
+title MapareMap - Use Case Diagram
+
+rectangle Connection {
+    (Login)
+    (Register)
+}
+
+
+rectangle Lobby {
+    (Join Lobby) as JL
+    (Create Lobby) as CL
+    (Invite User) as IU
+    (Chat with Lobby) as Chat
+    (Create Teams) as CT
+    (Join Team) as JT
+}
+
+rectangle Game {
+    (Look at Teammates' Positions) as LTP
+    (Use Virtual Binoculars) as VB
+    (Use Bonus) as Bonus
+    (Add Checkpoint) as CP
+}
+
+rectangle Safety {
+    (Send Alert) as Alert
+    (Look at all Players' Positions) as LaPP
+}
+
+:User:
+:GameMaster:
+
+User ---> Login
+User ---> Register
+User ---> JT
+User ---> JL
+User ---> LTP
+User ---> VB
+User ---> Bonus
+User ---> CP
+User ---> Alert
+User ---> Chat
+GameMaster --> CT
+GameMaster --> LaPP
+GameMaster --> CL
+GameMaster --|> User
+GameMaster --> IU
+
+@enduml
