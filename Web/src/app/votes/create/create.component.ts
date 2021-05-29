@@ -189,7 +189,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
     onEndDatePickerFocusOut(): boolean {
         const pickedDate = new Date(this.endDatePicker.nativeElement.value);
         pickedDate.setTime(pickedDate.getTime() + pickedDate.getTimezoneOffset() * 60 * 1000);
-        pickedDate.setHours(0, 0, 0, 0);
+        pickedDate.setHours(2, 0, 0, 0);
         if (this.isLimitedTime && (this.today.getTime() >= pickedDate.getTime() || !this.endDatePicker.nativeElement.value)) {
             this.renderer.addClass(this.endDatePicker.nativeElement, 'is-invalid');
             return true;
@@ -203,7 +203,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
 
         const pickedDate = new Date(this.startDatePicker.nativeElement.value);
         pickedDate.setTime(pickedDate.getTime() + pickedDate.getTimezoneOffset() * 60 * 1000);
-        pickedDate.setHours(0, 0, 0, 0);
+        pickedDate.setHours(2, 0, 0, 0);
         if (this.today.getTime() > pickedDate.getTime() || !this.startDatePicker.nativeElement.value) {
             this.renderer.addClass(this.startDatePicker.nativeElement, 'is-invalid');
             return true;
@@ -275,8 +275,8 @@ export class CreateComponent implements OnInit, AfterViewInit {
     }
 
     onMaxChoiceInput(): boolean {
-        if (this.maxChoice.nativeElement.min <= this.maxChoice.nativeElement.value &&
-            this.maxChoice.nativeElement.value <= this.maxChoice.nativeElement.max) {
+        if (Number(this.maxChoice.nativeElement.min) <= Number(this.maxChoice.nativeElement.value) &&
+            Number(this.maxChoice.nativeElement.value) <= Number(this.maxChoice.nativeElement.max)) {
             this.renderer.removeClass(this.maxChoice.nativeElement, 'is-invalid');
             return false;
         } else {
