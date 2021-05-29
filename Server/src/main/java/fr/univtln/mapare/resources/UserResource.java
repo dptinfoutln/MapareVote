@@ -48,8 +48,15 @@ public class UserResource {
      * @return the user
      */
     @GET
+    @JWTAuth
     @Path("{id}")
-    public User getUser(@PathParam("id") int id) {
+    public User getUser(@Context SecurityContext securityContext,
+                        @PathParam("id") int id) throws ForbiddenException {
+        User user = (User) securityContext.getUserPrincipal();
+
+        if (!user.isAdmin())
+            throw new ForbiddenException("You do not have the rights to do this.");
+
         return UserDAO.of(Controllers.getEntityManager()).findById(id);
     }
 
