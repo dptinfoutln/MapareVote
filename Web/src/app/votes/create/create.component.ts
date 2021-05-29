@@ -115,8 +115,12 @@ export class CreateComponent implements OnInit, AfterViewInit {
             this.isPending = true;
             this.submitBtn.nativeElement.disabled = true;
             const choices = [];
+            const members = [];
             this.choiceInputs.forEach((choiceInput) => {
                 choices.push({names: [choiceInput.nativeElement.value]});
+            });
+            this.memberInputs.forEach((memberInput) => {
+                members.push({email: [memberInput.nativeElement.value]});
             });
             const startDate = new Date(this.startDatePicker.nativeElement.value);
             const endDate = new Date(this.endDatePicker.nativeElement.value);
@@ -133,6 +137,7 @@ export class CreateComponent implements OnInit, AfterViewInit {
                 this.isAnonymous,
                 this.isIntermediaryResults,
                 choices,
+                members,
                 maxChoice);
             this.votesService.sendVote(vote, !this.isPrivate).then(
                 newVote => {
@@ -288,6 +293,7 @@ class VoteToSend {
                 public anonymous: boolean,
                 public intermediaryResult: boolean,
                 public choices: { names: string[] }[],
+                public members: { email: string }[],
                 public maxChoices: number) {
     }
 }

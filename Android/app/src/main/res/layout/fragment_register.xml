@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context=".tab.register.RegisterFragment">
+
+
+    <EditText
+        android:id="@+id/register_nameField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textCapSentences"
+        android:layout_marginHorizontal="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.2" />
+
+    <EditText
+        android:id="@+id/register_firstnameField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints="@string/email_text_view"
+        android:inputType="textCapSentences"
+        android:layout_marginHorizontal="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/register_nameField"
+        app:layout_constraintVertical_bias="0.1" />
+
+    <EditText
+        android:id="@+id/register_emailField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints="@string/email_text_view"
+        android:inputType="textEmailAddress"
+        android:layout_marginHorizontal="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/register_firstnameField"
+        app:layout_constraintVertical_bias="0.1" />
+
+    <EditText
+        android:id="@+id/register_passwordField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints="@string/password_text_view"
+        android:inputType="textPassword"
+        android:layout_marginHorizontal="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/register_emailField"
+        app:layout_constraintVertical_bias="0.1" />
+
+    <EditText
+        android:id="@+id/register_confirmPasswordField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints="@string/confirm_password_text_view"
+        android:inputType="textPassword"
+        android:layout_marginHorizontal="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/register_passwordField"
+        app:layout_constraintVertical_bias="0.1" />
+
+    <TextView
+        android:id="@+id/nameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:labelFor="@id/register_nameField"
+        android:text="@string/name_text_view"
+        app:layout_constraintBottom_toTopOf="@+id/register_nameField"
+        app:layout_constraintStart_toStartOf="@+id/register_nameField" />
+
+    <TextView
+        android:id="@+id/firstnameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:labelFor="@id/register_firstnameField"
+        android:text="@string/firstname_text_view"
+        app:layout_constraintBottom_toTopOf="@+id/register_firstnameField"
+        app:layout_constraintStart_toStartOf="@+id/register_firstnameField" />
+
+    <TextView
+        android:id="@+id/emailTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:labelFor="@id/register_emailField"
+        android:text="@string/email_text_view"
+        app:layout_constraintBottom_toTopOf="@+id/register_emailField"
+        app:layout_constraintStart_toStartOf="@+id/register_emailField" />
+
+    <TextView
+        android:id="@+id/passwordTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:labelFor="@id/register_passwordField"
+        android:text="@string/password_text_view"
+        app:layout_constraintBottom_toTopOf="@+id/register_passwordField"
+        app:layout_constraintStart_toStartOf="@+id/register_passwordField" />
+
+    <TextView
+        android:id="@+id/confirmPasswordTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:labelFor="@id/register_confirmPasswordField"
+        android:text="@string/confirm_password_text_view"
+        app:layout_constraintBottom_toTopOf="@+id/register_confirmPasswordField"
+        app:layout_constraintStart_toStartOf="@+id/register_confirmPasswordField" />
+
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/signup"
+        android:layout_marginHorizontal="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/register_confirmPasswordField"
+        app:layout_constraintVertical_bias="0.2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
