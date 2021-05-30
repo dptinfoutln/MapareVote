@@ -114,7 +114,7 @@ export class VoteComponent implements OnInit {
     }
 
     private setResults(): void {
-        if (this.vote.algo === Algo.BORDA) {
+        if (this.vote.algo === Algo.BORDA || this.vote.algo === Algo.MAJORITY) {
             this.results.sort((a, b) => {
                 return b.value - a.value;
             });
@@ -123,7 +123,6 @@ export class VoteComponent implements OnInit {
                 return a.value - b.value;
             });
         }
-
     }
 
     isDateBeforeToday(): boolean {
