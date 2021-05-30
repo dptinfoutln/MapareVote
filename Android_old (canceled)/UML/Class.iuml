@@ -1,0 +1,53 @@
+@startuml
+
+
+title Maparemap - Class Diagram
+
+package M {
+    class User {
+        String username
+        String password
+        Boolean gameMaster
+    }
+    
+    class Checkpoint {
+        String name
+        Coordinate xpos
+        Coordinate ypos
+    }
+    
+    class Lobby {
+        String password
+        Boolean gameStarted
+        Boolean canJoinMidGame
+    }
+    
+    class Team {
+        int number
+        Color color
+    }
+    
+    class Chatroom
+    
+    class Map
+}
+
+package V {
+    class Binoculars
+}
+
+package S {
+class Server
+}
+
+Team "1" *-- "*" User
+User "1" -up- "1" Lobby: GameMaster
+Team "*" -- "1" Lobby
+Checkpoint "*"--"1" Team
+Team "1" -- "1" Chatroom
+Lobby "1" -- "1" Chatroom
+Lobby "1" -- "1" Map
+Lobby "1" -- "*" Binoculars
+Lobby "*" --* "1" Server
+
+@enduml
