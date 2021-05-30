@@ -150,7 +150,7 @@ votedVotes		|	Array		| Liste des identifiants des votes pour lesquels l'utilisat
 	curl -X GET "https://api.maparevote.siannos.fr/users/33/validate/a37d43b3-b991-4ceb-955c-56d4256f4681"
 	
 
-### Supression d'un utilisateur
+### Suppression d'un utilisateur
 
 	DELETE https://api.maparevote.siannos.fr/users/{ID}
 	Avec {ID} le nombre identifiant de l'utilisateur.
@@ -513,7 +513,7 @@ members	| Non 		| Array	| Aucune 				| Liste des emails de chaque membre. 						
 
 	curl -H "Authorization: Bearer {TOKEN}" -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"label":"De quel couleur est le cheval blanc d'Henri IV?","startDate":[2021,5,29],"endDate":null,"algo":"borda","anonymous":false,"intermediaryResult":true,"choices":[{"names":["Magenta"]},{"names":["Champagne"]}],"members":[{"email":"henri8@examplemail.com"},{"email":"shakespeare@bill.com"}]}' "http://localhost:5431/votes/private"
 	
-### Supression d'un vote
+### Suppression d'un vote
 
 	DELETE https://api.maparevote.siannos.fr/votes/{ID}
 	Avec {ID} le nombre identifiant du vote.
