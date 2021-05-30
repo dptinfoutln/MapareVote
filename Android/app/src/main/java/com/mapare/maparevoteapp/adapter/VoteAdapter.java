@@ -79,13 +79,20 @@ public class VoteAdapter extends CustomAdapter<Vote> {
         String dateString = entityList.get(position).getStartDate().toString().replace("[", "").replace("]", "");
         List<String> dateList = Arrays.asList(dateString.split(","));
         dateString = dateList.get(2) + "/" + dateList.get(1) + "/" + dateList.get(0);
-
         dateString = dateString.replace(" ", "");
 
-        List<String> dateList2= Arrays.asList(dateString.split("/"));
-        LocalDate date = LocalDate.of(Integer.parseInt(dateList2.get(2)), Integer.parseInt(dateList2.get(1)), Integer.parseInt(dateList2.get(0)));
+        LocalDate endDate;
+        if (entityList.get(position).getEndDate() != null) {
+            String dateString2 = entityList.get(position).getEndDate().toString().replace("[", "").replace("]", "");
+            List<String> dateList2 = Arrays.asList(dateString2.split(","));
+            dateString2 = dateList2.get(2) + "/" + dateList2.get(1) + "/" + dateList2.get(0);
+            dateString2 = dateString2.replace(" ", "");
+            List<String> endDateList = Arrays.asList(dateString2.split("/"));
+            endDate = LocalDate.of(Integer.parseInt(endDateList.get(2)), Integer.parseInt(endDateList.get(1)), Integer.parseInt(endDateList.get(0)));
+        } else
+            endDate = LocalDate.now(ZoneId.of("GMT")).plusDays(1);
 
-        if (entityList.get(position).isIntermediaryResult() || date.isBefore(LocalDate.now(ZoneId.of("GMT")))) {
+        if (entityList.get(position).isIntermediaryResult() || endDate.isBefore(LocalDate.now(ZoneId.of("GMT")).plusDays(1))) {
             holder.intermediaryResultField.setText(R.string.vote_result_text_view);
             holder.intermediaryResultField.setTypeface(null, Typeface.ITALIC);
         } else {

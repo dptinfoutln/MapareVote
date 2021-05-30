@@ -2,12 +2,10 @@ package com.mapare.maparevoteapp;
 
 import android.annotation.SuppressLint;
 import android.graphics.BlurMaskFilter;
-import android.graphics.MaskFilter;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.MaskFilterSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ExpandableListView;
@@ -79,8 +77,12 @@ public class VoteActivity extends AppCompatActivity {
 
         BALLOT_STATE_CODE = new MutableLiveData<>();
         BALLOT_STATE_CODE.observe(this, s -> {
-            Toast.makeText(VoteActivity.this, "Voté", Toast.LENGTH_SHORT).show();
-            finish();
+            if (s.equals("vote successful")) {
+                Toast.makeText(VoteActivity.this, "Voté", Toast.LENGTH_SHORT).show();
+                finish();
+            } else if (s.equals("vote unsuccessful")) {
+                Toast.makeText(VoteActivity.this, "Valeurs incorrectes", Toast.LENGTH_SHORT).show();
+            }
         });
 
         Vote vote = (Vote) getIntent().getSerializableExtra("vote");
@@ -133,6 +135,7 @@ public class VoteActivity extends AppCompatActivity {
             if (adapter.getPickedOnes().isEmpty()) {
                 Toast.makeText(this, "Vous n'avez pas fait de choix", Toast.LENGTH_SHORT).show();
             } else {
+                pickedChoices.clear();
                 // fetch the choices picked
                 for (int id : adapter.getPickedOnes().keySet()) {  // <-- exception can't happen --'
                     pickedChoices.add(new BallotChoice(new Choice(id), adapter.getPickedOnes().get(id)));
@@ -143,9 +146,6 @@ public class VoteActivity extends AppCompatActivity {
         });
 
         boolean checkVoteClosed = endDate.isBefore(LocalDate.now(ZoneId.of("GMT")).plusDays(1));
-        Log.i("dateee", endDate+"");
-        Log.i("datenn", LocalDate.now(ZoneId.of("GMT"))+"");
-        Log.i("date", checkVoteClosed+"");
         if (ballotToken != null) {
             // Displays the token if voted
             TextView tokenField = findViewById(R.id.vote_ballotTokenField);
@@ -275,8 +275,7 @@ public class VoteActivity extends AppCompatActivity {
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.POST, url,
-                response -> BALLOT_STATE_CODE.setValue("vote successful"), error -> {
-        }) {
+                response -> BALLOT_STATE_CODE.setValue("vote successful"), error -> BALLOT_STATE_CODE.setValue("vote unsuccessful")) {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<>();
