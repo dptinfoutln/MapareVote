@@ -3,7 +3,7 @@
 Application Android qui utilise l'API du serveur REST.
 	  
 ## Serveur REST
-Pour lier votre propre serveur REST avec l'application mobile, il faut mettre l'url de votre serveur dans le `res/values/strings.xml`` et changer la valeur de API_URL à la ligne 32:
+Pour lier votre propre serveur REST avec l'application mobile, il faut mettre l'url de votre serveur dans le `res/values/strings.xml` et changer la valeur de API_URL à la ligne 32:
 
 	<string name="API_URL">https://api.maparevote.siannos.fr</string>
 	
