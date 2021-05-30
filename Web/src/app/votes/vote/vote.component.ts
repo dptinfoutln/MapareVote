@@ -220,7 +220,7 @@ export class VoteComponent implements OnInit {
             });
         } else if (this.vote.algo === Algo.STV) {
             this.choices.forEach((choice, index) => {
-                tmpChoices.push({choice: {id: choice.id}, weight: index});
+                tmpChoices.push({choice: {id: choice.id}, weight: index + 1 });
             });
         }
         // console.log(tmpChoices);

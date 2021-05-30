@@ -74,14 +74,14 @@
                                     </li>
                                 </ul>
                                 <div *ngIf="vote.algo === 'STV'">
-                                    Choix gagnant :
+                                    <span *ngIf="results.length > 0">Choix gagnant :</span>
                                     <ul class="list-group mt-1 mb-3">
                                         <li class="list-group-item d-flex justify-content-between align-items-center"
                                             *ngFor="let resultChoice of winnerResults; let index = index">
                                             {{resultChoice.choice.names}}
                                         </li>
                                     </ul>
-                                    Choix perdant :
+                                    <span *ngIf="results.length > 0">Choix perdant :</span>
                                     <ul class="list-group mt-1 mb-2">
                                         <li class="list-group-item d-flex justify-content-between align-items-center"
                                             *ngFor="let resultChoice of looserResults; let index = index">
