@@ -1,7 +1,7 @@
 GET http://localhost:5431/auth/signin
 Content-Type: application/json
 Accept: text/plain
-Authorization: Basic dGVzdEBtYWlsLmNvbTptZHA=
+Authorization: Basic ZnJhbmNvaXMtcGFsbWFAZXR1ZC51bml2LXRsbi5mcjptZHA=
 
 > {%
     client.global.set("auth_token", response.body);
@@ -9,7 +9,7 @@ Authorization: Basic dGVzdEBtYWlsLmNvbTptZHA=
 
 ###
 
-GET http://localhost:5431/votes/46
+GET http://localhost:5431/votes/45
 Accept: application/json
 Authorization: Bearer {{auth_token}}
 

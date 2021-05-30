@@ -81,7 +81,7 @@ public class VoteResource {
 //        Thread thread;
         if (vote.isPublic() || vote.getMembers().contains(user)) {
             if (vote.getEndDate() != null && (
-                    (!vote.hasResults() || vote.isIntermediaryResult()) && LocalDate.now().isAfter(vote.getEndDate()))
+                    (!vote.hasResults() || vote.isIntermediaryResult()) && LocalDate.now().isAfter(vote.getEndDate().minusDays(1)))
             ) {
                 vote.setIntermediaryResult(false);
 //                thread = new Thread(VoteUtils.voteResultsOf(vote));
@@ -292,7 +292,7 @@ public class VoteResource {
             throw new ForbiddenException("Already voted.");
         if (LocalDate.now().isBefore(vote.getStartDate()))
             throw new ForbiddenException("Too early.");
-        if (vote.getEndDate() != null && LocalDate.now().isAfter(vote.getEndDate()))
+        if (vote.getEndDate() != null && LocalDate.now().isAfter(vote.getEndDate().minusDays(1)))
             throw new ForbiddenException("Too late.");
         if (!vote.getAlgo().equals("STV") && ballot.getChoices().size() > vote.getMaxChoices())
             throw new ForbiddenException("Too many choices.");
