@@ -6,6 +6,8 @@ Pour calculer le résultat du vote, les algorithmes suivant sont disponible pour
 - Méthode Borda ("borda")
 - Scrutin à vote unique transférable ("STV")
 
+Lien du site web: https://maparevote.siannos.fr/
+
 ## Interface REST
 
 ### Authentification
